@@ -28,7 +28,6 @@
 1. [Atenção - Suporte e Uso](#-atenção---suporte-e-uso)
 2. [Sobre o Projeto](#sobre-este-projeto)
 3. [Instalação](#instalação)
-    - [Instalação em VPS (Debian/Ubuntu)](#instalação-em-vps-debianubuntu)
     - [Instalação no Termux](#instalação-no-termux)
 4. [Configuração](#configuração)
 5. [Funcionalidades](#funcionalidades)
@@ -48,84 +47,33 @@ Não há qualquer vínculo oficial com o WhatsApp. É de responsabilidade exclus
 
 ## Instalação
 
-### Instalação em VPS (Debian/Ubuntu)
-
-1.  **Pré-requisitos:** Instale `git`, `curl`, `ffmpeg` e o NVM/Node.js v20+.
-2.  **Clone o repositório:**
-    ```sh
-    git clone [https://github.com/leandromemes/gotica-bot.git](https://github.com/leandromemes/gotica-bot.git)
-    cd gotica-bot
-    ```
-3.  **Instale as dependências e o PM2:**
-    ```sh
-    npm install
-    npm install pm2 -g
-    ```
-4.  **Inicie o bot e pare para configurar:** Use `npm start` para obter o código de pareamento, conecte o dispositivo no WhatsApp e, em seguida, pare com `CTRL + C`.
-5.  **Configure o bot:** Edite o arquivo `src/config.js`.
-6.  **Inicie com PM2:**
-    ```sh
-    pm2 start index.js --name "Gotica-1"
-    ```
-
 ### Instalação no Termux
 
-1.  **Pré-requisitos:** Execute os comandos básicos para instalação de dependências:
-    ```sh
-    pkg upgrade -y && pkg update -y && pkg install git -y && pkg install nodejs-lts -y && pkg install ffmpeg -y
-    termux-setup-storage
-    ```
-2.  **Clone e instale:**
-    ```sh
-    cd /sdcard # ou a pasta de sua preferência
-    git clone [https://github.com/leandromemes/gotica-bot.git](https://github.com/leandromemes/gotica-bot.git)
-    cd gotica-bot
-    npm install
-    ```
-3.  **Inicie, Conecte e Configure:** Siga os passos de conexão e configuração (itens 4 e 5 da Instalação em VPS).
-4.  **Execute o bot:**
-    ```sh
-    npm start
-    ```
+1 - Abra o Termux e execute os comandos abaixo para instalar as dependências.
 
-## Configuração
+```bash
+pkg upgrade -y && pkg update -y && pkg install git -y && pkg install nodejs-lts -y && pkg install ffmpeg -y
 
-O arquivo principal de configuração é o **`src/config.js`**. Edite-o para definir:
-- `PREFIX` (o prefixo do seu comando, ex: `!`, `/` ou `.`)
-- `BOT_NAME` (Nome do seu bot)
-- `BOT_NUMBER` e `OWNER_NUMBER` (Seus números de telefone)
+```
 
-```javascript
-// Exemplo de configuração em src/config.js
-exports.PREFIX = "/";
-exports.BOT_NAME = "Gótica Bot";
-// ... (outras configurações de número)
-Funcionalidades
-O Gótica Bot inclui uma vasta gama de comandos administrativos, de moderação de grupo e de membro, como:
+2 - Habilite o acesso da pasta storage no Termux.
 
-Contexto	Funcionalidades Principais
-Dono	Controle de infraestrutura, desligar/ligar o bot, alterar configurações globais.
-Admin	Banir, promover/rebaixar, anti-link, anti-mídia, anti-sticker, agendamento de mensagens, boas-vindas.
-Membro	Busca CEP, Comandos de diversão/brincadeiras, conversão de mídias (sticker para imagem e vice-versa), comandos de utilidade.
+```bash
+termux-setup-storage
 
-Exportar para as Planilhas
-Personalização
-Menu de Comandos: O menu fica no arquivo src/menu.js.
+```
+3 - Escolha uma pasta de sua preferência para colocar os arquivos do bot.
 
-Mensagens de Grupo: As mensagens de boas-vindas e saída de grupo ficam no arquivo src/messages.js.
+Pastas mais utilizadas:
 
-Estrutura de Pastas
-📁 assets ➔ Arquivos de mídia (logo, stickers, etc.)
+/sdcard
 
-📁 database ➔ Arquivos de dados (auto-responder, configurações de grupo).
+/storage/emulated/0
 
-📁 src ➔ Código Fonte Principal
+/storage/emulated/0/Download
 
-📁 commands ➔ Onde ficam todos os comandos (owner, admin, member).
+No nosso exemplo, vamos para a /sdcard.
 
-📝 config.js ➔ Configurações do bot.
+```bash
+cd /sdcard
 
-📝 menu.js ➔ Texto e estrutura do menu de ajuda.
-
-Licença e Disclaimer
-Este projeto está licenciado sob a Licença Pública Geral GNU (GPL-3.0). Isso garante que o código-fonte permaneça aberto e acessível a todos. Você pode usar, modificar e distribuir o código, desde que mantenha a licença e os créditos originais.
