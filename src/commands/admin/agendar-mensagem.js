@@ -1,8 +1,7 @@
 /**
  * Desenvolvido por: Mkg
- * Refatorado por: Dev Gui
- *
- * @author Dev Gui
+ * Refatorado por: Dev Gui / Corrigido por Gemini
+ * Local: src/commands/admin/agendar-mensagem.js
  */
 import { PREFIX } from "../../config.js";
 
@@ -10,23 +9,19 @@ export default {
   name: "agendar-mensagem",
   description: "Agenda uma mensagem para ser enviada após um tempo definido.",
   commands: ["agendar", "agendar-mensagem"],
-  usage: `${PREFIX}agendar-mensagem mensagem / tempo
+  usage: `${PREFIX}agendar-mensagem mensagem / tempo`,
   
-Exemplo: ${PREFIX}agendar-mensagem Reunião amanhã / 10m`,
   /**
-   * @param {CommandHandleProps} props
+   * @param {import('../../@types').CommandHandleProps} props
    */
-  handle: async ({ args, sendErrorReply, sendSuccessReply, sendText }) => {
+  handle: async ({ args, sendErrorReply, sendSuccessReply, socket, remoteJid }) => {
     if (args.length !== 2) {
       return await sendErrorReply(
-        `Formato incorreto. Use: ${PREFIX}agendar-mensagem mensagem / tempo
-        
-Exemplo: ${PREFIX}agendar-mensagem Reunião amanhã / 10m`
+        `Formato incorreto. Use: ${PREFIX}agendar-mensagem mensagem / tempo\n\nExemplo: ${PREFIX}agendar-mensagem Reunião amanhã / 10m`
       );
     }
 
     const rawTime = args[1].trim();
-
     const message = args[0].trim();
 
     let timeInMs = 0;
@@ -39,8 +34,7 @@ Exemplo: ${PREFIX}agendar-mensagem Reunião amanhã / 10m`
       timeInMs = parseInt(rawTime) * 60 * 60 * 1000;
     } else {
       return await sendErrorReply(
-        `Formato de tempo inválido.
-Use:\n• 10s para 10 segundos\n• 5m para 5 minutos\n• 2h para 2 horas`
+        `Formato de tempo inválido.\nUse:\n• 10s para 10 segundos\n• 5m para 5 minutos\n• 2h para 2 horas`
       );
     }
 
@@ -50,10 +44,19 @@ Use:\n• 10s para 10 segundos\n• 5m para 5 minutos\n• 2h para 2 horas`
       );
     }
 
-    await sendSuccessReply(`⌚ Mensagem agendada para daqui a ${rawTime}...`);
+    // Confirmação de agendamento (com ✨ apenas aqui na resposta do bot)
+    await sendSuccessReply(` ⌚ Mensagem agendada para daqui a ${rawTime}...`);
 
     setTimeout(async () => {
-      await sendText(`⏰ *Mensagem agendada:*\n\n${message}`);
+      try {
+        // Envio 1: Cabeçalho corrigido (sem ✨ duplicado)
+        await socket.sendMessage(remoteJid, { text: `⏰ *Mensagem agendada:*` });
+        
+        // Envio 2: A mensagem pura (sem ✨ e sem formatação extra)
+        await socket.sendMessage(remoteJid, { text: message });
+      } catch (error) {
+        console.error("Erro ao enviar mensagem agendada:", error);
+      }
     }, timeInMs);
   },
 };

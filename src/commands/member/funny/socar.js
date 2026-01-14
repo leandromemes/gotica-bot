@@ -49,7 +49,7 @@ export default {
         "funny",
         "some-guy-getting-punch-anime-punching-some-guy-anime.mp4"
       ),
-      `@${userNumber} deu um soco bombástico em @${targetNumber}!`,
+      `@${userNumber} deu vários socos em @${targetNumber}! 👊💥`,
       [userLid, targetLid]
     );
   },

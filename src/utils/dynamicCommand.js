@@ -3,6 +3,7 @@
  * de comandos.
  *
  * @author Dev Gui
+ * @modified para Modo Deus (Leandro)
  */
 import { BOT_EMOJI, ONLY_GROUP_ID } from "../config.js";
 import {
@@ -26,6 +27,7 @@ import {
   isActiveAutoResponderGroup,
   isActiveGroup,
   isActiveOnlyAdmins,
+  getBlockedCommands, // Adicionado para trava de comandos
 } from "./database.js";
 import { findCommandImport } from "./index.js";
 import { errorLog } from "./logger.js";
@@ -50,17 +52,20 @@ export async function dynamicCommand(paramsHandler, startProcess) {
   } = paramsHandler;
 
   const activeGroup = isActiveGroup(remoteJid);
+  const isOwner = isBotOwner({ userLid }); // Verifica se é o Deus (Leandro)
 
+  // --- TRAVA ANTI-LINK (IGNORA SE FOR O DONO) ---
   if (activeGroup && isActiveAntiLinkGroup(remoteJid) && isLink(fullMessage)) {
     if (!userLid) {
       return;
     }
 
-    if (!(await isAdmin({ remoteJid, userLid, socket }))) {
+    // Se não for ADM E não for o Dono, remove.
+    if (!(await isAdmin({ remoteJid, userLid, socket })) && !isOwner) {
       await socket.groupParticipantsUpdate(remoteJid, [userLid], "remove");
 
       await sendReply(
-        "Anti-link ativado! Você foi removido por enviar um link!"
+        "🚫 *LIXO NO LIXO!* Anti-link ativado. Você foi removido por tentar sujar meu grupo com links. Tchau, gracinha! 👋💅"
       );
 
       await socket.sendMessage(remoteJid, {
@@ -77,6 +82,17 @@ export async function dynamicCommand(paramsHandler, startProcess) {
   }
 
   const { type, command } = await findCommandImport(commandName);
+
+  // --- TRAVA DE COMANDO BLOQUEADO (O DONO IGNORA) ---
+  if (activeGroup && !isOwner && commandName) {
+    const blockedCmds = getBlockedCommands(remoteJid);
+    if (blockedCmds.includes(commandName)) {
+      await sendWarningReply(
+        `🛑 *COMANDO DESATIVADO!* O comando *${prefix}${commandName}* foi bloqueado neste grupo pelos superiores. Não adianta insistir! 🤫`
+      );
+      return;
+    }
+  }
 
   if (ONLY_GROUP_ID && ONLY_GROUP_ID !== remoteJid) {
     return;
@@ -99,46 +115,52 @@ export async function dynamicCommand(paramsHandler, startProcess) {
         await sendReact(BOT_EMOJI);
         const groupPrefix = getPrefix(remoteJid);
         await sendReply(
-          `O padrão é: ${groupPrefix}\nUse ${groupPrefix}menu para ver os comandos disponíveis!`
+          `🙄 Esqueceu? O prefixo é: *${groupPrefix}*\nUse *${groupPrefix}menu* e tente não se perder, plebeu!`
         );
       }
 
       return;
     }
 
-    if (!(await checkPermission({ type, ...paramsHandler }))) {
-      await sendErrorReply(
-        "Você não tem permissão para executar este comando!"
-      );
+    // --- VERIFICAÇÃO DE PERMISSÃO (MODO DEUS) ---
+    if (!(await checkPermission({ type, ...paramsHandler })) && !isOwner) {
+      const msgDeboche = type === "owner" 
+        ? "🛑 *ALTO LÁ!* Esse comando é restrito ao meu *Dono e Mestre Supremo Leandro*. Você não tem brilho suficiente para tocar nisso! ✨👑"
+        : "🤨 *Quem você pensa que é?* Esse comando é sagrado para os ADMs. Você é só mais um plebeu na minha lista... volte para o seu lugar! 🤫";
+      
+      await sendErrorReply(msgDeboche);
       return;
     }
 
+    // --- MODO SÓ ADM (LIBERADO PARA O DONO) ---
     if (
       isActiveOnlyAdmins(remoteJid) &&
-      !(await isAdmin({ remoteJid, userLid, socket }))
+      !(await isAdmin({ remoteJid, userLid, socket })) && 
+      !isOwner
     ) {
       await sendWarningReply(
-        "Somente administradores podem executar comandos!"
+        "💅 *Cof cof...* achei que eu tinha ouvido um ADM falar, mas era só um membro comum. Só os chefes mandam aqui agora!"
       );
       return;
     }
   }
 
-  if (!isBotOwner({ userLid }) && !activeGroup) {
+  // --- TRAVA DE GRUPO DESATIVADO (LIBERADO PARA O DONO) ---
+  if (!isOwner && !activeGroup) {
     if (
       verifyPrefix(prefix, remoteJid) &&
       hasTypeAndCommand({ type, command })
     ) {
       if (command.name !== "on") {
         await sendWarningReply(
-          "Este grupo está desativado! Peça para o dono do grupo ativar o bot!"
+          "🥱 *Que tédio...* Este grupo está desativado. Peça para o dono do grupo me acordar se ele tiver coragem!"
         );
         return;
       }
 
       if (!(await checkPermission({ type, ...paramsHandler }))) {
         await sendErrorReply(
-          "Você não tem permissão para executar este comando!"
+          "🚫 *ACESSO NEGADO!* Você não tem os privilégios necessários para me dar ordens assim."
         );
         return;
       }
@@ -156,7 +178,7 @@ export async function dynamicCommand(paramsHandler, startProcess) {
   if (fullMessage === groupPrefix) {
     await sendReact(BOT_EMOJI);
     await sendReply(
-      `Este é meu prefixo! Use ${groupPrefix}menu para ver os comandos disponíveis!`
+      `Sente o peso do meu prefixo! Use *${groupPrefix}menu* para ver o que eu posso fazer por você (se eu estiver a fim). 😘`
     );
 
     return;
@@ -164,12 +186,13 @@ export async function dynamicCommand(paramsHandler, startProcess) {
 
   if (!hasTypeAndCommand({ type, command })) {
     await sendWarningReply(
-      `Comando não encontrado! Use ${groupPrefix}menu para ver os comandos disponíveis!`
+      `🤔 *Tá inventando comando?* Isso não existe! Use *${groupPrefix}menu* e aprenda a ler as opções disponíveis.`
     );
 
     return;
   }
 
+  // --- EXECUÇÃO DO COMANDO ---
   try {
     await command.handle({
       ...paramsHandler,
@@ -179,7 +202,7 @@ export async function dynamicCommand(paramsHandler, startProcess) {
   } catch (error) {
     if (badMacHandler.handleError(error, `command:${command?.name}`)) {
       await sendWarningReply(
-        "Erro temporário de sincronização. Tente novamente em alguns segundos."
+        "🙄 *Ai, que cansaço...* Erro de sincronização. Tente de novo em alguns segundos."
       );
       return;
     }
@@ -189,36 +212,27 @@ export async function dynamicCommand(paramsHandler, startProcess) {
         `Erro de sessão durante execução de comando ${command?.name}: ${error.message}`
       );
       await sendWarningReply(
-        "Erro de comunicação. Tente executar o comando novamente."
+        "🔌 *Opa!* Tive um apagão aqui. Tente executar o comando novamente."
       );
       return;
     }
 
     if (error instanceof InvalidParameterError) {
-      await sendWarningReply(`Parâmetros inválidos! ${error.message}`);
+      await sendWarningReply(`❌ *Burrice detectada!* Parâmetros errados. ${error.message}`);
     } else if (error instanceof WarningError) {
-      await sendWarningReply(error.message);
+      await sendWarningReply(`⚠️ *Atenção, mortal:* ${error.message}`);
     } else if (error instanceof DangerError) {
-      await sendErrorReply(error.message);
+      await sendErrorReply(`🔥 *PERIGO:* ${error.message}`);
     } else if (error.isAxiosError) {
       const messageText = error.response?.data?.message || error.message;
-      const url = error.config?.url || "URL não disponível";
-
-      const isSpiderAPIError = url.includes("api.spiderx.com.br");
-
       await sendErrorReply(
-        `Ocorreu um erro ao executar uma chamada remota para ${
-          isSpiderAPIError ? "a Spider X API" : url
-        } no comando ${command.name}!
-      
-📄 *Detalhes*: ${messageText}`
+        `💥 *API explodiu!* O comando ${command.name} tentou falar com o mundo lá fora e falhou.\n\n📄 *Detalhes*: ${messageText}`
       );
-    } else {
+ 
+   } else {
       errorLog("Erro ao executar comando", error);
       await sendErrorReply(
-        `Ocorreu um erro ao executar o comando ${command.name}!
-      
-📄 *Detalhes*: ${error.message}`
+        `🤦‍♀️ *Que mico!* Ocorreu um erro no comando ${command.name}!\n\n📄 *Detalhes*: ${error.message}`
       );
     }
   }

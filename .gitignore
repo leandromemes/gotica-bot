@@ -1,2 +1,7 @@
-assets/auth/baileys
+node_modules
+assets/auth
 .vscode
+database/*.json
+.env
+auth_info_baileys
+.git

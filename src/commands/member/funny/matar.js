@@ -44,7 +44,7 @@ export default {
 
     await sendGifFromFile(
       path.resolve(ASSETS_DIR, "images", "funny", "yumeko-mirai-nikki.mp4"),
-      `@${userNumber} matou brutalmente @${targetNumber}!`,
+      `@${userNumber} matou brutalmente @${targetNumber}! 🔪⚰️`,
       [userLid, targetLid]
     );
   },

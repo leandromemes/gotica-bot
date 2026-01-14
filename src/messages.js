@@ -7,6 +7,17 @@
  *
  * @author Dev Gui
  */
-export const welcomeMessage = "Seja bem vindo ao nosso grupo, @member!";
-export const exitMessage =
-  "Poxa, @member saiu do grupo... Sentiremos sua falta!";
+
+export const welcomeMessage = `✨ Seja bem-vindo(a), @member.
+
+Apresente-se com:
+
+📝 *Nome:*
+📸 *Foto:*
+🎂 *Idade:*
+
+Siga as regras para não ser banido! 💋`;
+
+export const exitMessage = `💅 Ih, tchau! @member não aguentou a pressão e vazou. 
+
+Menos um, Vá com Deus! *E NÃO VOLTA MAIS*. 👋🙄`;

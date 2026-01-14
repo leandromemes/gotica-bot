@@ -1,7 +1,7 @@
 /**
- * Menu do bot
+ * Menu do bot - Estilo Gótica Adaptado
  *
- * @author Dev Gui
+ * @author Dev Gui & Leandro
  */
 import pkg from "../package.json" with { type: "json" };
 import { BOT_NAME } from "./config.js";
@@ -11,128 +11,232 @@ import { readMore } from "./utils/index.js";
 export function menuMessage(groupJid) {
   const date = new Date();
 
-  const prefix = getPrefix(groupJid);
+  // Obtém o prefixo configurado para o grupo ou o padrão
+  const prefix = getPrefix(groupJid); 
 
-  return `╭━━⪩ BEM VINDO! ⪨━━${readMore()}
-▢
-▢ • ${BOT_NAME}
-▢ • Data: ${date.toLocaleDateString("pt-br")}
-▢ • Hora: ${date.toLocaleTimeString("pt-br")}
-▢ • Prefixo: ${prefix}
-▢ • Versão: ${pkg.version}
-▢
-╰━━─「🪐」─━━
+  return `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆
+🌙 Bem-vindo ao menu🌙
+⦁⋅⋅⊹⋅╍╾╾╾╾☾⋆${readMore()}
 
-╭━━⪩ DONO ⪨━━
-▢
-▢ • ${prefix}exec
-▢ • ${prefix}get-group-id
-▢ • ${prefix}off
-▢ • ${prefix}on
-▢ • ${prefix}set-menu-image
-▢ • ${prefix}set-prefix
-▢ • ${prefix}set-spider-api-token
-▢
-╰━━─「🌌」─━━
+         ╼╼├ ${BOT_NAME} ├╼╍⋅
 
-╭━━⪩ ADMINS ⪨━━
-▢
-▢ • ${prefix}abrir
-▢ • ${prefix}add-auto-responder
-▢ • ${prefix}agendar-mensagem
-▢ • ${prefix}anti-audio (1/0)
-▢ • ${prefix}anti-document (1/0)
-▢ • ${prefix}anti-event (1/0)
-▢ • ${prefix}anti-image (1/0)
-▢ • ${prefix}anti-link (1/0)
-▢ • ${prefix}anti-product (1/0)
-▢ • ${prefix}anti-sticker (1/0)
-▢ • ${prefix}anti-video (1/0)
-▢ • ${prefix}auto-responder (1/0)
-▢ • ${prefix}ban
-▢ • ${prefix}delete
-▢ • ${prefix}delete-auto-responder
-▢ • ${prefix}exit (1/0)
-▢ • ${prefix}fechar
-▢ • ${prefix}hidetag
-▢ • ${prefix}limpar
-▢ • ${prefix}link-grupo
-▢ • ${prefix}list-auto-responder
-▢ • ${prefix}mute
-▢ • ${prefix}only-admin (1/0)
-▢ • ${prefix}promover
-▢ • ${prefix}rebaixar
-▢ • ${prefix}revelar
-▢ • ${prefix}saldo
-▢ • ${prefix}set-proxy
-▢ • ${prefix}unmute
-▢ • ${prefix}welcome (1/0)
-▢
-╰━━─「⭐」─━━
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+┇┆ • Dono: Leandro
+┇┆ • Data: ${date.toLocaleDateString("pt-br")}
+┇┆ • Hora: ${date.toLocaleTimeString("pt-br")}
+┇┆ • Prefixo: ${prefix}
+┇┆ • Versão: ${pkg.version}
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+▹▫◃
 
-╭━━⪩ PRINCIPAL ⪨━━
-▢
-▢ • ${prefix}attp
-▢ • ${prefix}cep
-▢ • ${prefix}exemplos-de-mensagens
-▢ • ${prefix}fake-chat
-▢ • ${prefix}gerar-link
-▢ • ${prefix}meu-lid
-▢ • ${prefix}perfil
-▢ • ${prefix}ping
-▢ • ${prefix}raw-message
-▢ • ${prefix}rename
-▢ • ${prefix}sticker
-▢ • ${prefix}suporte
-▢ • ${prefix}to-gif
-▢ • ${prefix}to-image
-▢ • ${prefix}to-mp3
-▢ • ${prefix}ttp
-▢ • ${prefix}yt-search
-▢
-╰━━─「🚀」─━━
+┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆
+┖╮★彡[Aluguel / Info]彡★
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+┇┆💌 ✦⋆͜͡҈➳ ${prefix}alugar
+┇┆👑 ✦⋆͜͡҈➳ ${prefix}dono
+┇┆📋 ✦⋆͜͡҈➳ ${prefix}comandos
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+▹▫◃
 
-╭━━⪩ DOWNLOADS ⪨━━
-▢
-▢ • ${prefix}play-audio
-▢ • ${prefix}play-video
-▢ • ${prefix}tik-tok
-▢ • ${prefix}yt-mp3
-▢ • ${prefix}yt-mp4
-▢
-╰━━─「🎶」─━━
+┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆
+┖╮★彡[Dono]彡★
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+┇┆🧹 ✦⋆͜͡҈➳ ${prefix}zerarsaldos
+┇┆👑 ✦⋆͜͡҈➳ ${prefix}soberano
+┇┆🧠 ✦⋆͜͡҈➳ ${prefix}exec
+┇┆🆔 ✦⋆͜͡҈➳ ${prefix}get-group-id
+┇┆🔴 ✦⋆͜͡҈➳ ${prefix}off
+┇┆🟢 ✦⋆͜͡҈➳ ${prefix}on
+┇┆🖼️ ✦⋆͜͡҈➳ ${prefix}set-menu-image
+┇┆⚙️ ✦⋆͜͡҈➳ ${prefix}set-prefix
+┇┆💵 ✦⋆͜͡҈➳ ${prefix}dardinheiro
+┇┆💸 ✦⋆͜͡҈➳ ${prefix}tirardinheiro
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+▹▫◃
 
-╭━━⪩ BRINCADEIRAS ⪨━━
-▢
-▢ • ${prefix}abracar
-▢ • ${prefix}beijar
-▢ • ${prefix}dado
-▢ • ${prefix}jantar
-▢ • ${prefix}lutar
-▢ • ${prefix}matar
-▢ • ${prefix}socar
-▢
-╰━━─「🎡」─━━
+┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆
+┖╮★彡[Admins]彡★
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+┇┆🎭 ✦⋆͜͡҈➳ ${prefix}bam (fake)
+┇┆⚠️ ✦⋆͜͡҈➳ ${prefix}advertir
+┇┆💖 ✦⋆͜͡҈➳ ${prefix}perdoar
+┇┆💻 ✦⋆͜͡҈➳ ${prefix}cmd
+┇┆📴 ✦⋆͜͡҈➳ ${prefix}cmds-off
+┇┆👮 ✦⋆͜͡҈➳ ${prefix}so-adm (1/0)
+┇┆🔫 ✦⋆͜͡҈➳ ${prefix}roletarussa
+┇┆🤐 ✦⋆͜͡҈➳ ${prefix}x9 (1/0)
+┇┆🔓 ✦⋆͜͡҈➳ ${prefix}abrir
+┇┆🔒 ✦⋆͜͡҈➳ ${prefix}fechar
+┇┆⏰ ✦⋆͜͡҈➳ ${prefix}agendar-mensagem
+┇┆⚙️ ✦⋆͜͡҈➳ ${prefix}only-admin (1/0)
+┇┆🔨 ✦⋆͜͡҈➳ ${prefix}ban
+┇┆🗑️ ✦⋆͜͡҈➳ ${prefix}delete
+┇┆🏃 ✦⋆͜͡҈➳ ${prefix}exit (1/0)
+┇┆👻 ✦⋆͜͡҈➳ ${prefix}hidetag
+┇┆🧹 ✦⋆͜͡҈➳ ${prefix}limpar
+┇┆🔗 ✦⋆͜͡҈➳ ${prefix}link-grupo
+┇┆🔇 ✦⋆͜͡҈➳ ${prefix}mute
+┇┆🔊 ✦⋆͜͡҈➳ ${prefix}unmute
+┇┆🔼 ✦⋆͜͡҈➳ ${prefix}promover
+┇┆🔽 ✦⋆͜͡҈➳ ${prefix}rebaixar
+┇┆🕵️ ✦⋆͜͡҈➳ ${prefix}revelar
+┇┆👋 ✦⋆͜͡҈➳ ${prefix}welcome (1/0)
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+▹▫◃
 
-╭━━⪩ IA ⪨━━
-▢
-▢ • ${prefix}flux
-▢ • ${prefix}gemini
-▢ • ${prefix}ia-sticker
-▢
-╰━━─「🚀」─━━
+┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆
+┖╮★彡[Anti/Eventos]彡★
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+┇┆*— Auto-Respostas —*
+┇┆🤖 ✦⋆͜͡҈➳ ${prefix}auto-responder (1/0)
+┇┆➕ ✦⋆͜͡҈➳ ${prefix}add-auto-responder
+┇┆➖ ✦⋆͜͡҈➳ ${prefix}delete-auto-responder
+┇┆📋 ✦⋆͜͡҈➳ ${prefix}list-auto-responder
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+┇┆*— Anti-Mídia e Eventos —*
+┇┆🔊 ✦⋆͜͡҈➳ ${prefix}anti-audio (1/0)
+┇┆📄 ✦⋆͜͡҈➳ ${prefix}anti-document (1/0)
+┇┆🎉 ✦⋆͜͡҈➳ ${prefix}anti-event (1/0)
+┇┆🖼️ ✦⋆͜͡҈➳ ${prefix}anti-image (1/0)
+┇┆🔗 ✦⋆͜͡҈➳ ${prefix}anti-link (1/0)
+┇┆🛒 ✦⋆͜͡҈➳ ${prefix}anti-product (1/0)
+┇┆🧷 ✦⋆͜͡҈➳ ${prefix}anti-sticker (1/0)
+┇┆🎥 ✦⋆͜͡҈➳ ${prefix}anti-video (1/0)
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+▹▫◃
 
-╭━━⪩ CANVAS ⪨━━
-▢
-▢ • ${prefix}blur
-▢ • ${prefix}bolsonaro
-▢ • ${prefix}cadeia
-▢ • ${prefix}contraste
-▢ • ${prefix}espelhar
-▢ • ${prefix}gray
-▢ • ${prefix}inverter
-▢ • ${prefix}pixel
-▢ • ${prefix}rip
-▢
-╰━━─「❇」─━━`;
-};
+┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆
+┖╮★彡[Principal]彡★
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+┇┆🏷️ ✦⋆͜͡҈➳ ${prefix}f (figurinha)
+┇┆📜 ✦⋆͜͡҈➳ ${prefix}menu
+┇┆🎨 ✦⋆͜͡҈➳ ${prefix}attp
+┇┆📍 ✦⋆͜͡҈➳ ${prefix}cep
+┇┆📝 ✦⋆͜͡҈➳ ${prefix}exemplos-de-mensagens
+┇┆💬 ✦⋆͜͡҈➳ ${prefix}fake-chat
+┇┆🔗 ✦⋆͜͡҈➳ ${prefix}gerar-link
+┇┆🆔 ✦⋆͜͡҈➳ ${prefix}meu-lid
+┇┆🔎 ✦⋆͜͡҈➳ ${prefix}google-search
+┇┆🙍 ✦⋆͜͡҈➳ ${prefix}perfil
+┇┆📶 ✦⋆͜͡҈➳ ${prefix}ping
+┇┆📜 ✦⋆͜͡҈➳ ${prefix}raw-message
+┇┆✏️ ✦⋆͜͡҈➳ ${prefix}rename
+┇┆🧷 ✦⋆͜͡҈➳ ${prefix}sticker
+┇┆🖼️ ✦⋆͜͡҈➳ ${prefix}to-image
+┇┆💬 ✦⋆͜͡҈➳ ${prefix}ttp
+┇┆🎥 ✦⋆͜͡҈➳ ${prefix}yt-search
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+▹▫◃
+
+┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆
+┖╮★彡[Downloads]彡★
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+┇┆🎧 ✦⋆͜͡҈➳ ${prefix}play-audio
+┇┆🎬 ✦⋆͜͡҈➳ ${prefix}play-video
+┇┆📱 ✦⋆͜͡҈➳ ${prefix}tik-tok
+┇┆🎵 ✦⋆͜͡҈➳ ${prefix}yt-mp3
+┇┆🎞️ ✦⋆͜͡҈➳ ${prefix}yt-mp4
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+▹▫◃
+
+┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆
+┖╮★彡[Relacionamentos]彡★
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+┇┆💍 ✦⋆͜͡҈➳ ${prefix}Namorar
+┇┆👰 ✦⋆͜͡҈➳ ${prefix}Casar
+┇┆💔 ✦⋆͜͡҈➳ ${prefix}terminar
+┇┆💒 ✦⋆͜͡҈➳ ${prefix}casados
+┇┆👩‍❤️‍👨 ✦⋆͜͡҈➳ ${prefix}casal
+┇┆👬 ✦⋆͜͡҈➳ ${prefix}casalgay
+┇┆💕 ✦⋆͜͡҈➳ ${prefix}namorados
+┇┆📊 ✦⋆͜͡҈➳ ${prefix}status
+┇┆😈 ✦⋆͜͡҈➳ ${prefix}trair
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+▹▫◃
+
+┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆
+┖╮★彡[Brincadeiras]彡★
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+┇┆🏳️‍🌈 ✦⋆͜͡҈➳ ${prefix}gay
+┇┆👩‍❤️‍👩 ✦⋆͜͡҈➳ ${prefix}lésbica
+┇┆🙍 ✦⋆͜͡҈➳ ${prefix}perfil
+┇┆👫 ✦⋆͜͡҈➳ ${prefix}hetero
+┇┆🎂 ✦⋆͜͡҈➳ ${prefix}aniversário
+┇┆✨ ✦⋆͜͡҈➳ ${prefix}aura
+┇┆✂️ ✦⋆͜͡҈➳ ${prefix}cortar
+┇┆📊 ✦⋆͜͡҈➳ ${prefix}rankativo
+┇┆🔥 ✦⋆͜͡҈➳ ${prefix}gostosas
+┇┆🤗 ✦⋆͜͡҈➳ ${prefix}abracar
+┇┆💋 ✦⋆͜͡҈➳ ${prefix}beijar
+┇┆🎲 ✦⋆͜͡҈➳ ${prefix}dado
+┇┆🍽️ ✦⋆͜͡҈➳ ${prefix}jantar
+┇┆🥊 ✦⋆͜͡҈➳ ${prefix}lutar
+┇┆🔪 ✦⋆͜͡҈➳ ${prefix}matar
+┇┆👊 ✦⋆͜͡҈➳ ${prefix}socar
+┇┆🍑 ✦⋆͜͡҈➳ ${prefix}darcu
+┇┆🤰 ✦⋆͜͡҈➳ ${prefix}engravidar
+┇┆💦 ✦⋆͜͡҈➳ ${prefix}gozar
+┇┆🤜 ✦⋆͜͡҈➳ ${prefix}bater
+┇┆🥚 ✦⋆͜͡҈➳ ${prefix}tacarovo
+┇┆😋 ✦⋆͜͡҈➳ ${prefix}comer
+┇┆🍼 ✦⋆͜͡҈➳ ${prefix}mamar
+┇┆🦶 ✦⋆͜͡҈➳ ${prefix}chutar
+┇┆🌸 ✦⋆͜͡҈➳ ${prefix}flor
+┇┆🤕 ✦⋆͜͡҈➳ ${prefix}espancar
+┇┆🔥 ✦⋆͜͡҈➳ ${prefix}suruba
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+▹▫◃
+
+┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆
+┖╮★彡[Jogos]彡★
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+┇┆🦁 ✦⋆͜͡҈➳ ${prefix}quizanimais
+┇┆🎲 ✦⋆͜͡҈➳ ${prefix}eununca
+┇┆🎟️ ✦⋆͜͡҈➳ ${prefix}sorteio
+┇┆😙 ✦⋆͜͡҈➳ ${prefix}ppp
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+▹▫◃
+
+┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆
+┖╮★彡[Financeiro]彡★
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+┇┆🥷 ✦⋆͜͡҈➳ ${prefix}roubar
+┇┆💸 ✦⋆͜͡҈➳ ${prefix}pagar
+┇┆💳 ✦⋆͜͡҈➳ ${prefix}saldo
+┇┆⚒️ ✦⋆͜͡҈➳ ${prefix}trabalhar
+┇┆📦 ✦⋆͜͡҈➳ ${prefix}traficar
+┇┆💸 ✦⋆͜͡҈➳ ${prefix}Pix
+┇┆🎁 ✦⋆͜͡҈➳ ${prefix}doar
+┇┆🎰 ✦⋆͜͡҈➳ ${prefix}apostar
+┇┆🃏 ✦⋆͜͡҈➳ ${prefix}apostartudo
+┇┆⚔️ ✦⋆͜͡҈➳ ${prefix}duelo
+┇┆🏆 ✦⋆͜͡҈➳ ${prefix}rankricos
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+▹▫◃
+
+┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆
+┖╮★彡[IA]彡★
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+┇┆🤖 ✦⋆͜͡҈➳ ${prefix}gemini
+┇┆🧠 ✦⋆͜͡҈➳ ${prefix}ia-sticker
+┇┆🚀 ✦⋆͜͡҈➳ ${prefix}flux
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+▹▫◃
+
+┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆
+┖╮★彡[Efeitos Canvas]彡★
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+┇┆📸 ✦⋆͜͡҈➳ ${prefix}blur
+┇┆🇧🇷 ✦⋆͜͡҈➳ ${prefix}bolsonaro
+┇┆👮 ✦⋆͜͡҈➳ ${prefix}cadeia
+┇┆🎛️ ✦⋆͜͡҈➳ ${prefix}contraste
+┇┆🪞 ✦⋆͜͡҈➳ ${prefix}espelhar
+┇┆⚫ ✦⋆͜͡҈➳ ${prefix}gray
+┇┆🔁 ✦⋆͜͡҈➳ ${prefix}inverter
+┇┆🧊 ✦⋆͜͡҈➳ ${prefix}pixel
+┇┆🪞 ✦⋆͜͡҈➳ ${prefix}rip
+┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ
+▹▫◃
+├╼╼╼╼╼╼╍⋅⊹⋅⋅⦁ ✪ ⦁⋅⋅⊹⋅╍╾╾╾╾☾⋆
+╰✧ ･ ﾟ: * ✧ ･ ﾟ: *`;
+}
