@@ -241,7 +241,8 @@ export async function readCommandImports() {
       const files = await Promise.all(
         readDirectoryRecursive(subdirectoryPath).map(async (filePath) => {
           try {
-            const module = await import(pathToFileURL(filePath).href);
+            // A ÚNICA MUDANÇA É AQUI: Adicionamos path.resolve para garantir o caminho no Windows
+            const module = await import(pathToFileURL(path.resolve(filePath)).href);
             return module.default ?? module;
           } catch (err) {
             console.error(`Erro ao importar ${filePath}:`, err);
