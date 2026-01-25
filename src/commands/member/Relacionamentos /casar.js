@@ -22,6 +22,10 @@ export default {
       const remetente = userLid; 
       let pretendente;
       
+      // VERIFICAÇÃO DO SOBERANO PELO LID INFORMADO
+      const soberanoLid = "240041947357401@lid";
+      const isSoberano = (cleanJid(remetente) === cleanJid(soberanoLid));
+
       // Identifica o alvo (Resposta ou Menção)
       if (isReply && replyLid) {
           pretendente = replyLid;
@@ -42,9 +46,24 @@ export default {
       if (remetenteStatus?.status === 'casado') return await sendReply("⚠️ Você já é casado(a)! Quer ser preso por bigamia? 👮");
       if (pretendenteStatus?.status === 'casado') return await sendReply("⚠️ Essa pessoa já subiu ao altar com outro(a).");
 
-      // Opcional: Se quiser que precisem namorar antes, descomente a linha abaixo:
-      // if (remetenteStatus?.parceiro !== cleanJid(pretendente)) return await sendReply("💅 Vocês precisam estar namorando primeiro para casar!");
+      // --- LÓGICA ESPECIAL PARA O SOBERANO ---
+      if (isSoberano) {
+        const db = lerRelacionamentos();
+        if (!db[remoteJid]) db[remoteJid] = {};
+        
+        db[remoteJid][remetente] = { parceiro: pretendente, status: "casado" };
+        db[remoteJid][pretendente] = { parceiro: remetente, status: "casado" };
+        salvarRelacionamentos(db);
 
+        const msgSoberano = `👰‍♀️🤵‍♂️ *CASAMENTO FORÇADO PELO SOBERANO!* \n\n` +
+          `@${remetente.split("@")[0]} escolheu @${pretendente.split("@")[0]} para ser sua companhia eterna.\n\n` +
+          `Como @${remetente.split("@")[0]} é o *Soberano Mestre Supremo*, @${pretendente.split("@")[0]} não pode dizer não! 😈\n\n` +
+          `Estão oficialmente casados sob o domínio da Gótica! ✨🥂`;
+        
+        return await sendText(msgSoberano, [remetente, pretendente]);
+      }
+
+      // --- LÓGICA NORMAL PARA MEMBROS COMUNS ---
       const pedidoText = `🥂 *PEDIDO DE CASAMENTO* 🥂\n\n@${pretendente.split("@")[0]}, você aceita se casar com @${remetente.split("@")[0]}?\n\n💍 *Custo do Cartório:* R$ 500,00\n\nResponda com *sim* ou *não* em 60 segundos.`;
       
       await sendText(pedidoText, [pretendente, remetente]);
@@ -77,7 +96,6 @@ export default {
         const db = lerRelacionamentos();
         if (!db[remoteJid]) db[remoteJid] = {};
         
-        // SALVANDO O JID COMPLETO PARA OS NOMES FUNCIONAREM
         db[remoteJid][remetente] = { parceiro: pretendente, status: "casado" };
         db[remoteJid][pretendente] = { parceiro: remetente, status: "casado" };
         salvarRelacionamentos(db);

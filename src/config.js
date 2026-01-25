@@ -42,7 +42,7 @@ export const TIMEOUT_IN_MILLISECONDS_BY_EVENT = 700;
 export const SPIDER_API_BASE_URL = "https://api.spiderx.com.br/api";
 
 // Obtenha seu token, criando uma conta em: https://api.spiderx.com.br.
-export const SPIDER_API_TOKEN = "0pSudbZt8bzj8Wk0DSyo";
+export const SPIDER_API_TOKEN = "ziJuIJ1b230aBuu2yAbK";
 
 // Plataforma de geração de links a partir de imagens
 export const LINKER_BASE_URL = "https://linker.devgui.dev/api";

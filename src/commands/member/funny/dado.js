@@ -9,17 +9,18 @@ import { getRandomNumber } from "../../../utils/index.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// CONFIGURAÇÃO SINCRONIZADA (Sobe 4 níveis)
+// CONFIGURAÇÃO SINCRONIZADA
 const BASE_DIR = path.resolve(__dirname, '..', '..', '..', '..');
 const SALDO_FILE = "saldo-real";
-const COOLDOWN_FILE = "dado-cooldown"; // Arquivo separado para o cooldown do dado
+const COOLDOWN_FILE = "dado-cooldown"; 
 
 const TARGET_JID_DONO = '240041947357401@lid'; 
 const DONO_PHONE = '556391330669';
 
-const CUSTO_APOSTA = 100;
-const PREMIO_VITORIA = 1000;
-const TEMPO_ESPERA = 60 * 1000; // 1 Minuto em milissegundos
+// VALORES ATUALIZADOS CONFORME SOLICITADO
+const CUSTO_APOSTA = 1000;      // Valor do dado alterado para 1000
+const PREMIO_VITORIA = 10000;   // Prêmio alterado para 10000
+const TEMPO_ESPERA = 60 * 1000; // 1 Minuto
 
 const formatarReal = (valor) => 
   new Intl.NumberFormat("pt-BR", { 
@@ -43,7 +44,7 @@ function getPaths() {
 
 export default {
   name: "dado",
-  description: "Aposte R$ 100 e tente ganhar R$ 1.000 no dado (1 min cooldown).",
+  description: `Aposte ${formatarReal(CUSTO_APOSTA)} e tente ganhar ${formatarReal(PREMIO_VITORIA)} no dado (1 min cooldown).`,
   commands: ["dado", "dice"],
   usage: `${PREFIX}dado número`,
 
@@ -68,7 +69,7 @@ export default {
     const saldoData = JSON.parse(fs.readFileSync(saldoPath, 'utf8'));
     const cooldownData = JSON.parse(fs.readFileSync(cooldownPath, 'utf8'));
 
-    // --- LOGICA DE ID UNIFICADA (Igual ao seu trabalhar.js) ---
+    // --- LOGICA DE ID UNIFICADA ---
     let jidToUse = userLid || "";
     if (jidToUse.includes(DONO_PHONE) || jidToUse === OWNER_LID) {
         jidToUse = TARGET_JID_DONO; 

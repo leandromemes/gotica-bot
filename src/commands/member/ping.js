@@ -40,7 +40,7 @@ export default {
 
 ⏳ *Atividade:*
 • Uptime: \`${uptimeFormated}\`
-• Versão: \`7.3.0\`
+• Versão: \`7.3.5\`
 
 💻 *Hardware (Server):*
 • RAM em uso: \`${usedRam} MB\`
