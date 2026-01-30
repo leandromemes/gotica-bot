@@ -15,7 +15,7 @@
   </p>
 
  <div align="center">
-  <img src="https://files.catbox.moe/0jnapr.gif" width="350" alt="Gótica Bot">
+  <img src="https://files.catbox.moe/c7wjov.gif" width="350" alt="Gótica Bot">
 </div>
 
 ---
