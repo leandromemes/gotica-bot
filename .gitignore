@@ -1,0 +1,19 @@
+# Pastas de sistema
+node_modules/
+.npm/
+
+# SESSÃO E BANCO DE DADOS (PROTEJA ISSO!)
+session/
+database.json
+*.db
+
+# Arquivos de sistema do Windows
+Thumbs.db
+desktop.ini
+
+# Instaladores e arquivos temporários
+*.exe
+*.msi
+*.zip
+*.rar
+takeshi_temp_*
