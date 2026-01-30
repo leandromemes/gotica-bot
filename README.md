@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://files.catbox.moe/91q106.jpg" alt="Banner Gótica Bot" width="full">
+  <img src="https://files.catbox.moe/ob7j4s.jpeg" alt="Banner Gótica Bot" width="full">
 </div>
 
 <div align="center">
