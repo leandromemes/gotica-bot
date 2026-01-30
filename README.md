@@ -15,8 +15,6 @@ O ápice da automação para WhatsApp. Um sistema completo, totalmente desenvolv
 [![Baileys](https://img.shields.io/badge/Baileys-7.0.0.9-purple?logo=whatsapp)](https://github.com/WhiskeySockets/Baileys)
 [![FFMPEG](https://img.shields.io/badge/FFMPEG-Latest-orange?logo=ffmpeg)](https://ffmpeg.org/)
 
------
-
  
 
  <div align="center">
@@ -31,16 +29,54 @@ O ápice da automação para WhatsApp. Um sistema completo, totalmente desenvolv
 
 [**Entrar no Grupo Oficial**](https://chat.whatsapp.com/HhIATn48XsuAbduwn8sowT)
 
------
 
-## ⚠ Atenção
 
-**AVISO IMPORTANTE** 
-
+## ⚠ AVISO IMPORTANTE
 Este bot não é feito pela `WhatsApp Inc.` O uso indevido do bot pode resultar no `banimento` da sua conta do `WhatsApp`.
 Não sou responsável pelo banimento da sua conta. Use por sua conta e risco.
 
-**`Gótica Bot`** É uma versão brasileira independente e personalizada, focada em estética e performance.  
- ¡Use com responsabilidade e divirta-se! 💖
+**`Gótica Bot`** É um projeto independente e personalizada, focada em estética e performance.  
+ Use com responsabilidade e divirta-se! 💖
 
------
+
+## 🦇 **`INSTALAÇÃO`**
+### 📥 VOCÊ PRECISA INSTALAR UMA DESTAS FERRAMENTAS
+
+<p align="center">
+  <a href="https://www.mediafire.com/file/llugt4zgj7g3n3u/com.termux_1020.apk/file"><img src="https://img.shields.io/badge/Baixar-Termux-26C6DA?style=for-the-badge&logo=android" alt="Download Termux"></a>
+  <a href="https://www.mediafire.com/file/bp2l6cci2p30hjv/Cloud+Shell_1.apk/file"><img src="https://img.shields.io/badge/Baixar-Cloud%20Shell-FF7043?style=for-the-badge&logo=google-cloud" alt="Download Cloud Shell"></a>
+</p>
+
+---
+
+🚩 DIGITE OS SEGUINTES COMANDOS UM POR UM: 
+
+### <img src="https://i.giphy.com/media/nWGRHBnAl5Kmc/giphy.gif" alt="Instalacao" width="40" height="40"> Instalação no [termux](https://f-droid.org/repo/com.termux_118.apk)
+
+ ⚠️ **Nota Importante:** O bot não é 100% compatível com o Termux e pode apresentar falhas ou não funcionar corretamente em alguns dispositivos. Recomenda-se o uso de Cloud Shell ou hospedagem na nuvem para uma melhor experiência.
+
+### 🦇 PASSOS DE INSTALAÇÃO
+
+```bash
+termux-setup-storage
+````
+
+```bash
+pkg update && pkg upgrade && pkg install -y git nodejs ffmpeg imagemagick yarn
+```
+
+```bash
+git clone https://github.com/leandromemes/gotica-bot 
+```
+
+```bash
+cd gotica-bot
+```
+
+```bash
+yarn install
+```
+
+```bash
+npm start
+```
