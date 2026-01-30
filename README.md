@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="[https://files.catbox.moe/ob7j4s.jpeg](https://files.catbox.moe/yyk5xo.jpg)](https://files.catbox.moe/yyk5xo.jpg" alt="Banner Gótica Bot" width="full">
+  <img src="https://files.catbox.moe/yyk5xo.jpg" alt="Banner Gótica Bot" width="full">
 </div>
 
 <div align="center">
@@ -14,7 +14,7 @@
     <a href="mailto:leandromemes.lr@gmail.com"><img src="https://img.shields.io/badge/Contato-Suporte-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" alt="Suporte WhatsApp"></a>
   </p>
 
-  <img src="https://files.catbox.moe/atnv7f.gif" alt="Gótica Bot Preview" width="350"/>
+  <img src="https://files.catbox.moe/46fwv5.mp4" alt="Gótica Bot Preview" width="350"/>
 </div>
 
 ---
