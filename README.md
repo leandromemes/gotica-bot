@@ -108,42 +108,12 @@ cd gotica-bot
 ```
 
 ```bash
-rm -rf RubySessions
-```
-
-```bash
-npm start
-```
-
-### 🦇 **`ATIVAR SE PARAR (TERMUX)`**
-
-```bash
-cd && cd gotica-bot && npm start
-```
-
-### 🔑 **`OBTER UM NOVO CÓDIGO (QR/PAIRING)`**
-
-<details>
-<summary><b>🔄 VER COMANDOS</b></summary>
-
-```bash
-cd gotica-bot
-
-```
-
-```bash
 rm -rf goticaSession
-
 ```
 
 ```bash
 npm start
-
 ```
-
-</details>
-
----
 
 ### 🔄 Comando para reiniciar:
  **`node index.js`**
@@ -181,8 +151,8 @@ Tem dúvidas ou quer ficar por dentro das novidades? Junte-se aos nossos canais 
 ---
 
 
-### `🦇 𝘾𝙍𝙄𝘼𝘿𝙊𝙍 𝙊𝙁𝙄𝘾𝙄𝘼𝙇`
+### ` 👑𝘾𝙍𝙄𝘼𝘿𝙊𝙍 𝙊𝙁𝙄𝘾𝙄𝘼𝙇`
 <a href="https://github.com/leandromemes"><img src="https://github.com/leandromemes.png" width="130" height="130" alt="Leandro Rocha"/></a>
 
 
-**`¡OBRIGADO POR NOS ESCOLHER!` 💋**
+**`OBRIGADO POR NOS ESCOLHER!` 🖤**
