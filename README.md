@@ -14,7 +14,8 @@
     <a href="mailto:leandromemes.lr@gmail.com"><img src="https://img.shields.io/badge/Contato-Suporte-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" alt="Suporte WhatsApp"></a>
   </p>
 
-  <img src="https://files.catbox.moe/atnv7f.gif" alt="Gótica Bot Preview" width="350"/>
+ <div align="center">
+  <img src="https://files.catbox.moe/0jnapr.gif" width="350" alt="Gótica Bot">
 </div>
 
 ---
