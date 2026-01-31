@@ -49,7 +49,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
   }
 }
 
-handler.help = ['s', 'f', 'sticker', 'figurinha']
+handler.help = ['sticker', 'f', 's', 'figurinha']
 handler.tags = ['sticker']
 handler.command = /^(s|f|sticker|figurinha)$/i
 

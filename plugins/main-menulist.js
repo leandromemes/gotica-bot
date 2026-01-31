@@ -2,9 +2,9 @@
  * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
  * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
  * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
- * * dev: leandro rocha
- * * GitHub: https://github.com/leandromemes
- * * e-mail: leandromemes.lr@gmail.com
+ * * @author Leandro Rocha
+ * @link https://github.com/leandromemes
+ * @project Gotica Bot
  */
 
 import { promises } from 'fs';
@@ -19,11 +19,9 @@ const cwd = process.cwd();
 
 let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
     try {
-        // Dados do usuário
         let user = global.db?.data?.users?.[m.sender] || { exp: 0, level: 0 };
         let { exp, level } = user;
         
-        // Sistema de Patentes Brasileiras
         let role = (level <= 3) ? '🥉 BRONZE' : 
                    (level <= 10) ? '🥈 PRATA' : 
                    (level <= 20) ? '🥇 OURO' : 
@@ -38,7 +36,6 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
         let muptime = clockString(uptime);
         let totalreg = global.db?.data?.users ? Object.keys(global.db.data.users).length : 0;
 
-        // --- LÓGICA DE VÍDEO ALEATÓRIO ---
         const gifVideosDir = path.join(cwd, 'src', 'menu');
         let randomGif = null;
         if (fs.existsSync(gifVideosDir)) {
@@ -57,7 +54,6 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
             media = await prepareWAMessageMedia({ image: { url: 'https://files.catbox.moe/yyk5xo.jpg' } }, { upload: conn.waUploadToServer });
         }
 
-        // --- SEÇÕES DO MENU (SIMPLIFICADAS) ---
         let sections = [{
             title: "𝐒𝐄𝐋𝐄𝐂𝐈𝐎𝐍𝐄 𝐔𝐌𝐀 𝐂𝐀𝐓𝐄𝐆𝐎𝐑𝐈𝐀",
             rows: [

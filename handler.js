@@ -1,3 +1,12 @@
+/**
+ * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
+ * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
+ * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
+ * * @author Leandro Rocha
+ * @link https://github.com/leandromemes
+ * @project Gotica Bot
+ */
+
 import { smsg } from './lib/simple.js'
 import { format } from 'util'
 import * as ws from 'ws';
@@ -40,7 +49,7 @@ try {
         let parsed = JSON.parse(idLista);
         idLista = parsed.id || parsed.selectedId || idLista;
     }
-} catch (e) { console.log("Erro na varredura bruta") }
+} catch (e) { }
 // ---------------------------------------
 
 m = smsg(this, m) || m
@@ -275,6 +284,10 @@ global.comando = command
 if ((m.id.startsWith('NJX-') || (m.id.startsWith('BAE5') && m.id.length === 16) || (m.id.startsWith('B24E') && m.id.length === 20))) return
 if (!isAccept) { continue }
 m.plugin = name
+
+// LOG DE COMANDO LIMPO PARA TERMUX
+console.log(chalk.black(chalk.bgCyan(` ⚡ COMANDO `)), chalk.black(chalk.bgWhite(` ${command} `)), `de ${chalk.green(m.pushName || senderNum)}`)
+
 if (m.chat in global.db.data.chats || sender in global.db.data.users) {
 let chat = global.db.data.chats[m.chat]
 let user = global.db.data.users[sender]
@@ -399,7 +412,8 @@ stat.lastSuccess = now
 }
 }
 try {
-if (!opts['noprint']) await (await import(`./lib/print.js`)).default(m, this)
+// REMOVIDO PRINT.JS PARA DEIXAR O TERMUX LIMPO
+// if (!opts['noprint']) await (await import(`./lib/print.js`)).default(m, this)
 } catch (e) {
 console.log(chalk.red('Error en print.js'))
 }
