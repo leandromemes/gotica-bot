@@ -43,13 +43,14 @@ global.canal = 'https://whatsapp.com/channel/0029Vb7PsjVA89Md7LCwWN1u'
 global.md = 'https://github.com/leandromemes/gotica-bot'
 global.correo = 'leandromemes.lr@gmail.com'
 
+// --- MENSAGENS COM PURO DEBOCHE ---
 global.msg = {
-  admin: '⚠️ *Este comando é apenas para administradores do grupo!*',
-  group: '⚠️ *Este comando só pode ser usado dentro de grupos!*',
-  private: '⚠️ *Este comando só pode ser usado no chat privado!*',
-  owner: '⚠️ *Este comando é restrito ao meu criador (Leandro Rocha)!*',
-  wait: '⌛ *Processando... Aguarde um momento por favor.*',
-  error: '❌ *Ocorreu um erro ao executar este comando!*'
+  admin: '💅 *Quem você pensa que é? Hum hum... Ponha-se no seu lugar! Este comando é exclusivo para os Admins. Você não tem brilho para usar isso!*',
+  group: '🙄 *Querido(a), este comando só funciona em grupos. Não tente brilhar no privado que aqui você é só um plebeu comum!*',
+  private: '🤫 *Shhh! Esse comando é íntimo, só para o meu privado. Não exponha sua falta de classe em grupos!*',
+  owner: '👑 *Pare tudo! Quem te deu audácia? Este comando é restrito ao meu Mestre Supremo Leandro. Você não tem o pedigree necessário!*',
+  wait: '⌛ *Aguarde, plebeu... Estou processando. Nem tudo é no seu tempo, tenha paciência ou retire-se!*',
+  error: '❌ *Ai que horror! Ocorreu um erro. Até eu me cansei da sua incompetência agora!*'
 }
 
 global.catalogo = fs.existsSync('./src/catalogo.jpg') ? fs.readFileSync('./src/catalogo.jpg') : fs.readFileSync('./src/yyk5xo.jpg') 
