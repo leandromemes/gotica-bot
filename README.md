@@ -77,6 +77,10 @@ cd gotica-bot
 yarn install
 ```
 
+```bash
+npm start
+```
+
 Quando o sistema perguntar: `(Y/I/N/O/D/Z) [default=N]`, digite **"y"** e pressione **ENTER**.
 
 </details>

@@ -2,7 +2,7 @@
  * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
  * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
  * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
- * * @author Leandro Rocha
+ * @author Leandro Rocha
  * @link https://github.com/leandromemes
  * @project Gotica Bot
  */
@@ -17,132 +17,131 @@ import moment from 'moment-timezone';
 
 const cwd = process.cwd();
 
-let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
-    try {
-        let user = global.db?.data?.users?.[m.sender] || { exp: 0, level: 0 };
-        let { exp, level } = user;
-        
-        let role = (level <= 3) ? '🥉 BRONZE' : 
-                   (level <= 10) ? '🥈 PRATA' : 
-                   (level <= 20) ? '🥇 OURO' : 
-                   (level <= 35) ? '💠 PLATINA' : 
-                   (level <= 50) ? '💎 DIAMANTE' : 
-                   (level <= 70) ? '🏆 MESTRE' : 
-                   (level <= 100) ? '🔥 ELITE' : '👑 DESAFIANTE';
+let handler = async (m, { conn, usedPrefix: _p }) => {
+  // Reação de espera
+  await m.react('⏳');
 
-        let { max } = xpRange(level, global.multiplier || 1);
-        let name = await conn.getName(m.sender);
-        let uptime = process.uptime() * 1000;
-        let muptime = clockString(uptime);
-        let totalreg = global.db?.data?.users ? Object.keys(global.db.data.users).length : 0;
+  try {
+    let { exp, level, role } = global.db.data.users[m.sender] || { exp: 0, level: 0, role: 'Verme' };
+    let name = await conn.getName(m.sender);
+    let _uptime = process.uptime() * 1000;
+    let uptime = clockString(_uptime);
+    let totalreg = Object.keys(global.db.data.users).length;
+    let date = moment.tz('America/Sao_Paulo').format('DD/MM/YYYY');
+    let version = '2.0.4';
 
-        const gifVideosDir = path.join(cwd, 'src', 'menu');
-        let randomGif = null;
-        if (fs.existsSync(gifVideosDir)) {
-            const gifVideos = fs.readdirSync(gifVideosDir)
-                .filter(file => file.endsWith('.mp4'))
-                .map(file => path.join(gifVideosDir, file));
-            if (gifVideos.length > 0) {
-                randomGif = gifVideos[Math.floor(Math.random() * gifVideos.length)];
-            }
+    // 1. Lógica para pegar vídeo aleatório da pasta src/menu
+    const gifVideosDir = path.join(cwd, 'src', 'menu');
+    let randomVideo = null;
+    if (fs.existsSync(gifVideosDir)) {
+        const files = fs.readdirSync(gifVideosDir).filter(file => file.endsWith('.mp4') || file.endsWith('.mkv'));
+        if (files.length > 0) {
+            randomVideo = path.join(gifVideosDir, files[Math.floor(Math.random() * files.length)]);
         }
+    }
 
-        let media;
-        if (randomGif) {
-            media = await prepareWAMessageMedia({ video: { url: randomGif }, gifPlayback: true }, { upload: conn.waUploadToServer });
-        } else {
-            media = await prepareWAMessageMedia({ image: { url: 'https://files.catbox.moe/yyk5xo.jpg' } }, { upload: conn.waUploadToServer });
-        }
+    // 2. Prepara a mídia
+    let media = await prepareWAMessageMedia(
+        { video: randomVideo ? fs.readFileSync(randomVideo) : { url: 'https://files.catbox.moe/yyk5xo.jpg' }, gifPlayback: true }, 
+        { upload: conn.waUploadToServer }
+    );
 
-        let sections = [{
-            title: "𝐒𝐄𝐋𝐄𝐂𝐈𝐎𝐍𝐄 𝐔𝐌𝐀 𝐂𝐀𝐓𝐄𝐆𝐎𝐑𝐈𝐀",
-            rows: [
-                { title: "🦇 𝗠𝗘𝗡𝗨 𝗣𝗥𝗜𝗡𝗖𝗜𝗣𝗔𝗟", description: "Membros, Downloads e Stickers", id: `${_p}menuprincipal` },
-                { title: "🛡️ 𝗠𝗘𝗡𝗨 𝗔𝗗𝗠", description: "Comandos de Gerenciamento e Grupo", id: `${_p}menugrupo` },
-                { title: "👑 𝗠𝗘𝗡𝗨 𝗗𝗢𝗡𝗢", description: "Comandos de Controle e Ferramentas Lord", id: `${_p}menuowner` },
-                { title: "🧩 𝗕𝗥𝗜𝗡𝗖𝗔𝗗𝗘𝗜𝗥𝗔𝗦", description: "Diversão e Interação", id: `${_p}menubrincadeiras` },
-                { title: "🎲 𝗠𝗘𝗡𝗨 𝗝𝗢𝗚𝗢𝗦", description: "Desafios e Mini-jogos", id: `${_p}menujuegos` },
-                { title: "💰 𝗘𝗖𝗢𝗡𝗢𝗠𝗜𝗔 & 𝗥𝗣𝗚", description: "Ranking, XP e Status", id: `${_p}menueconomia` },
-                { title: "🔞 𝗠𝗘𝗡𝗨 +𝟭𝟴", description: "Conteúdo Adulto (NSFW)", id: `${_p}menunsfw` }
-            ]
-        }];
+    // 3. Texto Principal formatado com Novo Título e Copy
+    let ucapanText = ucapan();
+    let textoPrincipal = `🌙ᩚ⃟꙰⟡˖ *𝐋𝐈𝐒𝐓𝐀 𝐃𝐄 𝐌𝐄𝐍𝐔𝐒* 🌙⃟✿˚
 
-        let texto = `𝙊𝙡𝙖́ *${name}*, ${ucapan()}
+𝙊𝙡𝙖́ *${name}* ${ucapanText}
 𝙈𝙚𝙪 𝙣𝙤𝙢𝙚 𝙚́ *𝙂𝙤́𝙩𝙞𝙘𝙖 𝘽𝙤𝙩*! 💋
 
-┏━━━━⏤͟͟͞͞★꙲⃝͟🌙❈┉━━━┓
-┃   *𝖨𝖭𝖥𝖮 𝖣𝖠 𝖡𝖮𝖳*
-┃ 🤴 *Criador:* Dev Leandro
-┃ ⏱️ *Ativa:* ${muptime}
-┃ 👥 *Usuários:* ${totalreg}
-┗━━━━⏤͟͟͞͞★꙲⃝͟🌙❈┉━━━━┛
 
-🕸️ᩚ⃟꙰⟡˖ ࣪𝗦𝗧𝗔𝗧𝗨𝗦 𝗗𝗢 𝗨𝗦𝗨𝗔́𝗥𝗜𝗢 🕸️
-🌑 *E𝗫𝗣:* ${exp} / ${max}
-🌑 *𝗡𝗜́𝗩𝗘𝗟:* ${level}
-🌑 *𝗣𝗔𝗧𝗘𝗡𝗧𝗘:* ${role}`.trim();
+┃ ─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🦇❈┉━━━━─
+┃
+┃ ი ̯ ✦⋆͜͡҈➳ *${_p}menuprincipal*
+┃
+┃ ─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🛡️❈┉━━━━─
+┃
+┃ ი ̯ ✦⋆͜͡҈➳ *${_p}menuadm*
+┃
+┃ ─━━━━┉❈⏤͟͟͞͞★꙲⃝͟👑❈┉━━━━─
+┃
+┃ ი ̯ ✦⋆͜͡҈➳ *${_p}menudono*
+┃
+┃ ─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🧩❈┉━━━━─
+┃
+┃ ი ̯ ✦⋆͜͡҈➳ *${_p}menubrincadeiras*
+┃
+┃ ─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🎮❈┉━━━━─
+┃
+┃ ი ̯ ✦⋆͜͡҈➳ *${_p}menujogos*
+┃
+┃ ─━━━━┉❈⏤͟͟͞͞★꙲⃝͟💰❈┉━━━━─
+┃
+┃ ი ̯ ✦⋆͜͡҈➳ *${_p}menureal*
+┃
+┃ ─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🔞❈┉━━━━─
+┃
+┃ ი ̯ ✦⋆͜͡҈➳ *${_p}menu+18*
+┃
+├╼╼╼╼╼╼╍⋅⊹⋅⋅⦁ ✪ ⦁⋅⋅⊹⋅╍╾╾╾╾☾⋆
 
-        let headerMessage = { hasMediaAttachment: true };
-        if (randomGif) {
-            headerMessage.videoMessage = media.videoMessage;
-        } else {
-            headerMessage.imageMessage = media.imageMessage;
-        }
+😌 *Faça parte da nossa elite! Receba novidades exclusivas em nosso canal oficial.*📢 
+👇 *CLIQUE NO BOTÃO* 👇`.trim();
 
-        const interactiveMessage = {
-            header: headerMessage,
-            body: { text: texto },
-            footer: { text: "Gótica Bot • dev Leandro" },
-            nativeFlowMessage: {
-                buttons: [
-                    {
-                        name: "cta_url",
-                        buttonParamsJson: JSON.stringify({
-                            display_text: "📢 𝖢𝖺𝗇𝖺𝗅 𝖽𝖺 𝖦𝗈́𝗍𝗂𝖼𝖺",
-                            url: "https://whatsapp.com/channel/0029Vb7PsjVA89Md7LCwWN1u",
-                            merchant_url: "https://whatsapp.com/channel/0029Vb7PsjVA89Md7LCwWN1u"
-                        })
-                    },
-                    {
-                        name: "single_select",
-                        buttonParamsJson: JSON.stringify({
-                            title: "✨ ABRIR MENU LISTA",
-                            sections: sections
-                        })
-                    }
-                ]
-            }
-        };
+    // 4. Mensagem Interativa
+    const interactiveMessage = {
+      header: { 
+        hasMediaAttachment: true, 
+        videoMessage: media.videoMessage 
+      },
+      body: { text: textoPrincipal },
+      footer: { text: "" },
+      nativeFlowMessage: {
+        buttons: [
+          {
+            name: "cta_url",
+            buttonParamsJson: JSON.stringify({
+              display_text: "𝖢𝖺𝗇𝖺𝗅 𝖽𝖺 𝖦𝗈́𝗍𝗂𝖼𝖺 💋",
+              url: "https://whatsapp.com/channel/0029Vb7PsjVA89Md7LCwWN1u"
+            })
+          }
+        ]
+      }
+    };
 
-        let msgi = generateWAMessageFromContent(m.chat, { 
-            viewOnceMessage: { message: { interactiveMessage } } 
-        }, { userJid: conn.user.jid, quoted: m });
+    let msgi = generateWAMessageFromContent(m.chat, { 
+      viewOnceMessage: { message: { interactiveMessage } } 
+    }, { userJid: conn.user.id, quoted: m });
 
-        await conn.relayMessage(m.chat, msgi.message, { messageId: msgi.key.id });
-        await m.react('🦇');
+    await conn.relayMessage(m.chat, msgi.message, { messageId: msgi.key.id });
+    await m.react('🦇');
 
-    } catch (e) {
-        console.error(e);
-        conn.reply(m.chat, `⚠️ *Erro no menu:* ${e.message}`, m);
-    }
+  } catch (e) {
+    console.error(e);
+    await m.react('❌');
+    conn.reply(m.chat, `❌ Erro no menu: ${e.message}`, m);
+  }
 };
 
 handler.help = ['menu'];
 handler.tags = ['main'];
-handler.command = /^(menu|help|ajuda)$/i;
+handler.command = ['menu', 'menus', 'ajuda'];
 
 export default handler;
 
 function clockString(ms) {
-    let h = Math.floor(ms / 3600000);
-    let m = Math.floor(ms / 60000) % 60;
-    let s = Math.floor(ms / 1000) % 60;
-    return [h, m, s].map(v => v.toString().padStart(2, '0')).join(':');
+  let d = Math.floor(ms / 86400000);
+  let h = Math.floor(ms / 3600000) % 24;
+  let m = Math.floor(ms / 60000) % 60;
+  let result = [];
+  if (d > 0) result.push(`${d}d`);
+  if (h > 0) result.push(`${h}h`);
+  if (m > 0) result.push(`${m}m`);
+  return result.length > 0 ? result.join(' ') : '0m';
 }
 
 function ucapan() {
-    const hour = moment.tz('America/Sao_Paulo').hour();
-    if (hour >= 5 && hour < 12) return "𝘽𝙤𝙢 𝘿𝙞𝙖! ☀️";
-    if (hour >= 12 && hour < 18) return "𝘽𝙤𝙖 𝙏𝙖𝙧𝙙𝙚! 🌤️";
-    return "𝘽𝙤𝙖 𝙉𝙤𝙞𝙩𝐞! 🌙";
+  const time = moment.tz('America/Sao_Paulo').format('HH');
+  if (time >= 5 && time < 12) return "𝘽𝙤𝙢 𝘿𝙞𝙖! ☀️";
+  if (time >= 12 && time < 18) return "𝘽𝙤𝙖 𝙏𝙖𝙧𝙙𝖾! 🌤️";
+  return "𝘽𝙤𝙖 𝙉𝙤𝙞𝙩𝙚! 🌙";
 }

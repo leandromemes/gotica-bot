@@ -2,7 +2,7 @@
  * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
  * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
  * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
- * * @author Leandro Rocha
+ * @author Leandro Rocha
  * @link https://github.com/leandromemes
  * @project Gotica Bot
  */
@@ -15,80 +15,154 @@ import { prepareWAMessageMedia, generateWAMessageFromContent } from '@whiskeysoc
 const cwd = process.cwd();
 
 let handler = async (m, { conn, usedPrefix: _p }) => {
+    await m.react('⏳');
     try {
         let _uptime = process.uptime() * 1000;
         let uptime = clockString(_uptime);
-        let totalreg = global.db?.data?.users ? Object.keys(global.db.data.users).length : 0;
+        let date = moment.tz('America/Sao_Paulo').format('DD/MM/YYYY');
+        let version = '2.0.4'; 
         
-        let tags = {
-            'main': '𝗜𝗡𝗙𝗢 / 𝗕𝗢𝗧',
-            'sticker': '𝗦𝗧𝗜𝗖𝗞𝗘𝗥𝗦',
-            'downloader': '𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗦',
-            'tools': '𝗙𝗘𝗥𝗥𝗔𝗠𝗘𝗡𝗧𝗔𝗦'
-        }
-
         const gifVideosDir = path.join(cwd, 'src', 'menu');
         let randomGif = null;
         if (fs.existsSync(gifVideosDir)) {
-            const gifVideos = fs.readdirSync(gifVideosDir).filter(file => file.endsWith('.mp4'));
+            const gifVideos = fs.readdirSync(gifVideosDir).filter(file => file.endsWith('.mp4') || file.endsWith('.mkv'));
             if (gifVideos.length > 0) randomGif = path.join(gifVideosDir, gifVideos[Math.floor(Math.random() * gifVideos.length)]);
         }
 
-        let media = randomGif 
-            ? await prepareWAMessageMedia({ video: { url: randomGif }, gifPlayback: true }, { upload: conn.waUploadToServer })
-            : await prepareWAMessageMedia({ image: { url: 'https://files.catbox.moe/yyk5xo.jpg' } }, { upload: conn.waUploadToServer });
+        let media = await prepareWAMessageMedia(
+            { video: randomGif ? fs.readFileSync(randomGif) : { url: 'https://files.catbox.moe/yyk5xo.jpg' }, gifPlayback: true }, 
+            { upload: conn.waUploadToServer }
+        );
 
-        let help = Object.values(global.plugins).filter(plugin => !plugin.disabled)
-        let txt = `🕸️ *𝙂𝙊́𝙏𝙄𝘾𝘼 𝘽𝙊𝙏 - 𝙈𝙀𝙉𝙐 𝙋𝙍𝙄𝙉𝘾𝙄𝙋𝘼𝙇* 🕸️\n\n`
-        txt += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n┖╮★彡[ 𝗜𝗡𝗙𝗢 𝗕𝗢𝗧 ]彡★\n`
-        txt += `┃ 🤴 𝘿𝙚𝙫: Leandro Rocha\n┃ ⏱️ 𝘼𝙩iva: ${uptime}\n┃ 👥 𝙐𝙨𝙪𝙖́𝙧𝙞𝙤𝙨: ${totalreg}\n┗━━━━⏤͟͟͞͞★꙲⃝͟🌙❈┉━━━━┛\n\n`
+        let txt = `┏━ 🕸️ *𝗠𝗘𝗡𝗨 𝗣𝗥𝗜𝗡𝗖𝗜𝗣𝗔𝗟* 🕸️ ━┓\n\n`
+        
+        txt += `┏━━━━⏤͟͟͞͞★꙲⃝͟🌙❈┉━━━┓\n`
+        txt += `┃   *𝖨𝖭𝖥𝖮 𝖣𝖠 𝖡𝖮𝖳*\n`
+        txt += `┃ 🤴 *Criador:* Leandro\n`
+        txt += `┃ ⏱️ *Ativa:* ${uptime}\n`
+        txt += `┃ 📅 *Data:* ${date}\n`
+        txt += `┃ 📍 *Prefixo:* [ ${_p} ]\n`
+        txt += `┃ 💿 *Versão:* ${version}\n`
+        txt += `┗━━━━⏤͟͟͞͞★꙲⃝͟🌙❈┉━━━━┛\n\n`
 
-        for (let tag in tags) {
-            let filteredHelp = help.filter(menu => menu.tags && menu.tags.includes(tag))
-            if (filteredHelp.length > 0) {
-                txt += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n┖╮★彡[ ${tags[tag]} ]彡★\n┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n`
-                for (let menu of filteredHelp) {
-                    if (menu.help) {
-                        let mainName = Array.isArray(menu.help) ? menu.help[0] : menu.help;
-                        txt += `┇┆⚡ ✦⋆͜͡҈➳ ${_p}${mainName}\n`
-                    }
-                }
-                txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n▹▫◃\n\n`
-            }
-        }
+        
+        // --- CATEGORIA: MENUS ---
+        txt += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
+        txt += `┖╮★彡[ MENUS 🎨 ]彡★\n`
+        txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n`
+        txt += `┇┆🖼️ ${_p}menuadm\n`
+        txt += `┇┆🤡 ${_p}menudono\n`
+        txt += `┇┆✨ ${_p}menubrincadeiras\n`
+        txt += `┇┆✨ ${_p}menujogos\n`
+        txt += `┇┆✨ ${_p}menureal\n`
+        txt += `┇┆✨ ${_p}menu+18\n`
+        txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
 
-        let headerMessage = randomGif ? { hasMediaAttachment: true, videoMessage: media.videoMessage } : { hasMediaAttachment: true, imageMessage: media.imageMessage };
+
+        // --- CATEGORIA: STICKERS ---
+        txt += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
+        txt += `┖╮★彡[ 𝗦𝗧𝗜𝗖𝗞𝗘𝗥𝗦 🎨 ]彡★\n`
+        txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n`
+        txt += `┇┆🖼️ ${_p}sticker\n`
+        txt += `┇┆🤡 ${_p}fig\n`
+        txt += `┇┆✨ ${_p}ttp\n`
+        txt += `┇┆✨ ${_p}emojimix\n`
+        txt += `┇┆✨ ${_p}foto\n`
+        txt += `┇┆✨ ${_p}citacao\n`
+        txt += `┇┆✨ ${_p}toimg\n`
+        txt += `┇┆✨ ${_p}take\n`
+        txt += `┇┆✨ ${_p}autosticker\n`
+        txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
+
+        // --- CATEGORIA: DOWNLOADS ---
+        txt += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
+        txt += `┖╮★彡[ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗦 📥 ]彡★\n`
+        txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n`
+        txt += `┇┆📽️ ${_p}play\n`
+        txt += `┇┆🎶 ${_p}ytmp3\n`
+        txt += `┇┆🎬 ${_p}ytmp4\n`
+        txt += `┇┆📸 ${_p}ig\n`
+        txt += `┇┆🐦 ${_p}tiktok\n`
+        txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
+
+        // --- CATEGORIA: FERRAMENTAS ---
+        txt += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
+        txt += `┖╮★彡[ 𝗙𝗘𝗥𝗥𝗔𝗠𝗘𝗡𝗧𝗔𝗦 🛠️ ]彡★\n`
+        txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n`
+        txt += `┇┆🔍 ${_p}calculadora\n`
+        txt += `┇┆🆔 ${_p}comprimir\n`
+        txt += `┇┆⏰ ${_p}fontes\n`
+        txt += `┇┆📖 ${_p}horario\n`
+        txt += `┇┆📖 ${_p}logos\n`
+        txt += `┇┆📖 ${_p}print\n`
+        txt += `┇┆📖 ${_p}todoc\n`
+        txt += `┇┆📖 ${_p}topdf\n`
+        txt += `┇┆📖 ${_p}wikipedia\n`
+        txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
+
+                // --- CATEGORIA: ENTRETENIMENTO ---
+        txt += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
+        txt += `┖╮★彡[ ENTRETENIMENTO 🛠️ ]彡★\n`
+        txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n`
+        txt += `┇┆🔍 ${_p}fake\n`
+        txt += `┇┆🆔 ${_p}id\n`
+        txt += `┇┆⏰ ${_p}clima\n`
+        txt += `┇┆📖 ${_p}wiki\n`
+        txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
+
+        // --- CATEGORIA: RPG ---
+        txt += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
+        txt += `┖╮★彡[ RPG 🛠️ ]彡★\n`
+        txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n`
+        txt += `┇┆🔍 ${_p}roubarxp\n`
+        txt += `┇┆🆔 ${_p}id\n`
+        txt += `┇┆⏰ ${_p}clima\n`
+        txt += `┇┆📖 ${_p}wiki\n`
+        txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
+
+
+        txt += `├╼╼╼╼╼╼╍⋅⊹⋅⋅⦁ ✪ ⦁⋅⋅⊹⋅╍╾╾╾╾☾⋆\n\n`
+        txt += `😌 *Faça parte da nossa elite! Receba novidades exclusivas em nosso canal oficial.*📢\n`
+        txt += `👇 *CLIQUE NO BOTÃO* 👇`.trim();
 
         const interactiveMessage = {
-            header: headerMessage,
-            body: { text: txt.trim() },
-            footer: { text: "Gótica Bot • dev Leandro" },
+            header: { hasMediaAttachment: true, videoMessage: media.videoMessage },
+            body: { text: txt },
+            footer: { text: "𝖣𝖾𝗏: 𝖫𝖾𝖺𝗇𝖽𝗋𝗈 𝖱𝗈𝖼𝗁𝖺" },
             nativeFlowMessage: {
                 buttons: [{
                     name: "cta_url",
                     buttonParamsJson: JSON.stringify({
-                        display_text: "📢 𝖢𝖺𝗇𝖺𝗅 𝖽𝖺 𝖦𝗈́𝗍𝗂𝖼𝖺",
-                        url: "https://whatsapp.com/channel/0029Vb7PsjVA89Md7LCwWN1u",
-                        merchant_url: "https://whatsapp.com/channel/0029Vb7PsjVA89Md7LCwWN1u"
+                        display_text: "𝖢𝖺𝗇𝖺𝗅 𝖽𝖺 𝖦𝗈́𝗍𝗂𝖼𝖺 💋",
+                        url: "https://whatsapp.com/channel/0029Vb7PsjVA89Md7LCwWN1u"
                     })
                 }]
             }
         };
 
-        let msgi = generateWAMessageFromContent(m.chat, { viewOnceMessage: { message: { interactiveMessage } } }, { userJid: conn.user.jid, quoted: m });
+        let msgi = generateWAMessageFromContent(m.chat, { viewOnceMessage: { message: { interactiveMessage } } }, { userJid: conn.user.id, quoted: m });
         await conn.relayMessage(m.chat, msgi.message, { messageId: msgi.key.id });
         await m.react('🦇');
-    } catch (e) { console.error(e); m.reply('❌ Erro ao gerar menu.'); }
+    } catch (e) { 
+        console.error(e); 
+        await m.react('❌');
+        m.reply('❌ Erro ao gerar menu principal.'); 
+    }
 };
 
-handler.help = ['menuprincipal'];
+handler.help = ['menu', 'help'];
 handler.tags = ['main'];
-handler.command = ['menuprincipal'];
+handler.command = ['help', 'menup', 'comandos'];
+
 export default handler;
 
 function clockString(ms) {
-    let h = Math.floor(ms / 3600000);
+    let d = Math.floor(ms / 86400000);
+    let h = Math.floor(ms / 3600000) % 24;
     let m = Math.floor(ms / 60000) % 60;
-    let s = Math.floor(ms / 1000) % 60;
-    return `${h}h ${m}m ${s}s`;
+    let result = [];
+    if (d > 0) result.push(`${d}d`);
+    if (h > 0) result.push(`${h}h`);
+    if (m > 0) result.push(`${m}m`);
+    return result.length > 0 ? result.join(' ') : '0m';
 }

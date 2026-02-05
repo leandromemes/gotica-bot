@@ -2,7 +2,7 @@
  * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
  * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
  * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
- * * @author Leandro Rocha
+ * @author Leandro Rocha
  * @link https://github.com/leandromemes
  * @project Gotica Bot
  */
@@ -111,7 +111,7 @@ if (typeof user !== 'object')
 global.db.data.users[sender] = {}
 if (user) {
 if (!isNumber(user.exp)) user.exp = 0
-if (!isNumber(user.coin)) user.coin = 10
+if (!isNumber(user.coin)) user.coin = 0 
 if (!isNumber(user.joincount)) user.joincount = 1
 if (!isNumber(user.diamond)) user.diamond = 3
 if (!isNumber(user.lastadventure)) user.lastadventure = 0
@@ -149,8 +149,8 @@ if (!isNumber(user.bank)) user.bank = 0
 if (!isNumber(user.warn)) user.warn = 0
 } else
 global.db.data.users[sender] = {
-exp: 0, coin: 10, joincount: 1, diamond: 3, lastadventure: 0, health: 100, lastclaim: 0, lastcofre: 0, lastdiamantes: 0, lastcode: 0, lastduel: 0, lastpago: 0, lastmining: 0, lastcodereg: 0, muto: false, registered: false, genre: '', birth: '', marry: '', description: '', packstickers: null, name: m.name, age: -1, regTime: -1, afk: -1, afkReason: '', banned: false, useDocument: false, bank: 0, level: 0, role: 'Nuv', premium: false, premiumTime: 0,
-}
+exp: 0, coin: 0, joincount: 1, diamond: 3, lastadventure: 0, health: 100, lastclaim: 0, lastcofre: 0, lastdiamantes: 0, lastcode: 0, lastduel: 0, lastpago: 0, lastmining: 0, lastcodereg: 0, muto: false, registered: false, genre: '', birth: '', marry: '', description: '', packstickers: null, name: m.name, age: -1, regTime: -1, afk: -1, afkReason: '', banned: false, useDocument: false, bank: 0, level: 0, role: 'Nuv', premium: false, premiumTime: 0,
+} 
 let chat = global.db.data.chats[m.chat]
 if (typeof chat !== 'object')
 global.db.data.chats[m.chat] = {}
@@ -171,6 +171,7 @@ if (!('audios' in chat)) chat.audios = false
 if (!('antiBot' in chat)) chat.antiBot = false
 if (!('antiBot2' in chat)) chat.antiBot2 = false
 if (!('modoadmin' in chat)) chat.modoadmin = false
+if (!('modoreal' in chat)) chat.modoreal = false // PERSISTÊNCIA MODO REAL
 if (!('antiLink' in chat)) chat.antiLink = true
 if (!('antiImg' in chat)) chat.antiImg = false
 if (!('reaction' in chat)) chat.reaction = false
@@ -183,7 +184,7 @@ if (!('botPrimario' in chat)) chat.botPrimario = null
 } else
 global.db.data.chats[m.chat] = {
 sAutoresponder: '', welcome: true, isBanned: false, autolevelup: false, autoresponder: false, delete: false, autoAceptar: false, autoRechazar: false, detect: true, antiBot: false,
-antiBot2: false, modoadmin: false, antiLink: true, antifake: false, antiArabe: false, reaction: false, nsw: false, expired: 0,
+antiBot2: false, modoadmin: false, modoreal: false, antiLink: true, antifake: false, antiArabe: false, reaction: false, nsfw: false, expired: 0,
 welcomeText: null, byeText: null, audios: false, botPrimario: null,
 bannedBots: []
 }
@@ -410,12 +411,6 @@ stat.success += 1
 stat.lastSuccess = now
 }
 }
-}
-try {
-// REMOVIDO PRINT.JS PARA DEIXAR O TERMUX LIMPO
-// if (!opts['noprint']) await (await import(`./lib/print.js`)).default(m, this)
-} catch (e) {
-console.log(chalk.red('Error en print.js'))
 }
 }
 }

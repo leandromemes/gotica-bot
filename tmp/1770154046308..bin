@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>qu.ax | 404 Not found</title>
+    <style>body{background-color:#151515;font-family:"Open Sans",sans-serif;height:100vh;z-index:-999;overflow:hidden}#backdrop{display:flex;justify-content:center;align-items:center;width:100%;height:100%;backdrop-filter:blur(3px);z-index:1;color:#fff}#text{display:flex;justify-content:center;align-items:center;flex-direction:column;color:#818081}h1{background-color:#fff;font-size:12rem;margin:0;padding:0;background:linear-gradient(90deg,#E555A6 0%,#e80860 100%);-webkit-background-clip:text;-moz-background-clip:text;-webkit-text-fill-color:transparent;-moz-text-fill-color:transparent}p{font-size:2rem;margin:0;padding:0}a{color:#fff;text-decoration:underline}a:visited{color:#686868}</style>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <script async defer src="https://tianji.1337.la/tracker.js" data-website-id="cm4krj4fm000187p2belzg55x"></script>
+  </head>
+  <body>
+    <div id="tsparticles"></div>
+    <div id="backdrop">
+      <div id="text">
+        <h1>404</h1>
+        <p>Seems like that file got nuked or was never here!</p>
+      </div>
+    </div>
+  </body>
+</html>
