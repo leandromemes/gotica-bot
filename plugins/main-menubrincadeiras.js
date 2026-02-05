@@ -51,11 +51,21 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
 
     texto += `🎭 𝙄𝙉𝙏𝙀𝙍𝘼𝘾̧𝘼̃𝙊 𝙀 𝙕𝙊𝙀𝙄𝙍𝘼\n`
     texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🎭❈┉━━━━─\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}gay*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}bravo*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}decepção*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}bebado*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}chorar*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}comer*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}tedio*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}morder*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}lingua*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}banho*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}vergonha*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}dançar*\n`
     texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}corno*\n`
     texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}gado*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}ship*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}casal*\n\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}cafe*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}boanoite*\n\n`
 
         texto += `🔮 RELACIONAMENTOS\n`
     texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🔮❈┉━━━━─\n`
@@ -106,7 +116,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
 
 handler.help = ['menubrincadeiras'];
 handler.tags = ['main'];
-handler.command = ['menubrincadeiras', 'brincadeiras', 'brincadeira', 'diversao'];
+handler.command = ['menubrincadeiras', 'brincadeiras', 'brincadeira', 'menub'];
 
 export default handler;
 

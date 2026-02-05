@@ -14,7 +14,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     let mime = (q.msg || q).mimetype || q.mediaType || ''
     
     let packname = 'Gótica Bot 🦇'
-    let author = 'Dev: Leandro Rocha'
+    let author = 'Dev: Leandro'
 
     if (/webp|image|video/g.test(mime)) {
       // Verificação de vídeo (máximo 11 seg)

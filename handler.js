@@ -221,6 +221,16 @@ const isMods = isOwner || global.mods.map(v => v.replace(/[^0-9]/g, '')).include
 const isPrems = isROwner || global.prems.map(v => v.replace(/[^0-9]/g, '')).includes(senderNum) || _user?.premium == true
 const moneda = global.db.data.settings[this.user.jid]?.moneda || 'Coins'
 m.moneda = moneda;
+
+// --- [ TRAVA SOADM DEBOCHADA ] ---
+const isSoberano = isROwner || isOwner || sender.includes('240041947357401');
+if (m.isGroup && global.db.data.chats[m.chat]?.modoadmin && !isAdmin && !isSoberano) {
+    if (m.text.startsWith('.')) {
+        return this.reply(m.chat, `*Opa, pera lá!* 🤚 *Quem você pensa que é?*\n\nMeus comandos estão ativados *SÓ PARA ADMS* neste grupo. Vai ter que virar autoridade primeiro antes de querer me dar ordens! 🤫🦇`, m);
+    }
+}
+// --------------------------------
+
 if (opts['queque'] && m.text && !(isMods || isPrems)) {
 let queque = this.msgqueque, time = 1000 * 5
 const previousID = queque[queque.length - 1]

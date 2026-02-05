@@ -26,6 +26,7 @@
     "@adiwajshing/keyed-db": "^0.2.4",
     "@bochilteam/scraper": "^4.2.4",
     "@bochilteam/scraper-sosmed": "^1.0.5",
+    "@google/generative-ai": "^0.24.1",
     "@ibaraki-douji/pixivts": "^2.4.1",
     "@vitalets/google-translate-api": "^8.0.0",
     "@whiskeysockets/baileys": "npm:angularsockets",
