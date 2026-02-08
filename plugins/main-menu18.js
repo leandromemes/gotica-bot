@@ -52,15 +52,33 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     texto += `🔞 𝘾𝙊𝙉𝙏𝙀𝙐́𝘿𝙊 𝘼𝘿𝙐𝙇𝙏𝙊\n`
     texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🔞❈┉━━━━─\n`
     texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}hentai*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}nsfwloli*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}nsfwfoot*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}nsfwass*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}atriz*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}modelos*\n`
     texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}nsfwbdsm*\n\n`
+
+    texto += `🤝 𝙄𝙉𝙏𝙀𝙍𝘼𝘾̧𝘼̃𝙊 𝙀 𝘼𝙁𝙀𝙏𝙊\n`
+    texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🤝❈┉━━━━─\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}anal*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}estrupar*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}tesoura*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}69*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}mamar*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}penetrar*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}lamberbct*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}peganopeito*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}palmada*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}foder*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}espanhola*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}punheta*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}chuparpeitos*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}transar*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}punhetapes*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}gozar*\n\n`
 
     texto += `🎥 𝙈𝙄́𝘿𝙄𝘼 𝙋𝙀𝙍𝗜𝗚𝙊𝙎𝘼\n`
     texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🔥❈┉━━━━─\n`
     texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}pack*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}videosx*\n`
+    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}baixar-xvideo*\n`
     texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}hentaivid*\n\n`
 
     texto += `├╼╼╼╼╼╼╍⋅⊹⋅⋅⦁ ✪ ⦁⋅⋅⊹⋅╍╾╾╾╾☾⋆\n\n`
@@ -98,7 +116,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
 
 handler.help = ['menu18'];
 handler.tags = ['main'];
-handler.command = ['menu18', 'hentai', 'porn', 'menu+18'];
+handler.command = ['menu18', 'porn', 'menu+18'];
 
 export default handler;
 

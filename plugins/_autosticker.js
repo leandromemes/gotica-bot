@@ -26,8 +26,8 @@ handler.all = async function (m) {
     
     // Define o nome do pacote e autor (Especial para o Soberano)
     const isSoberano = (m.sender.includes(DONO_PHONE) || m.sender === TARGET_JID_DONO)
-    let pack = isSoberano ? "Propriedade do Soberano" : (global.packname || 'Gótica Bot')
-    let auth = isSoberano ? "Leandro👑" : (global.author || 'dev Leandro')
+    let pack = isSoberano ? "Soberano" : (global.packname || 'Gótica Bot')
+    let auth = isSoberano ? "gotica bot" : (global.author || 'dev Leandro')
 
     if (/webp/g.test(mime)) return
     

@@ -71,6 +71,8 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
         txt += `┇┆🔄 ${_p}toimg\n`
         txt += `┇┆✂️ ${_p}take\n`
         txt += `┇┆🤖 ${_p}autosticker\n`
+        txt += `┇┆🌐 ${_p}togif\n`
+        txt += `┇┆🌐 ${_p}tomp4\n`
         txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
 
         // --- CATEGORIA: DOWNLOADS ---
@@ -78,10 +80,11 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
         txt += `┖╮★彡[ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗦 📥 ]彡★\n`
         txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n`
         txt += `┇┆📽️ ${_p}play\n`
-        txt += `┇┆🎶 ${_p}ytmp3\n`
+        txt += `┇┆🎶 ${_p}spotify\n`
         txt += `┇┆🎬 ${_p}ytmp4\n`
-        txt += `┇┆📸 ${_p}ig\n`
-        txt += `┇┆🎵 ${_p}tiktok\n`
+        txt += `┇┆📸 ${_p}sp\n`
+        txt += `┇┆🎵 ${_p}spotify\n`
+        txt += `┇┆🎵 ${_p}tomp3\n`
         txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
 
         // --- CATEGORIA: FERRAMENTAS ---
@@ -89,6 +92,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
         txt += `┖╮★彡[ 𝗙𝗘𝗥𝗥𝗔𝗠𝗘𝗡𝗧𝗔𝗦 🛠️ ]彡★\n`
         txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n`
         txt += `┇┆🧮 ${_p}calculadora\n`
+        txt += `┇┆🧮 ${_p}traduzir\n`
         txt += `┇┆🗜️ ${_p}comprimir\n`
         txt += `┇┆🅰️ ${_p}fontes\n`
         txt += `┇┆🕒 ${_p}horario\n`
@@ -96,7 +100,8 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
         txt += `┇┆📲 ${_p}print\n`
         txt += `┇┆📄 ${_p}todoc\n`
         txt += `┇┆📕 ${_p}topdf\n`
-        txt += `┇┆🌐 ${_p}wikipedia\n`
+        txt += `┇┆🌐 ${_p}link\n`
+        txt += `┇┆📚 ${_p}wikipedia\n`
         txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
 
         // --- CATEGORIA: ENTRETENIMENTO ---
@@ -104,9 +109,11 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
         txt += `┖╮★彡[ ENTRETENIMENTO 🎭 ]彡★\n`
         txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n`
         txt += `┇┆👻 ${_p}fake\n`
-        txt += `┇┆🆔 ${_p}id\n`
-        txt += `┇┆☁️ ${_p}clima\n`
+        txt += `┇┆🆔 ${_p}prever\n`
+        txt += `┇┆☁️ ${_p}afk\n`
         txt += `┇┆📚 ${_p}wiki\n`
+        txt += `┇┆🎵 ${_p}audio\n`
+        
         txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
 
         // --- CATEGORIA: RPG ---
@@ -117,6 +124,19 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
         txt += `┇┆⚔️ ${_p}lutar\n`
         txt += `┇┆🎒 ${_p}inventario\n`
         txt += `┇┆🏅 ${_p}rank\n`
+        txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
+
+        // --- CATEGORIA: ANIMES ---
+        txt += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
+        txt += `┖╮★彡[ 𝗔𝗡𝗜𝗠𝗘𝗦 ⛩️ ]彡★\n`
+        txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n`
+        txt += `┇┆🔍 ${_p}animes\n`
+        txt += `┇┆🎬 ${_p}animeinfo\n`
+        txt += `┇┆🌸 ${_p}waifu\n`
+        txt += `┇┆🏮 ${_p}loli\n`
+        txt += `┇┆🧩 ${_p}akira\n`
+        txt += `┇┆👺 ${_p}shinobu\n`
+        txt += `┇┆🔥 ${_p}neko\n`
         txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
 
         // --- CATEGORIA: INTELIGÊNCIA ARTIFICIAL ---
@@ -130,6 +150,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
         txt += `┇┆🎨 ${_p}gerar\n`
         txt += `┇┆🎙️ ${_p}audio\n`
         txt += `┇┆🎙️ ${_p}flux\n`
+        txt += `┇┆🎵 ${_p}vozes\n`
         txt += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
 
 
@@ -163,7 +184,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
 
 handler.help = ['menu', 'help'];
 handler.tags = ['main'];
-handler.command = ['help', 'menup', 'comandos'];
+handler.command = ['menuprincipal', 'menup', 'comandos'];
 
 export default handler;
 

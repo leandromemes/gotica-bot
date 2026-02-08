@@ -7,49 +7,72 @@
  * @project Gotica Bot
  */
 
-import gtts from 'node-gtts'
-import { readFileSync, unlinkSync } from 'fs'
-import { join } from 'path'
+import gtts from 'node-gtts';
+import { readFileSync, unlinkSync, existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
 
-let cooldowns = {}
-const TARGET_JID_DONO = '240041947357401@lid'
-const DONO_PHONE = '556391330669'
+const defaultLang = 'pt'; // Idioma padrão: Português
 
-let handler = async (m, { conn, args, usedPrefix, command }) => {
-    const eDono = (m.sender.includes(DONO_PHONE) || m.sender === TARGET_JID_DONO)
+const handler = async (m, { conn, args, usedPrefix, command }) => {
+    let lang = args[0];
+    let text = args.slice(1).join(' ');
 
-    // REGRA SOBERANA: Leandro sem cooldown
-    if (!eDono) {
-        const tempoEspera = 15 * 1000 
-        if (cooldowns[m.sender] && Date.now() - cooldowns[m.sender] < tempoEspera) return
-        cooldowns[m.sender] = Date.now()
+    // Se o primeiro argumento não for um código de idioma (2 letras), assume português
+    if ((args[0] || '').length !== 2) {
+        lang = defaultLang;
+        text = args.join(' ');
     }
 
-    let text = args.join(' ')
-    if (!text && m.quoted && m.quoted.text) text = m.quoted.text
-    if (!text) return m.reply(`*🎙️ Por favor, escreva o texto que deseja transformar em áudio.*\n\n*Exemplo:* ${usedPrefix + command} Olá Soberano Leandro!`)
+    // Se não houver texto, mas houver uma mensagem respondida, usa o texto da mensagem
+    if (!text && m.quoted?.text) text = m.quoted.text;
+    
+    if (!text) return m.reply(`*✨ Por favor, digite o texto que deseja converter em voz.*\nExemplo: *${usedPrefix + command} Olá, eu sou a Gótica Bot*`);
 
-    await m.react('🗣️')
+    await m.react('🗣️');
 
     try {
-        const res = gtts('pt') // Define o idioma para Português
-        const filePath = join(process.cwd(), 'tmp', `${Date.now()}.wav`)
-        
-        res.save(filePath, text, async () => {
-            await conn.sendFile(m.chat, filePath, 'tts.opus', null, m, true)
-            unlinkSync(filePath) // Deleta o arquivo temporário
-        })
-        
-        await m.react('✅')
+        let res = await tts(text, lang);
+        if (res) {
+            await conn.sendFile(m.chat, res, 'tts.opus', null, m, true);
+            await m.react('✅');
+        }
     } catch (e) {
-        console.error(e)
-        m.reply('*❌ Erro ao converter texto em áudio.*')
+        console.error(e);
+        try {
+            // Tenta novamente com o idioma padrão em caso de erro no código de idioma
+            let res = await tts(text, defaultLang);
+            await conn.sendFile(m.chat, res, 'tts.opus', null, m, true);
+        } catch (err) {
+            await m.react('❌');
+            m.reply(`*❌ Ocorreu um erro ao converter o texto em voz.*`);
+        }
     }
+};
+
+handler.help = ['tts <lang> <texto>'];
+handler.tags = ['transformador'];
+handler.group = true;
+handler.register = false; // Removida a trava de registro
+handler.command = ['audio', 'falar', 'voz','áudio'];
+
+export default handler;
+
+function tts(text, lang = 'pt') {
+    return new Promise((resolve, reject) => {
+        try {
+            const tts = gtts(lang);
+            const tmpDir = join(process.cwd(), 'tmp');
+            if (!existsSync(tmpDir)) mkdirSync(tmpDir); // Garante que a pasta tmp existe
+            
+            const filePath = join(tmpDir, (1 * new Date()) + '.wav');
+            
+            tts.save(filePath, text, () => {
+                const buffer = readFileSync(filePath);
+                unlinkSync(filePath);
+                resolve(buffer);
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
 }
-
-handler.help = ['audio <texto>']
-handler.tags = ['tools']
-handler.command = ['audio', 'tts', 'dizer']
-handler.register = false 
-
-export default handler

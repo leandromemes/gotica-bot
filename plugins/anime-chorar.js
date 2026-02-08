@@ -36,14 +36,9 @@ let handler = async (m, { conn, usedPrefix }) => {
     
     // Links de vídeos
     const videos = [
-        'https://qu.ax/gRjHK.mp4', 
-        'https://qu.ax/VjjCJ.mp4', 
-        'https://qu.ax/ltieQ.mp4',
-        'https://qu.ax/oryVi.mp4',
-        'https://qu.ax/YprzU.mp4',
-        'https://qu.ax/nxaUW.mp4',
-        'https://qu.ax/woSGV.mp4',
-        'https://qu.ax/WkmA.mp4'
+        'https://files.catbox.moe/as38q9.mp4', 
+        'https://files.catbox.moe/comq6e.mp4', 
+        'https://files.catbox.moe/tlsasl.mp4'
     ];
     
     const video = videos[Math.floor(Math.random() * videos.length)];

@@ -7,14 +7,9 @@
  * @project Gotica Bot
  */
 
-import fs from 'fs';
-
 let handler = async (m, { conn, usedPrefix }) => {
-    // Para que serve: Envia um GIF de anime chorando, sozinho ou por alguém.
-    // Como usar: .chorar @tag ou apenas .chorar
-    // Público: Todos. Sem travas de registro.
-
     let who;
+
     if (m.mentionedJid.length > 0) {
         who = m.mentionedJid[0];
     } else if (m.quoted) {
@@ -25,43 +20,45 @@ let handler = async (m, { conn, usedPrefix }) => {
 
     let name = conn.getName(who);
     let name2 = conn.getName(m.sender);
-    await m.react('😭');
+    await m.react('🗡️');
 
     let str;
     if (m.mentionedJid.length > 0 || m.quoted) {
-        str = `*${name2}* está chorando por culpa de *${name}*... 😭`;
+        str = `*${name2}* acaba de matar *${name}*! ( ⚆ _ ⚆ ) 💀`;
     } else {
-        str = `*${name2}* está chorando... 😭`.trim();
+        str = `*${name2}* cometeu suicídio... ( ⚆ _ ⚆ ) 😵‍💫`.trim();
     }
     
-    // Novos links enviados pelo Soberano
-    const videos = [
-        'https://files.catbox.moe/tlsasl.mp4',
-        'https://files.catbox.moe/as38q9.mp4',
-        'https://files.catbox.moe/mnzy9r.mp4'
-    ];
-    
-    const video = videos[Math.floor(Math.random() * videos.length)];
-    let mentions = [who];
+    if (m.isGroup) {
+        // Seus novos links do Litterbox para o comando de matar
+        const videos = [
+            'https://files.catbox.moe/4fk4q2.mp4',
+            'https://files.catbox.moe/pypp8u.mp4',
+            'https://files.catbox.moe/o0obly.mp4'
+        ];
+        
+        const video = videos[Math.floor(Math.random() * videos.length)];
+        let mentions = [who];
 
-    try {
         await conn.sendMessage(m.chat, { 
             video: { url: video }, 
             gifPlayback: true, 
             caption: str, 
             mentions 
         }, { quoted: m });
-    } catch (e) {
-        console.error('Erro no comando chorar:', e);
-        await conn.reply(m.chat, str, m);
     }
 }
 
-handler.help = ['chorar'];
+handler.help = ['kill', 'matar'];
 handler.tags = ['anime'];
-handler.command = ['chorar', 'chora'];
+handler.command = ['kill', 'matar'];
+handler.group = true;
 
-handler.group = false;
-handler.register = false;
+// Sem cooldown para o Leandro, 5s para os outros
+handler.cooldown = m => (m.sender.split`@`[0] === '556391330669' ? 0 : 5000);
+
+// Para que serve: Envia um vídeo de anime "matando" ou "assassinando" alguém.
+// Benefícios: Diversão e interação dinâmica no chat.
+// Acesso: Todos os membros do grupo.
 
 export default handler;

@@ -22,6 +22,7 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
 clearTimeout(this)
 resolve()
 }, ms))
+
 export async function handler(chatUpdate) {
 this.msgqueque = this.msgqueque || []
 this.uptime = this.uptime || Date.now()
@@ -171,7 +172,7 @@ if (!('audios' in chat)) chat.audios = false
 if (!('antiBot' in chat)) chat.antiBot = false
 if (!('antiBot2' in chat)) chat.antiBot2 = false
 if (!('modoadmin' in chat)) chat.modoadmin = false
-if (!('modoreal' in chat)) chat.modoreal = false // PERSISTÊNCIA MODO REAL
+if (!('modoreal' in chat)) chat.modoreal = false 
 if (!('antiLink' in chat)) chat.antiLink = true
 if (!('antiImg' in chat)) chat.antiImg = false
 if (!('reaction' in chat)) chat.reaction = false
@@ -208,6 +209,11 @@ if (!m.fromMe && opts['self']) return
 if (opts['swonly' && m.chat !== 'status@broadcast']) return
 if (typeof m.text !== 'string')
 m.text = ''
+
+// --- [ VERIFICAÇÃO DE BANIMENTO PARA IGNORAR ] ---
+if (global.db.data.users[sender]?.banned && !m.fromMe) return
+// ------------------------------------------------
+
 const _user = global.db.data.users[sender]
 const userGroup = (m.isGroup ? participants.find((u) => this.decodeJid(u.jid) === sender) : {}) || {}
 const botGroup = (m.isGroup ? participants.find((u) => this.decodeJid(u.jid) == this.user.jid) : {}) || {}
@@ -215,21 +221,25 @@ const isRAdmin = userGroup?.admin == "superadmin" || false
 const isAdmin = isRAdmin || userGroup?.admin == "admin" || false
 const isBotAdmin = botGroup?.admin || false
 const senderNum = sender.split('@')[0];
-const isROwner = [...global.owner.map(([number]) => number), this.user.jid.split('@')[0]].includes(senderNum);
+
+const ownerList = Array.isArray(global.owner) ? global.owner : [];
+const modList = Array.isArray(global.mods) ? global.mods : [];
+const premList = Array.isArray(global.prems) ? global.prems : [];
+
+const isROwner = [...ownerList.map(([number]) => number), this.user.jid.split('@')[0]].includes(senderNum);
 const isOwner = isROwner || m.fromMe
-const isMods = isOwner || global.mods.map(v => v.replace(/[^0-9]/g, '')).includes(senderNum)
-const isPrems = isROwner || global.prems.map(v => v.replace(/[^0-9]/g, '')).includes(senderNum) || _user?.premium == true
+const isMods = isOwner || modList.map(v => typeof v === 'string' ? v.replace(/[^0-9]/g, '') : '').includes(senderNum)
+const isPrems = isROwner || premList.map(v => typeof v === 'string' ? v.replace(/[^0-9]/g, '') : '').includes(senderNum) || _user?.premium == true
+
 const moneda = global.db.data.settings[this.user.jid]?.moneda || 'Coins'
 m.moneda = moneda;
 
-// --- [ TRAVA SOADM DEBOCHADA ] ---
 const isSoberano = isROwner || isOwner || sender.includes('240041947357401');
 if (m.isGroup && global.db.data.chats[m.chat]?.modoadmin && !isAdmin && !isSoberano) {
     if (m.text.startsWith('.')) {
         return this.reply(m.chat, `*Opa, pera lá!* 🤚 *Quem você pensa que é?*\n\nMeus comandos estão ativados *SÓ PARA ADMS* neste grupo. Vai ter que virar autoridade primeiro antes de querer me dar ordens! 🤫🦇`, m);
     }
 }
-// --------------------------------
 
 if (opts['queque'] && m.text && !(isMods || isPrems)) {
 let queque = this.msgqueque, time = 1000 * 5
@@ -241,11 +251,11 @@ await delay(time)
 }, time)
 }
 m.exp += Math.ceil(Math.random() * 10)
-let usedPrefix
 
-// --- TRAVA DE PREFIXO NO PONTO ---
-let _prefix = /[.]/
-// --------------------------------
+// --- [ LÓGICA DE PREFIXO POR GRUPO ] ---
+let usedPrefix
+let _prefix = global.db.data.chats[m.chat]?.prefix || global.prefix 
+// ----------------------------------------
 
 const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins')
 for (let name in global.plugins) {
@@ -296,19 +306,18 @@ if ((m.id.startsWith('NJX-') || (m.id.startsWith('BAE5') && m.id.length === 16) 
 if (!isAccept) { continue }
 m.plugin = name
 
-// LOG DE COMANDO LIMPO PARA TERMUX
 console.log(chalk.black(chalk.bgCyan(` ⚡ COMANDO `)), chalk.black(chalk.bgWhite(` ${command} `)), `de ${chalk.green(m.pushName || senderNum)}`)
+
+// REAÇÃO AUTOMÁTICA EM COMANDOS
+if (m.text.startsWith(usedPrefix)) {
+    this.sendMessage(m.chat, { react: { text: '⚡', key: m.key } })
+}
 
 if (m.chat in global.db.data.chats || sender in global.db.data.users) {
 let chat = global.db.data.chats[m.chat]
 let user = global.db.data.users[sender]
 if (!['grupo-unbanchat.js'].includes(name) && chat && chat.isBanned && !isROwner) return
 if (user.antispam > 2) return
-if (m.text && user.banned && !isROwner) {
-m.reply(`《✦》Você está banido/a!\n\n${user.bannedReason ? `✰ *Motivo:* ${user.bannedReason}` : '✰ *Motivo:* Não Especificado'}`)
-user.antispam++
-return
-}
 }
 if (plugin.rowner && plugin.owner && !(isROwner || isOwner)) {
 fail('owner', m, this)
@@ -387,9 +396,9 @@ break
 } catch (e) {
 console.error(e)
 } finally {
-if (opts['queque'] && m.text) {
-const quequeIndex = this.msgqueque.indexOf(m.id || m.key.id)
-if (quequeIndex !== -1) this.msgqueque.splice(quequeIndex, 1)
+if (m && m.id) {
+    const quequeIndex = this.msgqueque.indexOf(m.id || m.key.id)
+    if (quequeIndex !== -1) this.msgqueque.splice(quequeIndex, 1)
 }
 let user, stats = global.db.data.stats
 if (m) {
@@ -399,12 +408,12 @@ let bang = m.key.id
 let cancellazzione = m.key.participant
 await this.sendMessage(m.chat, { delete: { remoteJid: m.chat, fromMe: false, id: bang, participant: cancellazzione } })
 }
-if (sender && (user = global.db.data.users[sender])) {
-user.exp += m.exp
-user.coin -= m.coin * 1
+if (sender && global.db.data.users && (user = global.db.data.users[sender])) {
+user.exp += m.exp || 0
+user.coin -= (m.coin || 0) * 1
 }
 let stat
-if (m.plugin) {
+if (m.plugin && stats) {
 let now = +new Date
 if (m.plugin in stats) {
 stat = stats[m.plugin]
