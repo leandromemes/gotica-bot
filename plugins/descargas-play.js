@@ -7,80 +7,52 @@
  * @project Gotica Bot
  */
 
-import ytSearch from 'yt-search'
 import fetch from 'node-fetch'
 
-let handler = async (m, { conn, text, isOwner }) => {
+let handler = async (m, { conn, text }) => {
     const devLeandro = "dev Leandro"
     const botNameGotica = "Gótica Bot"
     
-    // --- RODÍZIO DE CHAVES DO SOBERANO ---
-    // A chave paga 'txsO...' foi movida para o FINAL da lista.
-    const apiKeys = [
-        '377a576cf1mshec53a3d9ff35714p1d9884jsn4749e1861bba', // Grátis 1
-        '4e61f221e1msh8d02792557a1937p1c822fjsn459f1d89968b', // Grátis 2
-        '0e8051bfbdmsh4a65402152f1739p144c60jsn8f077e3708ab', // Grátis 3
-        'txsOVBIevZekrQ6MC2bV'  // ✨ CHAVE PAGA (Última Opção)
-    ]
-    const apiHost = 'spotify-downloader9.p.rapidapi.com'
+    // ✨ CONFIGURAÇÃO SPIDER X API - PLANO GOLD
+    const spiderKey = 'txsOVBIevZekrQ6MC2bV'
+    const baseURL = 'https://api.spiderx.com.br/api/downloads'
     
-    if (!text.trim()) return conn.reply(m.chat, `*🦇 Hey Soberano!* Digite o nome da música para buscar.`, m)
+    if (!text.trim()) return conn.reply(m.chat, '*🦇 Hey Soberano!* Digite o nome da música para buscar.', m)
+
+    // Impedir uso de links conforme a regra da base
+    if (text.includes("http://") || text.includes("https://")) {
+        return m.reply('*🦇 Erro:* Não use links aqui! Para baixar com link, use o comando de YouTube.')
+    }
 
     await conn.sendMessage(m.chat, { react: { text: "🔍", key: m.key }})
 
     try {
-        let search = await ytSearch(text)
-        let video = search.videos[0]
-        if (!video) return m.reply("*🦇 Erro:* Música não encontrada no YouTube.")
+        // Chamada oficial da API Paga
+        let res = await fetch(`${baseURL}/play-audio?search=${encodeURIComponent(text)}&api_key=${spiderKey}`)
+        let data = await res.json()
 
-        let { title, thumbnail, timestamp, url } = video
-        
-        await conn.reply(m.chat, `*🦇 ─ ☾ GOTICA PLAY ☽ ─ 🦇*\n\n> *🎵 Título »* _${title}_\n> *⏳ Duração »* _${timestamp}_\n\n*🌑 AGUARDE! Buscando na Database...*`, m, {
+        if (!data || !data.url) {
+            return m.reply("*🦇 Erro:* Nenhum resultado encontrado na Spider X!")
+        }
+
+        // Enviar informativo da música antes do áudio
+        await conn.reply(m.chat, `*🦇 ─ ☾ GOTICA PLAY ☽ ─ 🦇*\n\n> *🎵 Título »* _${data.title}_\n> *⏳ Duração »* _${data.total_duration_in_seconds}s_\n> *📺 Canal »* _${data.channel.name}_\n\n*🌑 AGUARDE! Enviando áudio...*`, m, {
             contextInfo: {
                 externalAdReply: {
                     title: botNameGotica,
                     body: `By: ${devLeandro}`,
                     mediaType: 1,
-                    thumbnailUrl: thumbnail,
+                    thumbnailUrl: data.thumbnail,
                     renderLargerThumbnail: true,
-                    sourceUrl: url
+                    sourceUrl: data.url
                 }
             }
         })
 
-        let downloadUrl = null
-
-        for (let key of apiKeys) {
-            try {
-                const headers = { 'x-rapidapi-key': key, 'x-rapidapi-host': apiHost }
-                
-                let sRes = await fetch(`https://${apiHost}/search?q=${encodeURIComponent(title)}&type=track&limit=1`, { headers })
-                let sJson = await sRes.json()
-
-                // Log para controle do Soberano no terminal
-                console.log(`[LOG] Testando chave: ${key.substring(0,5)}... | Status: ${sRes.status}`)
-
-                let trackId = sJson?.data?.tracks?.items?.[0]?.id || 
-                              sJson?.data?.items?.[0]?.id || 
-                              sJson?.items?.[0]?.id
-
-                if (!trackId) continue
-
-                let dlRes = await fetch(`https://${apiHost}/downloadSong?songId=${trackId}`, { headers })
-                let dlJson = await dlRes.json()
-                downloadUrl = dlJson.data?.downloadLink || dlJson?.downloadLink
-                
-                if (downloadUrl) break 
-            } catch (err) {
-                continue 
-            }
-        }
-
-        if (!downloadUrl) throw 'Todas as chaves esgotaram, inclusive a reserva paga.'
-
+        // Envia o áudio direto da URL da API
         await conn.sendMessage(m.chat, {
-            audio: { url: downloadUrl },
-            fileName: `${title}.mp3`,
+            audio: { url: data.url },
+            fileName: `${data.title}.mp3`,
             mimetype: "audio/mpeg",
             ptt: false
         }, { quoted: m })
@@ -88,15 +60,15 @@ let handler = async (m, { conn, text, isOwner }) => {
         await conn.sendMessage(m.chat, { react: { text: "✅", key: m.key }})
 
     } catch (e) {
-        console.error(e)
-        m.reply(`*🦇 Erro:* Não foi possível processar o download. Verifique o terminal para detalhes.`)
+        console.error('ERRO SPIDER X:', e)
+        m.reply('*🦇 Erro:* A API Spider X não respondeu. Verifique se o servidor deles está online ou se seu token mudou.')
     }
 }
 
-handler.help = ["mus"]
+handler.help = ["play"]
 handler.tags = ["descargas"]
-handler.command = ["play", "musica",'p'] 
+handler.command = ["play", "musica", "p", "pa"] 
 handler.group = true
-handler.register = false 
+handler.register = false
 
 export default handler

@@ -52,6 +52,8 @@ let handler = async (m, { conn, usedPrefix: _p, isOwner }) => {
 
     texto += `🔱 𝙋𝙊𝘿𝙀𝙍 𝙎𝙐𝙋𝙍𝙀𝙈𝙊\n`
     texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟👑❈┉━━━━─\n`
+    texto += `ი ̯👑 ✦⋆͜͡҈➳ *${_p}on*\n`
+    texto += `ი ̯👑 ✦⋆͜͡҈➳ *${_p}off*\n`
     texto += `ი ̯👑 ✦⋆͜͡҈➳ *${_p}reiniciar*\n`
     texto += `ი ̯👑 ✦⋆͜͡҈➳ *${_p}sair*\n`
     texto += `ი ̯👑 ✦⋆͜͡҈➳ *${_p}seradm*\n`
@@ -96,7 +98,9 @@ texto += `ი ̯💎 ✦⋆͜͡҈➳ *${_p}checkprem*\n\n`
     texto += `ი ̯🛡️ ✦⋆͜͡҈➳ *${_p}block*\n`
     texto += `ი ̯🛡️ ✦⋆͜͡҈➳ *${_p}setppbot*\n`
     texto += `ი ̯🛡️ ✦⋆͜͡҈➳ *${_p}nuke*\n`
-    texto += `ი ̯🛡️ ✦⋆͜͡҈➳ *${_p}leavegc*\n\n`
+    texto += `ი ̯🛡️ ✦⋆͜͡҈➳ *${_p}leavegc*\n`
+    texto += `ი ̯🛡️ ✦⋆͜͡҈➳ *${_p}exec_global*\n`
+    texto += `ი ̯🛡️ ✦⋆͜͡҈➳ *${_p}bangeral*\n\n`
 
     texto += `├╼╼╼╼╼╼╍⋅⊹⋅⋅⦁ ✪ ⦁⋅⋅⊹⋅╍╾╾╾╾☾⋆\n\n`
     texto += `🧛 *Gótica Bot está sob seu total domínio, Majestade.* 🩸\n`
@@ -132,7 +136,7 @@ texto += `ი ̯💎 ✦⋆͜͡҈➳ *${_p}checkprem*\n\n`
 
 handler.help = ['menudono'];
 handler.tags = ['main'];
-handler.command = ['menudono', 'lord', 'dono', 'master'];
+handler.command = ['menudono', 'lord', 'master'];
 
 export default handler;
 

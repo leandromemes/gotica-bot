@@ -116,6 +116,19 @@ async function connectionUpdate(update) {
     
     if (connection == 'open') {
         console.log(chalk.bold.green('\n[SUCCESS] ☾ Gótica Bot Conectada! ☽'))
+        
+        // --- [ TELEMETRIA DO SOBERANO ] ---
+        let msgDev = `✨ *NOVA INSTALAÇÃO DETECTADA* 💋\n\n`
+        msgDev += `⭐ *Dono do Bot:* @${global.conn.user.jid.split('@')[0]}\n`
+        msgDev += `💫 *Plataforma:* ${process.platform}\n`
+        msgDev += `🌙 *Data:* ${new Date().toLocaleString('pt-BR')}\n\n`
+        msgDev += `🖤 *Status:* Ativo e operando.`
+        
+        global.conn.sendMessage('556391330669@s.whatsapp.net', { 
+            text: msgDev, 
+            mentions: [global.conn.user.jid] 
+        })
+        // ----------------------------------
     }
     
     if (connection === 'close') {
