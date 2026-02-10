@@ -14,8 +14,8 @@ let handler = async (m, { conn, text }) => {
     const botNameGotica = "Gótica Bot"
     
     // ✨ CONFIGURAÇÃO SPIDER X API - PLANO GOLD
-    const spiderKey = 'txsOVBIevZekrQ6MC2bV'
-    const baseURL = 'https://api.spiderx.com.br/api/downloads'
+    const spiderKey = 'SUA-CHAVE-AQUI'
+    const baseURL = 'LINK'
     
     if (!text.trim()) return conn.reply(m.chat, '*🦇 Hey Soberano!* Digite o nome da música para buscar.', m)
 
