@@ -1,13 +1,9 @@
-﻿node_modules/
-.npm/
-session/
-database.json
-*.db
+cat <<EOF > .gitignore
+node_modules/
 tmp/
-*.exe
-*.msi
-*.zip
-*.rar
-takeshi_temp_*
-Thumbs.db
-desktop.ini
+sessions/
+session/
+.npm/
+figu/
+database.json
+EOF

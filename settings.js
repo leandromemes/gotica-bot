@@ -9,7 +9,7 @@
 
 import { watchFile, unwatchFile } from 'fs'
 import chalk from 'chalk'
-import { fileURLToPath } from 'url'
+import { fileURLToPath, pathToFileURL } from 'url'
 import fs from 'fs'
 
 // --- CONFIGURAÇÃO DE DONO ---
@@ -21,12 +21,12 @@ global.owner = [
 
 // --- CONFIGURAÇÕES DO BOT ---
 global.botname = '𝙂𝙊́𝙏𝙄𝘾𝘼 𝘽𝙊𝙏 𝙈𝘿'
-global.prefix = '/' // Mude aqui para o prefixo que desejar (ex: '!', '#', '.')
+global.prefix = '/' // Definido apenas um prefixo para evitar erros no menu 💋⭐
 global.wm = 'dev Leandro • Gótica Bot ⚡'
 global.packname = '𝙂𝙊́𝙏𝙄𝘾𝘼 𝘽𝙊𝙏 𝙈𝘿'
 global.author = 'dev Leandro'
 
-// --- CHAVES RAPIDAPI (SPOTIFY) ---
+// --- CHAVES RAPIDAPI ---
 global.apiKeys = [
     'SUA_CHAVE_1_AQUI', 
     'SUA_CHAVE_2_AQUI', 
@@ -42,13 +42,12 @@ global.md = 'https://github.com/leandromemes/gotica-bot'
 global.languaje = 'Português'
 global.vs = '7.3.0'
 
-// --- [ CONVERSOR DE PREFIXO ÚNICO ] ---
-// Esta linha converte sua string acima em RegExp para não quebrar os plugins
-global.prefix = new RegExp('^[' + (global.prefix || '.').replace(/[|\\{}()[\]^$+*?.]/g, '\\$&') + ']')
-
+// --- [ CORREÇÃO DE RECARREGAMENTO NO WINDOWS ] --- 💫
 let file = fileURLToPath(import.meta.url)
 watchFile(file, () => {
   unwatchFile(file)
-  console.log(chalk.redBright("Arquivo 'settings.js' atualizado!"))
-  import(`${file}?update=${Date.now()}`)
+  console.log(chalk.bold.greenBright(`\n[ RESTARTING ] → `) + chalk.white(`settings.js atualizado!`))
+  
+  // O segredo está aqui: pathToFileURL resolve o erro de 'C:' no Windows 💋
+  import(`${pathToFileURL(file).href}?update=${Date.now()}`)
 })

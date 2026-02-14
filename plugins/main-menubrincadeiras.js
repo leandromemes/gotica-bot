@@ -37,68 +37,90 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
 
     let texto = `┏━ 🧩 𝗠𝗘𝗡𝗨 𝗗𝗜𝗩𝗘𝗥𝗦𝗔̃𝗢 🧩 ━┓\n\n`
     
-    texto += `*Olá! Pronto para um pouco de entretenimento?* 🎭\n`
-    texto += `Aqui estão os comandos para você interagir e se divertir com seus amigos no grupo. 🦇✨\n\n`
+    texto += `*Pronto para o entretenimento?* 🎭\n\n`
 
-    texto += `┏━━━━⏤͟͟͞͞★꙲⃝͟🌙❈┉━━━┓
-┃   *𝖨𝖭𝖥𝖮 𝖣𝖠 𝖡𝖮𝖳*
-┃ 🤴 *Criador:* Dev Leandro
-┃ ⏱️ *Ativa:* ${uptime}
-┃ 📅 *Data:* ${date}
-┃ 📍 *Prefixo:* [ ${_p} ]
-┃ 💿 *Versão:* ${version}
-┗━━━━⏤͟͟͞͞★꙲⃝͟🌙❈┉━━━━┛\n\n`
+    texto += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
+    texto += `🌙 𝙄𝙉𝙁𝙊 𝘿𝘼 𝘽𝙊𝙏\n`
+    texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🌙❈┉━━━━─\n`
+    texto += `┇┆🤴 *Criador:* Leandro\n`
+    texto += `┇┆⏱️ *Ativa:* ${uptime}\n`
+    texto += `┇┆📅 *Data:* ${date}\n`
+    texto += `┇┆📍 *Prefixo:* [ ${_p} ]\n`
+    texto += `┇┆💿 *Versão:* ${version}\n`
+    texto += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
 
-    texto += `🎭 𝙄𝙉𝙏𝙀𝙍𝘼𝘾̧𝘼̃𝙊 𝙀 𝙕𝙊𝙀𝙄𝙍𝘼\n`
+    // --- CATEGORIA: JOGOS ---
+    texto += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
+    texto += `🎮 𝙅𝙊𝙂𝙊𝙎 𝙀 𝘿𝙀𝙎𝘼𝙐𝙄𝙊𝙎\n`
+    texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🎮❈┉━━━━─\n`
+    texto += `┇┆🎲 ✦⋆͜͡҈➳ *${_p}roleta*\n`
+    texto += `┇┆🎰 ✦⋆͜͡҈➳ *${_p}cassino*\n`
+    texto += `┇┆🧩 ✦⋆͜͡҈➳ *${_p}advinhacao*\n`
+    texto += `┇┆🔠 ✦⋆͜͡҈➳ *${_p}anagrama*\n`
+    texto += `┇┆💀 ✦⋆͜͡҈➳ *${_p}forca*\n`
+    texto += `┇┆✂️ ✦⋆͜͡҈➳ *${_p}ppt*\n`
+    texto += `┇┆🪙 ✦⋆͜͡҈➳ *${_p}caraoucoroa*\n`
+    texto += `┇┆❌ ✦⋆͜͡҈➳ *${_p}velha*\n`
+    texto += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
+
+    // --- CATEGORIA: INTERAÇÃO ---
+    texto += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
+    texto += `🎭 𝙄𝙉𝙏𝙀𝙍𝘼𝘾̧𝘼̃𝙊 𝙀 𝘼𝘾̧𝙊̃𝙀𝙎\n`
     texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🎭❈┉━━━━─\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}bravo*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}engravidar*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}nu*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}dormir*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}decepção*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}ola*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}feliz*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}bebado*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}chorar*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}comer*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}tedio*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}morder*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}lingua*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}banho*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}vergonha*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}dançar*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}corno*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}gado*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}cafe*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}boanoite*\n\n`
+    texto += `┇┆👋 ✦⋆͜͡҈➳ *${_p}ola*\n`
+    texto += `┇┆😡 ✦⋆͜͡҈➳ *${_p}bravo*\n`
+    texto += `┇┆😴 ✦⋆͜͡҈➳ *${_p}dormir*\n`
+    texto += `┇┆😊 ✦⋆͜͡҈➳ *${_p}feliz*\n`
+    texto += `┇┆😭 ✦⋆͜͡҈➳ *${_p}chorar*\n`
+    texto += `┇┆🤤 ✦⋆͜͡҈➳ *${_p}comer*\n`
+    texto += `┇┆😑 ✦⋆͜͡҈➳ *${_p}tedio*\n`
+    texto += `┇┆🦷 ✦⋆͜͡҈➳ *${_p}morder*\n`
+    texto += `┇┆😛 ✦⋆͜͡҈➳ *${_p}lingua*\n`
+    texto += `┇┆🛁 ✦⋆͜͡҈➳ *${_p}banho*\n`
+    texto += `┇┆😳 ✦⋆͜͡҈➳ *${_p}vergonha*\n`
+    texto += `┇┆💃 ✦⋆͜͡҈➳ *${_p}dançar*\n`
+    texto += `┇┆☕ ✦⋆͜͡҈➳ *${_p}cafe*\n`
+    texto += `┇┆💤 ✦⋆͜͡҈➳ *${_p}boanoite*\n`
+    texto += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
 
-        texto += `🔮 RELACIONAMENTOS\n`
+    // --- CATEGORIA: RELACIONAMENTOS ---
+    texto += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
+    texto += `🔮 𝙍𝙀𝙇𝘼𝘾𝙄𝙊𝙉𝘼𝙈𝙀𝙉𝙏𝙊𝙎\n`
     texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🔮❈┉━━━━─\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}beijar*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}abraçar*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}casar*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}metadinha*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}namorar*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}topcasados*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}casados*\n\n`
+    texto += `┇┆💋 ✦⋆͜͡҈➳ *${_p}beijar*\n`
+    texto += `┇┆🫂 ✦⋆͜͡҈➳ *${_p}abraçar*\n`
+    texto += `┇┆💍 ✦⋆͜͡҈➳ *${_p}casar*\n`
+    texto += `┇┆💞 ✦⋆͜͡҈➳ *${_p}metadinha*\n`
+    texto += `┇┆👩‍❤️‍👨 ✦⋆͜͡҈➳ *${_p}namorar*\n`
+    texto += `┇┆🏆 ✦⋆͜͡҈➳ *${_p}topcasados*\n`
+    texto += `┇┆💒 ✦⋆͜͡҈➳ *${_p}casados*\n`
+    texto += `┇┆🤰 ✦⋆͜͡҈➳ *${_p}engravidar*\n`
+    texto += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
 
-    texto += `🔮 𝘿𝙀𝙎𝙏𝙄𝙉𝙊 𝙀 𝙎𝙊𝙍𝙏𝙀\n`
-    texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🔮❈┉━━━━─\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}shipo*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}chance*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}pergunta*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}waifu*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}prever*\n`
-    texto += `ი ̯ ✦⋆͜͡҈➳ *${_p}vadiar*\n`
+    // --- CATEGORIA: ZOERIA E SORTE ---
+    texto += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
+    texto += `🎲 𝙕𝙊𝙀𝙄𝙍𝘼 𝙀 𝘿𝙀𝙎𝙏𝙄𝙉𝙊\n`
+    texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🎲❈┉━━━━─\n`
+    texto += `┇┆🚢 ✦⋆͜͡҈➳ *${_p}shipo*\n`
+    texto += `┇┆📊 ✦⋆͜͡҈➳ *${_p}enquete*\n`
+    texto += `┇┆📈 ✦⋆͜͡҈➳ *${_p}chance*\n`
+    texto += `┇┆❓ ✦⋆͜͡҈➳ *${_p}pergunta*\n`
+    texto += `┇┆✨ ✦⋆͜͡҈➳ *${_p}prever*\n`
+    texto += `┇┆🔥 ✦⋆͜͡҈➳ *${_p}vadiar*\n`
+    texto += `┇┆🍻 ✦⋆͜͡҈➳ *${_p}bebado*\n`
+    texto += `┇┆🤘 ✦⋆͜͡҈➳ *${_p}corno*\n`
+    texto += `┇┆🐂 ✦⋆͜͡҈➳ *${_p}gado*\n`
+    texto += `┇┆😏 ✦⋆͜͡҈➳ *${_p}nu*\n`
+    texto += `┇┆🌸 ✦⋆͜͡҈➳ *${_p}waifu*\n`
+    texto += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
 
-    texto += `├╼╼╼╼╼╼╍⋅⊹⋅⋅⦁ ✪ ⦁⋅⋅⊹⋅╍╾╾╾╾☾⋆\n\n`
-    texto += `😌 *Faça parte da nossa elite! Receba novidades exclusivas em nosso canal oficial.*📢\n`
+    texto += `😌 *Faça parte da nossa elite!*\n`
     texto += `👇 *CLIQUE NO BOTÃO* 👇`.trim();
 
     const interactiveMessage = {
       header: { hasMediaAttachment: true, videoMessage: media.videoMessage },
       body: { text: texto },
-      footer: { text: "" },
+      footer: { text: "dev Leandro • Gótica Bot ⚡" },
       nativeFlowMessage: {
         buttons: [
           {
@@ -120,13 +142,13 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
 
   } catch (e) {
     console.error(e);
-    m.reply('❌ Erro ao abrir o menu de diversão.');
+    m.reply('❌ Erro ao abrir o menu unificado.');
   }
 };
 
 handler.help = ['menubrincadeiras'];
 handler.tags = ['main'];
-handler.command = ['menubrincadeiras', 'brincadeiras', 'brincadeira', 'menub'];
+handler.command = ['menubrincadeiras', 'brincadeiras', 'brincadeira', 'menub', 'jogos', 'jogar'];
 
 export default handler;
 

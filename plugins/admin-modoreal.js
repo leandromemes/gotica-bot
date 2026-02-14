@@ -16,7 +16,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isAdmin, isOwner }) =
 
     if (state === 'on' || state === '1') {
         chat.modoreal = true
-        m.reply(`✅ *MODO REAL ATIVADO!*\n*A economia está liberada neste grupo, dev Leandro.* 🍷`)
+        m.reply(`✅ *MODO REAL ATIVADO!*\n*A economia está liberada neste grupo.* 🍷`)
     } else if (state === 'off' || state === '0') {
         chat.modoreal = false
         m.reply(`⚠️ *MODO REAL DESATIVADO!*\n*A farra do dinheiro acabou.* 🍷`)

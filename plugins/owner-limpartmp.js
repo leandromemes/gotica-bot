@@ -49,7 +49,7 @@ let handler = async (m, { conn, __dirname }) => {
 
 handler.help = ['cleartmp']
 handler.tags = ['owner']
-handler.command = ['cleartmp', 'limpartmp', 'limparlixo']
+handler.command = ['deltmp', 'limpartmp', 'limparlixo']
 handler.rowner = true 
 
 export default handler

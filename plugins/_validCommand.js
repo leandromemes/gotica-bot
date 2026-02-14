@@ -10,9 +10,26 @@
 import fetch from 'node-fetch';
 
 export async function before(m, { conn }) {
-    if (!m.text || !global.prefix.test(m.text)) return;
+    // --- [ AJUSTE DE PREFIXO PARA TEXTO FIXO ] --- 💋
+    let pref = global.prefix || '/'
+    let isCommand = false
+    let usedPrefix = ''
 
-    const usedPrefix = global.prefix.exec(m.text)[0];
+    if (typeof pref === 'string') {
+        if (m.text && m.text.startsWith(pref)) {
+            isCommand = true
+            usedPrefix = pref
+        }
+    } else if (pref instanceof RegExp) {
+        if (m.text && pref.test(m.text)) {
+            isCommand = true
+            usedPrefix = pref.exec(m.text)[0]
+        }
+    }
+
+    if (!m.text || !isCommand) return;
+    // ----------------------------------------------
+
     const command = m.text.slice(usedPrefix.length).trim().split(' ')[0].toLowerCase();
 
     // Função de validação protegida contra valores nulos
@@ -20,7 +37,9 @@ export async function before(m, { conn }) {
         for (let plugin of Object.values(plugins || {})) {
             if (plugin && plugin.command) {
                 const commandList = Array.isArray(plugin.command) ? plugin.command : [plugin.command];
-                if (commandList.includes(command)) {
+                if (commandList.some(cmd => 
+                    cmd instanceof RegExp ? cmd.test(command) : cmd === command
+                )) {
                     return true;
                 }
             }
@@ -50,7 +69,7 @@ export async function before(m, { conn }) {
         // Bloco para comandos não encontrados
         let fkontak = null;
         try {
-            const res = await fetch('https://i.postimg.cc/d0DPFp3R/5a8d323a071395fcdab8465e510c749c-2025-11-17T213332-475.jpg');
+            const res = await fetch('https://files.catbox.moe/agyn6l.jpeg');
             if (res.ok) {
                 const thumb2 = Buffer.from(await res.arrayBuffer());
                 fkontak = {
@@ -70,7 +89,7 @@ export async function before(m, { conn }) {
 
         const msjDecorado = `(,,•᷄‎ࡇ•᷅ ,,)? O comando *${comandoErrado}* não está registrado ou foi escrito incorretamente.\n\nPara ver a lista de funções, use:\n» *${usedPrefix}menu*`;
 
-        // Se for você ou ADM, ele avisa. Se for apenas texto comum com ponto, ele ignora para não floodar.
+        // Se for você ou ADM, ele avisa.
         if (fkontak) {
             await conn.sendMessage(m.chat, { text: msjDecorado }, { quoted: fkontak });
         } else {

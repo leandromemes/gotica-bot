@@ -13,7 +13,7 @@ import moment from 'moment-timezone';
 import { prepareWAMessageMedia, generateWAMessageFromContent } from '@whiskeysockets/baileys';
 
 let handler = async (m, { conn, usedPrefix: _p }) => {
-  await m.react('⏳');
+  await m.react('🛡️');
 
   try {
     let _uptime = process.uptime() * 1000;
@@ -35,79 +35,82 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
         { upload: conn.waUploadToServer }
     );
 
-    // Título Grande e Destacado para evitar quebra de linha
     let texto = `┏━ 🛡️ 𝗠𝗘𝗡𝗨 𝗔𝗗𝗠𝗜𝗡 🛡️ ━┓\n\n`
-    texto += `┏━━━━⏤͟͟͞͞★꙲⃝͟🌙❈┉━━━┓
-┃   *𝖨𝖭𝖥𝖮 𝖣𝖠 𝖡𝖮𝖳*
-┃ 🤴 *Criador:* Dev Leandro
-┃ ⏱️ *Ativa:* ${uptime}
-┃ 📅 *Data:* ${date}
-┃ 📍 *Prefixo:* [ ${_p} ]
-┃ 💿 *Versão:* ${version}
-┗━━━━⏤͟͟͞͞★꙲⃝͟🌙❈┉━━━━┛
+    
+    texto += `*Controle total do grupo em suas mãos.* 🔒\n\n`
 
-🛡️ 𝙎𝙀𝙂𝙐𝙍𝘼𝙉𝘾̧𝘼 𝙀 𝙋𝙍𝙊𝙏𝙀𝘾̧𝘼̃𝙊
-─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🛡️❈┉━━━━─
-ი ̯ ✦⋆͜͡҈➳ *${_p}antibot* [on/off]
-ი ̯ ✦⋆͜͡҈➳ *${_p}limparvirus* [on/off]
-ი ̯ ✦⋆͜͡҈➳ *${_p}antibot* [on/off]
-ი ̯ ✦⋆͜͡҈➳ *${_p}antibot* [on/off]
-ი ̯ ✦⋆͜͡҈➳ *${_p}apagarmsg* 
-
-🚫 𝙂𝙀𝙍𝙀𝙉𝘾𝙄𝘼𝙈𝙀𝙉𝙏𝙊
-─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🚫❈┉━━━━─
-ი ̯ ✦⋆͜͡҈➳ *${_p}ban*
-ი ̯ ✦⋆͜͡҈➳ *${_p}banddd*
-ი ̯ ✦⋆͜͡҈➳ *${_p}listaddd*
-ი ̯ ✦⋆͜͡҈➳ *${_p}linkgp*
-ი ̯ ✦⋆͜͡҈➳ *${_p}infogrupo*
-ი ̯ ✦⋆͜͡҈➳ *${_p}fotogp*
-ი ̯ ✦⋆͜͡҈➳ *${_p}promover*
-ი ̯ ✦⋆͜͡҈➳ *${_p}rebaixar*
-ი ̯ ✦⋆͜͡҈➳ *${_p}advertidos*
-ი ̯ ✦⋆͜͡҈➳ *${_p}mutar*
-ი ̯ ✦⋆͜͡҈➳ *${_p}desmutar*
-ი ̯ ✦⋆͜͡҈➳ *${_p}setmsg*
-ი ̯ ✦⋆͜͡҈➳ *${_p}delmsg*
-ი ̯ ✦⋆͜͡҈➳ *${_p}listmsg*
-ი ̯ ✦⋆͜͡҈➳ *${_p}dashboard*
-
-⚙️ 𝘾𝙊𝙉𝙁𝙄𝙂𝙐𝙍𝘼𝘾̧𝙊̃𝙀𝙎
-─━━━━┉❈⏤͟͟͞͞★꙲⃝͟⚙️❈┉━━━━─
-             
-ი ̯ ✦⋆͜͡҈➳ *${_p}chegada*
-ი ̯ ✦⋆͜͡҈➳ *${_p}saida*
-ი ̯ ✦⋆͜͡҈➳ *${_p}x9* [on/off]
-ი ̯ ✦⋆͜͡҈➳ *${_p}antibot* (on/off)
-ი ̯ ✦⋆͜͡҈➳ *${_p}antilink* (on/off)
-ი ̯ ✦⋆͜͡҈➳ *${_p}autosticker* (on/off)
-ი ̯ ✦⋆͜͡҈➳ *${_p}welcome* (on/off)
-ი ̯ ✦⋆͜͡҈➳ *${_p}antispam* (on/off)
-ი ̯ ✦⋆͜͡҈➳ *${_p}antifake* (on/off)
-ი ̯ ✦⋆͜͡҈➳ *${_p}antitrava* (on/off)
-ი ̯ ✦⋆͜͡҈➳ *${_p}antivisu* [on/off]
-ი ̯ ✦⋆͜͡҈➳ *${_p}autolevelup* [on/off]
-
-📢 𝙁𝙀𝙍𝙍𝘼𝙈𝙀𝙉𝙏𝘼𝙎 𝙀 𝘼𝙑𝙄𝙎𝙊𝙎
-─━━━━┉❈⏤͟͟͞͞★꙲⃝͟📢❈┉━━━━─
-ი ̯ ✦⋆͜͡҈➳ *${_p}marcar*
-ი ̯ ✦⋆͜͡҈➳ *${_p}hidetag*
-ი ̯ ✦⋆͜͡҈➳ *${_p}citar*
-ი ̯ ✦⋆͜͡҈➳ *${_p}agendar*
-ი ̯ ✦⋆͜͡҈➳ *${_p}link*
-ი ̯ ✦⋆͜͡҈➳ *${_p}qrcode*
+    texto += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
+    texto += `🌙 𝙄𝙉𝙁𝙊 𝘿𝘼 𝘽𝙊𝙏\n`
+    texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🌙❈┉━━━━─\n`
+    texto += `┇┆🤴 *Criador:* Leandro\n`
+    texto += `┇┆⏱️ *Ativa:* ${uptime}\n`
+    texto += `┇┆📅 *Data:* ${date}\n`
+    texto += `┇┆📍 *Prefixo:* [ ${_p} ]\n`
+    texto += `┇┆💿 *Versão:* ${version}\n`
+    texto += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
 
 
+    // --- CATEGORIA: GERENCIAMENTO ---
+    texto += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
+    texto += `🚫 𝙂𝙀𝙍𝙀𝙉𝘾𝙄𝘼𝙈𝙀𝙉𝙏𝙊\n`
+    texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🚫❈┉━━━━─\n`
+    texto += `┇┆🚪 ✦⋆͜͡҈➳ *${_p}ban* @user\n`
+    texto += `┇┆🌍 ✦⋆͜͡҈➳ *${_p}banddd* [prefixo]\n`
+    texto += `┇┆📋 ✦⋆͜͡҈➳ *${_p}listaddd*\n`
+    texto += `┇┆⬆️ ✦⋆͜͡҈➳ *${_p}promover* @user\n`
+    texto += `┇┆⬇️ ✦⋆͜͡҈➳ *${_p}rebaixar* @user\n`
+    texto += `┇┆🔇 ✦⋆͜͡҈➳ *${_p}mutar* / *desmutar*\n`
+    texto += `┇┆⚠️ ✦⋆͜͡҈➳ *${_p}advertidos*\n`
+    texto += `┇┆📊 ✦⋆͜͡҈➳ *${_p}dashboard*\n`
+    texto += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
 
-├╼╼╼╼╼╼╍⋅⊹⋅⋅⦁ ✪ ⦁⋅⋅⊹⋅╍╾╾╾╾☾⋆
+    // --- CATEGORIA: CONFIGURAÇÕES ---
+    texto += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
+    texto += `⚙️ 𝘾𝙊𝙉𝙁𝙄𝙂𝙐𝙍𝘼𝘾̧𝙊̃𝙀𝙎\n`
+    texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟⚙️❈┉━━━━─\n`
+    texto += `┇┆👋 ✦⋆͜͡҈➳ *${_p}welcome* [on/off]\n`
+    texto += `┇┆📥 ✦⋆͜͡҈➳ *${_p}chegada* [texto]\n`
+    texto += `┇┆📤 ✦⋆͜͡҈➳ *${_p}saida* [texto]\n`
+    texto += `┇┆👁️ ✦⋆͜͡҈➳ *${_p}antivisu* [on/off]\n`
+    texto += `┇┆🎭 ✦⋆͜͡҈➳ *${_p}autosticker* [on/off]\n`
+    texto += `┇┆🆙 ✦⋆͜͡҈➳ *${_p}autolevelup* [on/off]\n`
+    texto += `┇┆🕵️ ✦⋆͜͡҈➳ *${_p}x9* [on/off]\n`
+    texto += `┇┆🖼️ ✦⋆͜͡҈➳ *${_p}fotogp*\n`
+    texto += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
 
-😌 *Faça parte da nossa elite! Receba novidades exclusivas em nosso canal oficial.*📢 
-👇 *CLIQUE NO BOTÃO* 👇`.trim();
+        // --- CATEGORIA: SEGURANÇA ---
+    texto += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
+    texto += `🛡️ 𝙎𝙀𝙂𝙐𝙍𝘼𝙉𝘾̧𝘼 𝙀 𝙋𝙍𝙊𝙏𝙀𝘾̧𝘼̃𝙊\n`
+    texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🛡️❈┉━━━━─\n`
+    texto += `┇┆🚫 ✦⋆͜͡҈➳ *${_p}antibot* [on/off]\n`
+    texto += `┇┆🔗 ✦⋆͜͡҈➳ *${_p}antilink* [on/off]\n`
+    texto += `┇┆🕸️ ✦⋆͜͡҈➳ *${_p}antispam* [on/off]\n`
+    texto += `┇┆👺 ✦⋆͜͡҈➳ *${_p}antifake* [on/off]\n`
+    texto += `┇┆🚧 ✦⋆͜͡҈➳ *${_p}antitrava* [on/off]\n`
+    texto += `┇┆🧼 ✦⋆͜͡҈➳ *${_p}limparvirus*\n`
+    texto += `┇┆🗑️ ✦⋆͜͡҈➳ *${_p}apagarmsg*\n`
+    texto += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
+
+    // --- CATEGORIA: FERRAMENTAS ---
+    texto += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
+    texto += `📢 𝙁𝙀𝙍𝙍𝘼𝙈𝙀𝙉𝙏𝘼𝙎 𝙀 𝘼𝙑𝙄𝙎𝙊𝙎\n`
+    texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟📢❈┉━━━━─\n`
+    texto += `┇┆📣 ✦⋆͜͡҈➳ *${_p}marcar*\n`
+    texto += `┇┆🎐 ✦⋆͜͡҈➳ *${_p}hidetag*\n`
+    texto += `┇┆💬 ✦⋆͜͡҈➳ *${_p}citar*\n`
+    texto += `┇┆⏰ ✦⋆͜͡҈➳ *${_p}agendar*\n`
+    texto += `┇┆🔗 ✦⋆͜͡҈➳ *${_p}linkgp*\n`
+    texto += `┇┆ℹ️ ✦⋆͜͡҈➳ *${_p}infogrupo*\n`
+    texto += `┇┆🖼️ ✦⋆͜͡҈➳ *${_p}qrcode*\n`
+    texto += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
+
+    texto += `😌 *A ordem é mantida por você!*\n`
+    texto += `👇 *CLIQUE NO BOTÃO* 👇`.trim();
 
     const interactiveMessage = {
       header: { hasMediaAttachment: true, videoMessage: media.videoMessage },
       body: { text: texto },
-      footer: { text: "" },
+      footer: { text: "dev Leandro • Gótica Bot ⚡" },
       nativeFlowMessage: {
         buttons: [
           {
@@ -126,12 +129,10 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     }, { userJid: conn.user.id, quoted: m });
 
     await conn.relayMessage(m.chat, msgi.message, { messageId: msgi.key.id });
-    await m.react('🛡️');
 
   } catch (e) {
     console.error(e);
-    await m.react('❌');
-    m.reply('❌ Erro ao abrir menu administrativo.');
+    m.reply('❌ Erro ao abrir o menu administrativo.');
   }
 };
 

@@ -36,7 +36,7 @@ let handler = async (m, { conn }) => {
   let mensaje = `
 ╭━━〔 🎁 *BÔNUS MENSAL* 〕━━╮
 ┃
-┃ ✿ *Seu salário chegou, Soberano!*
+┃ ✿ *Seu salário chegou!*
 ┃ _Parabéns por ser um membro ativo._
 ┃
 ┃ 💸 *Dinheiro:* + ${coinReward.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })}
