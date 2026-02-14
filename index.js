@@ -1,6 +1,6 @@
 /**
  * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
- * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
+ * ║ ╦ ║ ║  ║  ║ ║  ╠═╣      ╠╩╗ ║ ║  ║ 
  * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
  * @author Leandro Rocha
  * @link https://github.com/leandromemes
@@ -141,16 +141,32 @@ global.reloadHandler = async function (restatConn) {
     
     if (!isInit) {
         global.conn.ev.off('messages.upsert', global.conn.handler)
+        global.conn.ev.off('group-participants.update', global.conn.onParticipantsUpdate) // Remove ouvinte antigo
         global.conn.ev.off('connection.update', global.conn.connectionUpdate)
         global.conn.ev.off('creds.update', global.conn.credsUpdate)
     }
 
+    // --- [ HANDLER DE MENSAGENS AJUSTADO ] --- 💋⭐
     global.conn.handler = async (chatUpdate) => {
         try {
             let m = chatUpdate.messages[chatUpdate.messages.length - 1]
-            if (!m || !m.message) return
-            // TRAVA DE TEMPO REMOVIDA PARA ZERO VÁCUO 🖤✨
+            if (!m) return
+            // Se for StubType (evento de sistema), ele NÃO terá .message, mas precisamos processar! ✨
             await handler.handler.call(global.conn, chatUpdate)
+        } catch (e) { console.error(e) }
+    }
+
+    // --- [ NOVO: OUVER EVENTOS DE GRUPO ] --- 🖤💫
+    global.conn.onParticipantsUpdate = async (anu) => {
+        try {
+            // Converte o evento de participante em um formato que o handler entenda
+            const m = {
+                key: { remoteJid: anu.id },
+                messageStubType: anu.action === 'add' ? 27 : 32,
+                messageStubParameters: anu.participants,
+                isGroup: true
+            }
+            await handler.handler.call(global.conn, { messages: [m], type: 'append' })
         } catch (e) { console.error(e) }
     }
 
@@ -158,6 +174,7 @@ global.reloadHandler = async function (restatConn) {
     global.conn.credsUpdate = saveCreds.bind(global.conn)
 
     global.conn.ev.on('messages.upsert', global.conn.handler)
+    global.conn.ev.on('group-participants.update', global.conn.onParticipantsUpdate) // LIGA O WELCOME 💋
     global.conn.ev.on('connection.update', global.conn.connectionUpdate)
     global.conn.ev.on('creds.update', global.conn.credsUpdate)
     

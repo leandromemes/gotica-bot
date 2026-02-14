@@ -7,69 +7,57 @@
  * @project Gotica Bot
  */
 
+import fs from 'fs'
+
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) return conn.reply(m.chat, `*✨ Por favor, Soberano, faça uma pergunta ao Gênio.* 💋\n\n*Exemplo:* ${usedPrefix}${command} Eu serei rico?`, m)
 
   const respostas = [
-    'Sim.',
-    'É melhor eu não te dizer agora... 🌙',
-    'Sim, definitivamente.',
-    'Você deve confiar nisso.',
-    'Minhas fontes dizem que não. 🖤',
+    'Sim, com toda certeza! ✨',
+    'Claro que sim! 💋',
+    'Definitivamente sim. ⭐',
+    'Sim, os astros confirmam. 💫',
+    'Com certeza, Soberano. 🖤',
+    'Sim, acredite nisso.',
+    'Tudo indica que sim!',
+    'Sim, é a sua hora. ✨',
+    'Não, nem pense nisso. 🖤',
+    'Definitivamente não. 🍂',
+    'Minha resposta é um não absoluto.',
     'Não conte com isso.',
-    'Não posso prever agora.',
-    'Muito duvidoso.',
-    'As perspectivas não são boas.',
-    'Concentre-se e pergunte novamente.',
-    'Na minha opinião, sim.',
-    'É verdade.',
-    'Provavelmente.',
-    'Tudo indica que sim.',
-    'Minha resposta é não.',
-    'Definitivamente não.',
-    'Pergunte em outro momento.',
-    'Não tenho certeza, tente de novo.',
-    'Claro que sim! ✨',
-    'Os sinais apontam que sim.',
-    'Talvez.',
-    'Duvido muito.',
-    'Não vejo como possível.',
-    'Pode ser, mas não se confie.',
-    'Conte com isso.',
-    'Não saberia te dizer.',
-    'Confie na sua intuição. 💫',
-    'Parece que sim, mas com cautela.',
-    'Meus sensores dizem que sim.',
-    'Não posso responder a isso agora.',
-    'Com certeza.',
-    'Só o tempo dirá.',
-    'Não há dúvida alguma.',
-    'Não é o momento adequado para saber.',
-    'É altamente provável.',
-    'Não crie ilusões. 🖤',
-    'Definitivamente sim.',
-    'Não está claro neste momento.',
-    'Depende de como você vê.',
-    'Prefiro não responder. 💋'
+    'Infelizmente não. 🌙',
+    'Não, as chances são nulas.',
+    'Minhas fontes dizem que não.',
+    'Esqueça, a resposta é não. 💋'
   ]
 
-  // Link novo e estável (Imgur ou similar é melhor que Catbox)
-  const imagen = 'https://files.catbox.moe/0g7l2j.png' 
-
+  const pathImg = './media/genio.png'
   const resposta = respostas[Math.floor(Math.random() * respostas.length)]
+  
+  let messageOptions = {
+    caption: `---⭑꒷꒦꒷〘 PREVISÃO 〙꒷꒦꒷⭑---\n\n*💋 Pergunta:* ${text}\n\n*🔮 Resposta:* ${resposta}\n\n╰─⭑꒷꒦꒷〘 🌙🖤 〙꒷꒦꒷⭑---\n*dev: Leandro Rocha*`,
+    mentions: [m.sender]
+  }
 
-  await conn.sendMessage(m.chat, { 
-    image: { url: imagen }, 
-    caption: `---⭑꒷꒦꒷〘 PREVISÃO 〙꒷꒦꒷⭑---\n\n*💋 Pergunta:* ${text}\n\n*🔮 Resposta:* ${resposta}\n\n╰─⭑꒷꒦꒷〘 🌙🖤 〙꒷꒦꒷⭑─╯`,
-    mimetype: 'image/jpeg'
-  }, { quoted: m })
+  if (fs.existsSync(pathImg)) {
+    messageOptions.image = fs.readFileSync(pathImg)
+  }
+
+  // Bloco de segurança para evitar o erro 1006 💫
+  try {
+    if (conn.ws.isOpen || conn.ws.readyState === 1) {
+        await conn.sendMessage(m.chat, messageOptions, { quoted: m })
+    } else {
+        console.log('⚠️ Conexão instável, aguardando reconexão...')
+    }
+  } catch (e) {
+    console.log('❌ Erro de conexão ao enviar mensagem. O bot tentará reconectar.')
+  }
 }
 
 handler.help = ['genio <pergunta>']
 handler.tags = ['fun']
 handler.command = ['akinator', 'genio', 'gênio']
-
-// Regras do Soberano
 handler.register = false
 
 export default handler

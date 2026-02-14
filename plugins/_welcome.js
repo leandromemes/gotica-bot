@@ -9,19 +9,18 @@
 
 import { WAMessageStubType } from '@whiskeysockets/baileys'
 import { prepareWAMessageMedia, generateWAMessageFromContent } from '@whiskeysockets/baileys'
+import fs from 'fs'
 
-// Informações do seu Canal Oficial
 const canalOficial = 'https://whatsapp.com/channel/0029Vb7PsjVA89Md7LCwWN1u'
 
-// Suas imagens oficiais do Catbox
-const iconos = [
-    'https://files.catbox.moe/pbu54p.jpg',
-    'https://files.catbox.moe/q2loia.jpg',
-    'https://files.catbox.moe/bzzd78.jpg',
-    'https://files.catbox.moe/9jcnzq.jpg',
-    'https://files.catbox.moe/sypl75.jpg'
-]
-const getRandomIcono = () => iconos[Math.floor(Math.random() * iconos.length)]
+// Trava para evitar envio duplo 💋
+let welcomeCache = new Map()
+
+const getLocalIcon = () => {
+    const images = ['./media/menu1.jpg', './media/menu2.jpg', './media/menu3.jpg']
+    const path = images[Math.floor(Math.random() * images.length)]
+    return fs.existsSync(path) ? fs.readFileSync(path) : (fs.existsSync(images[0]) ? fs.readFileSync(images[0]) : null)
+}
 
 export async function before(m, { conn, participants, groupMetadata }) {
     if (!m.messageStubType || !m.isGroup) return true
@@ -30,30 +29,56 @@ export async function before(m, { conn, participants, groupMetadata }) {
     if (!chat || !chat.welcome) return true
 
     const userId = m.messageStubParameters[0]
-    const pp = await conn.profilePictureUrl(userId, 'image').catch(() => getRandomIcono())
+    if (!userId) return true
+    
+    const userJid = userId.includes('@') ? userId : userId + '@s.whatsapp.net'
+    
+    // Identificador único para a trava (Grupo + Usuário + Tipo de evento) ⭐
+    const cacheKey = `${m.chat}-${userJid}-${m.messageStubType}`
+    if (welcomeCache.has(cacheKey)) return true
+    
+    // Adiciona ao cache e remove após 5 segundos
+    welcomeCache.set(cacheKey, true)
+    setTimeout(() => welcomeCache.delete(cacheKey), 5000)
+
     const username = `@${userId.split('@')[0]}`
     const groupName = groupMetadata.subject
 
-    let isWelcome = m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD
-    let isBye = m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE || m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE
+    let isWelcome = [
+        WAMessageStubType.GROUP_PARTICIPANT_ADD,
+        WAMessageStubType.GROUP_PARTICIPANT_INVITE,
+        WAMessageStubType.GROUP_PARTICIPANT_ADD_REQUEST_JOIN
+    ].includes(m.messageStubType)
+
+    let isBye = [
+        WAMessageStubType.GROUP_PARTICIPANT_REMOVE,
+        WAMessageStubType.GROUP_PARTICIPANT_LEAVE
+    ].includes(m.messageStubType)
 
     if (isWelcome || isBye) {
         let text = ''
-        
         if (isWelcome) {
-            // Texto de Boas-vindas personalizado conforme o pedido do Soberano
             text = chat.welcomeText ? 
                 chat.welcomeText.replace(/@user/g, username).replace(/@subject/g, groupName) :
                 `✨ Seja bem-vindo(a), ${username}.\n\nApresente-se com:\n\n📝 *Nome:*\n📸 *Foto:*\n🎂 *Idade:*\n\nSiga as regras para não ser banido! 💋`
         } else {
-            // Texto de despedida (pode ser customizado também)
             text = chat.byeText ? 
                 chat.byeText.replace(/@user/g, username).replace(/@subject/g, groupName) :
                 `O usuário ${username} saiu do grupo. Até a próxima! 🍂`
         }
 
-        // Prepara a mídia (Imagem de perfil ou aleatória do Soberano)
-        let media = await prepareWAMessageMedia({ image: { url: pp } }, { upload: conn.waUploadToServer })
+        let mediaBuffer = getLocalIcon()
+        let media;
+        try {
+            const ppUrl = await conn.profilePictureUrl(userJid, 'image').catch(() => null)
+            if (ppUrl) {
+                media = await prepareWAMessageMedia({ image: { url: ppUrl } }, { upload: conn.waUploadToServer })
+            } else {
+                media = await prepareWAMessageMedia({ image: mediaBuffer }, { upload: conn.waUploadToServer })
+            }
+        } catch (e) {
+            media = await prepareWAMessageMedia({ image: mediaBuffer }, { upload: conn.waUploadToServer })
+        }
 
         const interactiveMessage = {
             header: {
@@ -74,10 +99,10 @@ export async function before(m, { conn, participants, groupMetadata }) {
                 ]
             },
             contextInfo: {
-                mentionedJid: [userId], 
+                mentionedJid: [userJid], 
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
-                    newsletterJid: '120363384351639893@newsletter',
+                    newsletterJid: '120363405588045392@newsletter',
                     newsletterName: '✦ Gótica Bot | Canal Oficial ✦',
                     serverMessageId: -1
                 }
@@ -90,6 +115,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
         await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
     }
+    return true
 }
 
 export default { before }
