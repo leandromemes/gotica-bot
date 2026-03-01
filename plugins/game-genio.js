@@ -10,7 +10,7 @@
 import fs from 'fs'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) return conn.reply(m.chat, `*✨ Por favor, Soberano, faça uma pergunta ao Gênio.* 💋\n\n*Exemplo:* ${usedPrefix}${command} Eu serei rico?`, m)
+  if (!text) return conn.reply(m.chat, `*✨ Por favor, faça uma pergunta ao Gênio.* 💋\n\n*Exemplo:* ${usedPrefix}${command} Eu serei rico?`, m)
 
   const respostas = [
     'Sim, com toda certeza! ✨',
@@ -35,7 +35,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   const resposta = respostas[Math.floor(Math.random() * respostas.length)]
   
   let messageOptions = {
-    caption: `---⭑꒷꒦꒷〘 PREVISÃO 〙꒷꒦꒷⭑---\n\n*💋 Pergunta:* ${text}\n\n*🔮 Resposta:* ${resposta}\n\n╰─⭑꒷꒦꒷〘 🌙🖤 〙꒷꒦꒷⭑---\n*dev: Leandro Rocha*`,
+    caption: `---⭑꒷꒦꒷〘 PREVISÃO 〙꒷꒦꒷⭑---\n\n*💋 Pergunta:* ${text}\n\n*🔮 Resposta:* ${resposta}\n\n╰─⭑꒷꒦꒷〘 🌙🖤 〙꒷꒦꒷⭑---\n`,
     mentions: [m.sender]
   }
 

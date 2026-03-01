@@ -15,39 +15,44 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     let q = m.quoted ? m.quoted : m
     let mime = (q.msg || q).mimetype || q.mediaType || ''
     
-    // Pega o nome do usuário ou o pushName do WhatsApp
-    let packname = m.pushName || 'Usuário'
+    // Pega o nome do usuário de forma segura ⭐
+    let packname = m.pushName || 'Soberano'
     let author = 'Gótica Bot 💋'
-
-    await m.react('⏳')
 
     if (/webp|image|video/g.test(mime)) {
       if (/video/g.test(mime)) {
-        if ((q.msg || q).seconds > 10) return m.reply('*⚠️ O vídeo deve ter no máximo 10 segundos!*')
+        if ((q.msg || q).seconds > 10) return m.reply('⭐ *Erro:* O vídeo deve ter no máximo 10 segundos! 💋')
       }
 
+      await m.react('⏳')
       let img = await q.download?.()
-      if (!img) return m.reply('*❌ Falha ao baixar a mídia!*')
+      if (!img) return m.reply('⭐ *Erro:* Não consegui baixar a mídia. 💋')
 
-      // Criando a figurinha com o nome de quem usou o comando
+      // Criando a figurinha ✨
       stiker = await sticker(img, false, packname, author)
       
     } else if (args[0] && /https?:\/\//.test(args[0])) {
+      await m.react('⏳')
       stiker = await sticker(false, args[0], packname, author)
       
     } else {
-      return m.reply(`*✨ Marque uma foto ou vídeo com ${usedPrefix + command}*`)
+      return m.reply(`⭐ *Hey!* Marque uma foto ou vídeo com *${usedPrefix + command}* para criar sua figurinha. 💋`)
     }
-  } catch (e) {
-    console.error(e)
-    stiker = false
-  } finally {
+
     if (stiker) {
+      // Tenta enviar, se a conexão cair, o catch abaixo segura e o bot NÃO desliga 🖤
       await conn.sendMessage(m.chat, { sticker: stiker }, { quoted: m })
       await m.react('✅')
     } else {
-      m.reply('*❌ Erro ao criar figurinha. Verifique se o vídeo não está corrompido!*')
+      throw new Error('Falha na conversão')
     }
+
+  } catch (e) {
+    console.log('--- ERRO NO STICKER (TRATADO) ---')
+    console.error(e)
+    await m.react('❌')
+    // Resposta amigável para não travar o processo 💫
+    if (m.chat) conn.reply(m.chat, '⭐ *Ops!* A conexão oscilou ou a mídia é muito pesada. Tente novamente! 💋', m)
   }
 }
 

@@ -1,6 +1,6 @@
 /**
  * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
- * ║ ╦ ║ ║  ║  ║ ║  ╠═╣      ╠╩╗ ║ ║  ║ 
+ * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
  * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
  * @author Leandro Rocha
  * @link https://github.com/leandromemes
@@ -211,6 +211,9 @@ export async function handler(chatUpdate) {
                     console.error(e)
                     m.reply(format(e))
                 } finally {
+                    // Limpa dados de sistema após execução para não vazar 💋
+                    m.messageStubType = null
+                    m.messageStubParameters = null
                     break
                 }
             }
