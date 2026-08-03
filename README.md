@@ -8,7 +8,7 @@
   <br><br>
   
 
-O ápice da automação para WhatsApp. Um sistema completo, totalmente desenvolvido por Leandro Rocha, projetado para oferecer a melhor experiência em entretenimento, economia e gestão avançada de grupos.
+O ápice da automação para WhatsApp. Um sistema completo, totalmente desenvolvido por Dev Soberano, projetado para oferecer a melhor experiência em entretenimento, economia e gestão avançada de grupos.
 
 [![Node.js](https://img.shields.io/badge/Node.js-22.19-green?logo=node.js)](https://nodejs.org/en)
 [![Axios](https://img.shields.io/badge/Axios-1.13-blue?logo=axios)](https://axios-http.com/ptbr/docs/intro)
