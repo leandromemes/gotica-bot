@@ -1,25 +1,23 @@
 /**
- * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
- * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
- * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
+ * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗     ╔╗  ╔═╗ ╔╦╗
+ * ║ ╦ ║ ║  ║  ║ ║   ╠═╣     ╠╩╗ ║ ║  ║ 
+ * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩     ╚═╝ ╚═╝  ╩ 
  * @author Leandro Rocha
  * @link https://github.com/leandromemes
  * @project Gotica Bot
  */
 
 import fetch from 'node-fetch'
+import fs from 'fs'
 
 let handler = async (m, { conn, text }) => {
-    const devLeandro = "dev Leandro"
-    const botNameGotica = "Gótica Bot"
-    
-    // ✨ CONFIGURAÇÃO SPIDER X API - ATUALIZADA 💋
-    const spiderKey = 'T8a5maZdw3RW6dvKNHfO'
-    const baseURL = 'https://api.spiderx.com.br/api/downloads'
-    
+    const devLeandro = "༄ Đev Šoberano ×͜×"
+
+    // API SOBERANA 
+    const minhaApiURL = 'http://localhost:3000'
+
     if (!text.trim()) return conn.reply(m.chat, '*✨ Hey!* Digite o nome da música para buscar.', m)
 
-    // Impedir uso de links conforme a regra da base
     if (text.includes("http://") || text.includes("https://")) {
         return m.reply('*💋 Erro:* Não use links aqui! Para baixar com link, use o comando de YouTube.')
     }
@@ -27,55 +25,62 @@ let handler = async (m, { conn, text }) => {
     await conn.sendMessage(m.chat, { react: { text: "🔍", key: m.key }})
 
     try {
-        // Chamada com a nova URL da documentação
-        let res = await fetch(`${baseURL}/play-audio?search=${encodeURIComponent(text)}&api_key=${spiderKey}`)
-        
-        // Verificação se a resposta é JSON
+        let res = await fetch(`${minhaApiURL}/play?search=${encodeURIComponent(text)}`)
+
         const contentType = res.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
-            return m.reply("*🌙 Erro:* A API Spider X mudou algo ou está em manutenção. Tente novamente mais tarde.")
+            return m.reply("*🌙 Erro:* Minha API não respondeu em JSON. Ela está rodando?")
         }
 
         let data = await res.json()
 
-        // Verificando se a URL do áudio existe na resposta
-        if (!data || !data.url) {
-            return m.reply("*💫 Erro:* Música não encontrada na Spider X!")
+        if (!data || (!data.url && !data.file)) {
+            return m.reply("*💫 Erro:* Música não encontrada!")
         }
 
-        // Enviar informativo da música
-        await conn.reply(m.chat, `*💋 ─ ☾ GOTICA PLAY ☽ ─ 💫*\n\n> *🎵 Título »* _${data.title}_\n> *⏳ Duração »* _${data.total_duration_in_seconds}s_\n> *📺 Canal »* _${data.channel.name}_\n\n*⭐ AGUARDE! Enviando áudio...*`, m, {
-            contextInfo: {
-                externalAdReply: {
-                    title: botNameGotica,
-                    body: `By: ${devLeandro}`,
-                    mediaType: 1,
-                    thumbnailUrl: data.thumbnail,
-                    renderLargerThumbnail: true,
-                    sourceUrl: data.youtube_video_url || data.url
-                }
-            }
-        })
+        const textoMensagem = `*💋 ─ ☾ GOTICA PLAY ☽ ─ 💫*\n\n` +
+            `> *🎵 Título »* _${data.title}_\n` +
+            `> *⏳ Duração »* _${data.total_duration_in_seconds}s_\n` +
+            `> *📺 Canal »* _${data.channel?.name || 'YouTube'}_\n` +
+            `> *👤 Dev »* _${devLeandro}_\n\n` +
+            `*⭐ AGUARDE! Enviando áudio...*`
 
-        // Envia o áudio
+        // 1. ENVIA A IMAGEM REAL COM A LEGENDA
+        if (data.thumbnail) {
+            await conn.sendMessage(m.chat, {
+                image: { url: data.thumbnail },
+                caption: textoMensagem
+            }, { quoted: m })
+        } else {
+            await conn.reply(m.chat, textoMensagem, m)
+        }
+
+        // 2. PREPARA E ENVIA O ÁUDIO
+        let audioContent
+        if (data.file && fs.existsSync(data.file)) {
+            audioContent = fs.readFileSync(data.file)
+        } else {
+            audioContent = { url: data.url }
+        }
+
         await conn.sendMessage(m.chat, {
-            audio: { url: data.url },
+            audio: audioContent,
             fileName: `${data.title}.mp3`,
-            mimetype: "audio/mpeg",
+            mimetype: "audio/mp4",
             ptt: false
         }, { quoted: m })
-        
+
         await conn.sendMessage(m.chat, { react: { text: "✅", key: m.key }})
 
     } catch (e) {
-        console.error('ERRO SPIDER X:', e)
-        m.reply('*🖤 Erro:* A API não respondeu corretamente. Verifique sua conexão ou a chave de API.')
+        console.error('ERRO API PRÓPRIA:', e)
+        m.reply('*🖤 Erro:* Minha API não respondeu. Ela está rodando (node index.js)?')
     }
 }
 
 handler.help = ["play"]
 handler.tags = ["descargas"]
-handler.command = ["play", "musica", "p", "pa"] 
+handler.command = ["play", "musica", "p"] 
 handler.group = true
 handler.register = false
 

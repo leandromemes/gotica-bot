@@ -1,12 +1,3 @@
-/**
- * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
- * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
- * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
- * @author Leandro Rocha
- * @link https://github.com/leandromemes
- * @project Gotica Bot
- */
-
 import { sticker } from '../lib/sticker.js'
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
@@ -15,8 +6,10 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     let q = m.quoted ? m.quoted : m
     let mime = (q.msg || q).mimetype || q.mediaType || ''
     
-    // Pega o nome do usuário de forma segura ⭐
-    let packname = m.pushName || 'Soberano'
+    // Configuração de nomes conforme seu pedido ⭐
+    // O Packname agora é o nome da pessoa que enviou a mensagem
+    let packname = m.pushName || 'Soberano' 
+    // O Author é fixo como Gótica Bot 💋
     let author = 'Gótica Bot 💋'
 
     if (/webp|image|video/g.test(mime)) {
@@ -28,7 +21,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
       let img = await q.download?.()
       if (!img) return m.reply('⭐ *Erro:* Não consegui baixar a mídia. 💋')
 
-      // Criando a figurinha ✨
+      // Criando a figurinha quadrada (sem bordas) com os nomes definidos ✨
       stiker = await sticker(img, false, packname, author)
       
     } else if (args[0] && /https?:\/\//.test(args[0])) {
@@ -40,7 +33,6 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     }
 
     if (stiker) {
-      // Tenta enviar, se a conexão cair, o catch abaixo segura e o bot NÃO desliga 🖤
       await conn.sendMessage(m.chat, { sticker: stiker }, { quoted: m })
       await m.react('✅')
     } else {
@@ -48,11 +40,9 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     }
 
   } catch (e) {
-    console.log('--- ERRO NO STICKER (TRATADO) ---')
     console.error(e)
     await m.react('❌')
-    // Resposta amigável para não travar o processo 💫
-    if (m.chat) conn.reply(m.chat, '⭐ *Ops!* A conexão oscilou ou a mídia é muito pesada. Tente novamente! 💋', m)
+    if (m.chat) conn.reply(m.chat, '⭐ *Ops!* Ocorreu um erro. Tente novamente! 💋', m)
   }
 }
 

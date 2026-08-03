@@ -39,7 +39,7 @@ _Ele é o único que manda em mim (e em você também se ele quiser). Não o irr
 handler.help = ['dono']
 handler.tags = ['info']
 // Forcei todos os nomes aqui para este arquivo ser o único
-handler.command = /^(dono|creator|creador|dueño|owner|dev|soberano)$/i
+handler.command = /^(dono|creator|creador|dueño|owner|dev)$/i
 handler.register = false 
 
 export default handler

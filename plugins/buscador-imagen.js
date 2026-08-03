@@ -9,28 +9,37 @@
 
 import axios from 'axios';
 
+const SPIDER_API_KEY = '3edfB5m8XuOFVPijpgGE';
+
 const handler = async (m, { conn, text, usedPrefix, command }) => {
     if (!text) return m.reply(`*✨ O que deseja buscar?*\n\n*Exemplo:*\n*${usedPrefix + command} Naruto*`);
 
     try {
         await m.react('🔍');
         
-        // Fazendo a busca via Pinterest da Lolhuman usando sua chave
-        const res = await axios.get(`https://api.lolhuman.xyz/api/pinterest?apikey=${global.lolkeysapi}&query=${encodeURIComponent(text)}`);
+        // Fazendo a busca via Spider X API
+        const { data } = await axios.get(`https://api.spiderx.com.br/api/downloads/pinterest?search=${encodeURIComponent(text)}&api_key=${SPIDER_API_KEY}`);
         
-        if (res.data.status !== 200) {
-            return m.reply(`*⚠️ Erro na API:* ${res.data.message}`);
+        // Valida se a resposta veio no formato array esperado e possui imagens
+        if (!Array.isArray(data) || data.length === 0) {
+            return m.reply('*⚠️ Nenhuma imagem encontrada para este termo.*');
         }
 
-        const image = res.data.result;
+        // Seleciona até 3 imagens da lista retornada
+        const imagesToSend = data.slice(0, 3);
 
-        // Envia a imagem real
-        await conn.sendFile(m.chat, image, 'imagem.jpg', `*📌 PINTEREST*\n\n*🔍 Termo:* ${text}\n*👤 por:* gotica bot 💋`, m);
+        for (let i = 0; i < imagesToSend.length; i++) {
+            const imgUrl = imagesToSend[i].url;
+            const caption = i === 0 ? `*📌 PINTEREST*\n\n*🔍 Termo:* ${text}\n*👤 por:* Gotica Bot 💋` : '';
+            
+            await conn.sendFile(m.chat, imgUrl, 'pinterest.jpg', caption, m);
+        }
+
         await m.react('✅');
 
     } catch (e) {
-        console.error(e);
-        m.reply('*❌ Erro ao buscar imagem. Verifique se sua API Key é válida ou se o termo é permitido.*');
+        console.error('[ERRO PINTEREST]:', e);
+        m.reply('*❌ Erro ao buscar imagem no Pinterest. Tente novamente mais tarde!*');
     }
 };
 

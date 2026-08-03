@@ -52,7 +52,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
 
 handler.help = ['take'];
 handler.tags = ['sticker'];
-handler.command = ['take', 'wm', 'roubar'];
+handler.command = ['take', 'wm'];
 handler.group = true;
 
 export default handler;

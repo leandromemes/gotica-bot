@@ -9,7 +9,7 @@
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
     // Apenas VOCÊ (Soberano) pode gerar códigos
-    if (m.sender !== '556391330669@s.whatsapp.net') return
+    if (m.sender !== '556392922319@s.whatsapp.net') return
 
     let [nome, valor] = text.split('|')
     if (!nome || !valor) return m.reply(`*Exemplo:* ${usedPrefix + command} PIX100 | 100`)

@@ -14,7 +14,7 @@ let handler = async (m, { conn, text }) => {
         '377a576cf1mshec53a3d9ff35714p1d9884jsn4749e1861bba', // CHAVE 1
         '4e61f221e1msh8d02792557a1937p1c822fjsn459f1d89968b', // CHAVE 2
         '0e8051bfbdmsh4a65402152f1739p144c60jsn8f077e3708ab', // CHAVE 3
-        'txsOVBIevZekrQ6MC2bV'  // ✨ CHAVE PAGA (Reserva)
+        '3edfB5m8XuOFVPijpgGE'  // ✨ CHAVE PAGA (Reserva)
     ]
     const apiHost = 'spotify-downloader9.p.rapidapi.com'
     

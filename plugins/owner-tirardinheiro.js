@@ -9,8 +9,8 @@
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
     // VERIFICAÇÃO DE DONO (Soberano)
-    const DONO_OFICIAL = '556391330669@s.whatsapp.net'
-    const TARGET_LID_DONO = '240041947357401@lid'
+    const DONO_OFICIAL = '556392922319@s.whatsapp.net'
+    const TARGET_LID_DONO = '30314567069795@lid'
     
     const isOwner = m.sender === DONO_OFICIAL || m.sender === TARGET_LID_DONO || m.isOwner
 

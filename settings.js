@@ -12,19 +12,21 @@ import chalk from 'chalk'
 import { fileURLToPath, pathToFileURL } from 'url'
 import fs from 'fs'
 
-// --- CONFIGURAÇÃO DE DONO ---
+// --- CONFIGURAÇÃO DE DONO (MODO SOBERANO) ---
+// Adicionado variações para garantir que o bot te reconheça em qualquer circunstância
 global.owner = [
-  ['556391330669', 'Soberano Leandro', true],
-  ['240041947357401@lid', 'Soberano Leandro (LID)', true],
-  ['556391176144', 'Gótica Bot - Leandro', true]
+  ['5574991940377', 'Soberano', true],
+  ['557491940377', 'Soberano (S/ 9)', true], // Variação sem o 9 (comum no sistema interno)
+  ['573504377435', 'Gótica Bot - soberano', true],
+  ['25886472585277@lid', 'Soberano Leandro (LID)', true]
 ]
 
 // --- CONFIGURAÇÕES DO BOT ---
 global.botname = '𝙂𝙊́𝙏𝙄𝘾𝘼 𝘽𝙊𝙏 𝙈𝘿'
-global.prefix = '/' // Definido apenas um prefixo para evitar erros no menu 💋⭐
-global.wm = 'dev Leandro • Gótica Bot ⚡'
+global.prefix = '!' // Prefixo padrão 💋⭐
+global.wm = 'dev soberano • Gótica Bot ⚡'
 global.packname = '𝙂𝙊́𝙏𝙄𝘾𝘼 𝘽𝙊𝙏 𝙈𝘿'
-global.author = 'dev Leandro'
+global.author = 'Dev Soberano'
 
 // --- CHAVES RAPIDAPI ---
 global.apiKeys = [

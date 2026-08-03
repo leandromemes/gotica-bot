@@ -1,0 +1,16 @@
+[
+  {
+    "antiflood": false,
+    "nsfw": false,
+    "autolevelup": true,
+    "modoreal": true,
+    "real": true,
+    "ausentes": [],
+    "bemvindo": true,
+    "exit": {
+      "enabled": false
+    },
+    "antilink": true,
+    "antispam": true
+  }
+]

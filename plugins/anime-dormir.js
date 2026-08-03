@@ -1,14 +1,11 @@
 /**
  * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
- * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
- * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
+ * ║ ╦ ║ ║  ║  ║ ║  ╠═╣      ╠╩╗ ║ ║  ║  
+ * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩  
  * @author Leandro Rocha
  * @link https://github.com/leandromemes
  * @project Gotica Bot
  */
-
-import fs from 'fs';
-import path from 'path';
 
 let handler = async (m, { conn, usedPrefix }) => {
     let who;
@@ -21,19 +18,18 @@ let handler = async (m, { conn, usedPrefix }) => {
         who = m.sender;
     }
 
-    let name = conn.getName(who);
-    let name2 = conn.getName(m.sender);
+    let name = await conn.getName(who) || who.split('@')[0];
+    let name2 = m.pushName || await conn.getName(m.sender) || m.sender.split('@')[0];
     await m.react('😴');
 
     let str;
     if (m.mentionedJid.length > 0 || m.quoted) {
-        str = `*${name2}* está dormindo com *${name || who}*. 😴💤`;
+        str = `*${name2}* está dormindo com *${name}*. 😴💤`;
     } else {
         str = `*${name2}* está tirando um cochilo... 😴`.trim();
     }
     
     if (m.isGroup) {
-        // Vídeos originais preservados conforme sua ordem
         let pp = 'https://telegra.ph/file/0684477ff198a678d4821.mp4'; 
         let pp2 = 'https://telegra.ph/file/583b7a7322fd6722751b5.mp4'; 
         let pp3 = 'https://telegra.ph/file/e6ff46f4796c57f2235bd.mp4';
@@ -60,14 +56,8 @@ let handler = async (m, { conn, usedPrefix }) => {
 
 handler.help = ['dormir', 'sleep'];
 handler.tags = ['anime'];
-handler.command = ['dormir', 'dormi', 'soninho']; // Tudo em português
+handler.command = ['dormir', 'dormi', 'soninho'];
 handler.group = true;
+handler.cooldown = m => (m.sender.split`@`[0] === '5574991940377' ? 0 : 5000);
 
-// Cooldown zero para o soberano Leandro, 5s para os outros
-handler.cooldown = m => (m.sender.split`@`[0] === '556391330669' ? 0 : 5000);
-
-// Para que serve: Envia um vídeo de anime de alguém dormindo ou tirando um cochilo.
-// Como usar: .dormir @marcar ou apenas .dormir.
-// Acesso: Todos os membros.
-
-export default handler;
+export default handler

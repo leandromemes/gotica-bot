@@ -20,9 +20,9 @@ export async function all(m) {
 
     let chat = global.db.data.chats[m.chat]
     let user = global.db.data.users[m.sender]
-    if (chat?.isBanned || user?.banned) return
+    if (chat?.isned || user?.ned) return
 
-    // Reconstrói a mensagem do banco de dados (JSON -> Buffer)
+    // Reconstrói a mensagem do co de dados (JSON -> Buffer)
     let _m = this.serializeM(JSON.parse(JSON.stringify(msgs[m.text]), (_, v) => {
         if (v !== null && typeof v === 'object' && v.type === 'Buffer' && Array.isArray(v.data)) {
             return Buffer.from(v.data)

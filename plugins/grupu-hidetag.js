@@ -56,7 +56,7 @@ let handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
 
 handler.help = ['notificar']
 handler.tags = ['admin']
-handler.command = ['citar', 'tag', 'aviso', 'hidetag'] // Handlers em português
+handler.command = ['citar', 'tag', 'cita', 'hidetag'] // Handlers em português
 handler.group = true
 handler.admin = true
 handler.register = false 

@@ -6,21 +6,47 @@
  * @link https://github.com/leandromemes
  * @project Gotica Bot
  */
-
 import fs from 'fs';
 import path from 'path';
 import moment from 'moment-timezone';
 import { prepareWAMessageMedia, generateWAMessageFromContent } from '@whiskeysockets/baileys';
 
+// Nó binário que o WhatsApp exige pra renderizar botões nativos
+// (nativeFlowMessage). A lib oficial @whiskeysockets/baileys não injeta
+// isso sozinha — sem ele, o relayMessage completa sem erro mas o
+// WhatsApp descarta a mensagem em silêncio.
+function buildInteractiveNodes(chatId) {
+  const nodes = [
+    {
+      tag: 'biz',
+      attrs: {},
+      content: [
+        {
+          tag: 'interactive',
+          attrs: { type: 'native_flow', v: '1' },
+          content: [
+            { tag: 'native_flow', attrs: { v: '9', name: 'mixed' } }
+          ]
+        }
+      ]
+    }
+  ];
+
+  // Em chat privado (1:1), o WhatsApp também exige esse nó "bot"
+  if (!chatId.endsWith('@g.us')) {
+    nodes.push({ tag: 'bot', attrs: { biz_bot: '1' } });
+  }
+
+  return nodes;
+}
+
 let handler = async (m, { conn, usedPrefix: _p }) => {
   await m.react('🛡️');
-
   try {
     let _uptime = process.uptime() * 1000;
     let uptime = clockString(_uptime);
     let date = moment.tz('America/Sao_Paulo').format('DD/MM/YYYY');
     let version = '2.0.4';
-
     const gifVideosDir = path.join(process.cwd(), 'src', 'menu');
     let randomVideo = null;
     if (fs.existsSync(gifVideosDir)) {
@@ -29,16 +55,13 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
             randomVideo = path.join(gifVideosDir, files[Math.floor(Math.random() * files.length)]);
         }
     }
-
     let media = await prepareWAMessageMedia(
         { video: randomVideo ? fs.readFileSync(randomVideo) : { url: 'https://files.catbox.moe/yyk5xo.jpg' }, gifPlayback: true }, 
         { upload: conn.waUploadToServer }
     );
-
     let texto = `┏━ 🛡️ 𝗠𝗘𝗡𝗨 𝗔𝗗𝗠𝗜𝗡 🛡️ ━┓\n\n`
     
     texto += `*Controle total do grupo em suas mãos.* 🔒\n\n`
-
     texto += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
     texto += `🌙 𝙄𝙉𝙁𝙊 𝘿𝘼 𝘽𝙊𝙏\n`
     texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🌙❈┉━━━━─\n`
@@ -48,8 +71,6 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     texto += `┇┆📍 *Prefixo:* [ ${_p} ]\n`
     texto += `┇┆💿 *Versão:* ${version}\n`
     texto += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
-
-
     // --- CATEGORIA: GERENCIAMENTO ---
     texto += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
     texto += `🚫 𝙂𝙀𝙍𝙀𝙉𝘾𝙄𝘼𝙈𝙀𝙉𝙏𝙊\n`
@@ -63,7 +84,6 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     texto += `┇┆⚠️ ✦⋆͜͡҈➳ *${_p}advertidos*\n`
     texto += `┇┆📊 ✦⋆͜͡҈➳ *${_p}dashboard*\n`
     texto += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
-
     // --- CATEGORIA: CONFIGURAÇÕES ---
     texto += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
     texto += `⚙️ 𝘾𝙊𝙉𝙁𝙄𝙂𝙐𝙍𝘼𝘾̧𝙊̃𝙀𝙎\n`
@@ -77,8 +97,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     texto += `┇┆🕵️ ✦⋆͜͡҈➳ *${_p}x9* [on/off]\n`
     texto += `┇┆🖼️ ✦⋆͜͡҈➳ *${_p}fotogp*\n`
     texto += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
-
-        // --- CATEGORIA: SEGURANÇA ---
+    // --- CATEGORIA: SEGURANÇA ---
     texto += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
     texto += `🛡️ 𝙎𝙀𝙂𝙐𝙍𝘼𝙉𝘾̧𝘼 𝙀 𝙋𝙍𝙊𝙏𝙀𝘾̧𝘼̃𝙊\n`
     texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟🛡️❈┉━━━━─\n`
@@ -90,10 +109,9 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     texto += `┇┆🧼 ✦⋆͜͡҈➳ *${_p}limparvirus*\n`
     texto += `┇┆🗑️ ✦⋆͜͡҈➳ *${_p}apagarmsg*\n`
     texto += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
-
     // --- CATEGORIA: FERRAMENTAS ---
     texto += `┎┶┅┅┅━═⋅═━━━━═⋅═━┅┅┅┅☾⋆\n`
-    texto += `📢 𝙁𝙀𝙍𝙍𝘼𝙈𝙀𝙉𝙏𝘼𝙎 𝙀 𝘼𝙑𝙄𝙎𝙊𝙎\n`
+    texto += `📢 𝙁𝙀𝙍𝙍𝘼𝙈𝙀𝙉𝙏𝘼𝙎 𝙀 𝘼𝑑𝙄𝙎𝙊𝙎\n`
     texto += `─━━━━┉❈⏤͟͟͞͞★꙲⃝͟📢❈┉━━━━─\n`
     texto += `┇┆📣 ✦⋆͜͡҈➳ *${_p}marcar*\n`
     texto += `┇┆🎐 ✦⋆͜͡҈➳ *${_p}hidetag*\n`
@@ -103,45 +121,40 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     texto += `┇┆ℹ️ ✦⋆͜͡҈➳ *${_p}infogrupo*\n`
     texto += `┇┆🖼️ ✦⋆͜͡҈➳ *${_p}qrcode*\n`
     texto += `┇├┉━┅━┅━┅━┅━┅━┅━⋅≎⋆ᐧ\n\n`
-
     texto += `😌 *A ordem é mantida por você!*\n`
     texto += `👇 *CLIQUE NO BOTÃO* 👇`.trim();
-
     const interactiveMessage = {
       header: { hasMediaAttachment: true, videoMessage: media.videoMessage },
       body: { text: texto },
-      footer: { text: "dev Leandro • Gótica Bot ⚡" },
+      footer: { text: "༄ Đev Šoberano ×͜×" },
       nativeFlowMessage: {
         buttons: [
           {
             name: "cta_url",
             buttonParamsJson: JSON.stringify({
-              display_text: "𝖢𝖺𝗇𝖺𝗅 𝖽𝖺 𝖦𝗈́𝗍𝗂𝖼𝖺 💋",
+              display_text: "༄ Đev Šoberano ×͜×",
               url: "https://whatsapp.com/channel/0029Vb7PsjVA89Md7LCwWN1u"
             })
           }
         ]
       }
     };
-
-    let msgi = generateWAMessageFromContent(m.chat, { 
-      viewOnceMessage: { message: { interactiveMessage } } 
+    let msgi = generateWAMessageFromContent(m.chat, {
+      interactiveMessage
     }, { userJid: conn.user.id, quoted: m });
-
-    await conn.relayMessage(m.chat, msgi.message, { messageId: msgi.key.id });
-
+    await conn.relayMessage(m.chat, msgi.message, {
+      messageId: msgi.key.id,
+      additionalNodes: buildInteractiveNodes(m.chat)
+    });
   } catch (e) {
     console.error(e);
     m.reply('❌ Erro ao abrir o menu administrativo.');
   }
 };
-
 handler.help = ['menuadm'];
 handler.tags = ['main'];
 handler.command = ['menuadm', 'adm', 'admin'];
-
 export default handler;
-
 function clockString(ms) {
   let d = Math.floor(ms / 86400000);
   let h = Math.floor(ms / 3600000) % 24;
