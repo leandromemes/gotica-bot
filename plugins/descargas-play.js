@@ -13,8 +13,9 @@ import fs from 'fs'
 let handler = async (m, { conn, text }) => {
     const devLeandro = "༄ Đev Šoberano ×͜×"
 
-    // API SOBERANA 
+    // Configuração da API Soberana
     const minhaApiURL = 'http://localhost:3000'
+    const apiKey = 'sb_bot_gotica_8f9a2b' // Coloque aqui o token cadastrado na API
 
     if (!text.trim()) return conn.reply(m.chat, '*✨ Hey!* Digite o nome da música para buscar.', m)
 
@@ -25,14 +26,21 @@ let handler = async (m, { conn, text }) => {
     await conn.sendMessage(m.chat, { react: { text: "🔍", key: m.key }})
 
     try {
-        let res = await fetch(`${minhaApiURL}/play?search=${encodeURIComponent(text)}`)
+        // Envia a requisição com o parâmetro 'apikey'
+        const endpoint = `${minhaApiURL}/play?search=${encodeURIComponent(text)}&apikey=${apiKey}`
+        let res = await fetch(endpoint)
 
-        const contentType = res.headers.get("content-type");
+        const contentType = res.headers.get("content-type")
         if (!contentType || !contentType.includes("application/json")) {
             return m.reply("*🌙 Erro:* Minha API não respondeu em JSON. Ela está rodando?")
         }
 
         let data = await res.json()
+
+        // Tratamento para caso o token seja recusado
+        if (res.status === 401 || res.status === 403) {
+            return m.reply(`*🔑 Erro de Autenticação:* ${data.erro || 'Token inválido!'}`)
+        }
 
         if (!data || (!data.url && !data.file)) {
             return m.reply("*💫 Erro:* Música não encontrada!")
@@ -45,7 +53,7 @@ let handler = async (m, { conn, text }) => {
             `> *👤 Dev »* _${devLeandro}_\n\n` +
             `*⭐ AGUARDE! Enviando áudio...*`
 
-        // 1. ENVIA A IMAGEM REAL COM A LEGENDA
+        // 1. Envia a imagem/thumbnail com a legenda
         if (data.thumbnail) {
             await conn.sendMessage(m.chat, {
                 image: { url: data.thumbnail },
@@ -55,7 +63,7 @@ let handler = async (m, { conn, text }) => {
             await conn.reply(m.chat, textoMensagem, m)
         }
 
-        // 2. PREPARA E ENVIA O ÁUDIO
+        // 2. Prepara e envia o áudio
         let audioContent
         if (data.file && fs.existsSync(data.file)) {
             audioContent = fs.readFileSync(data.file)
@@ -74,7 +82,7 @@ let handler = async (m, { conn, text }) => {
 
     } catch (e) {
         console.error('ERRO API PRÓPRIA:', e)
-        m.reply('*🖤 Erro:* Minha API não respondeu. Ela está rodando (node index.js)?')
+        m.reply('*🖤 Erro:* Minha API não respondeu. Verifique se o processo está rodando no PM2.')
     }
 }
 
