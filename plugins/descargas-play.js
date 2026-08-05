@@ -30,7 +30,7 @@ let handler = async (m, { conn, text }) => {
 
         const contentType = res.headers.get("content-type")
         if (!contentType || !contentType.includes("application/json")) {
-            return m.reply("*🌙 Erro:* Minha API não respondeu em JSON. Ela está no ar?")
+            return m.reply("*🌙 Erro:* Minha API não respondeu em JSON. Verifique se ela está ativa.")
         }
 
         let data = await res.json()
@@ -50,7 +50,7 @@ let handler = async (m, { conn, text }) => {
             `> *👤 Dev »* _${devLeandro}_\n\n` +
             `*⭐ AGUARDE! Enviando áudio...*`
 
-        // 1. Envia a thumbnail
+        // 1. Envia a thumbnail com legenda
         if (data.thumbnail) {
             await conn.sendMessage(m.chat, {
                 image: { url: data.thumbnail },
@@ -60,7 +60,7 @@ let handler = async (m, { conn, text }) => {
             await conn.reply(m.chat, textoMensagem, m)
         }
 
-        // 2. Trata o arquivo local limpando espaços/caracteres ocultos
+        // 2. Trata o áudio: se o arquivo existe na máquina envia via buffer local, senão baixa via URL da API
         let audioContent
         const caminhoLocal = data.file ? String(data.file).trim() : ''
 
@@ -83,7 +83,7 @@ let handler = async (m, { conn, text }) => {
 
     } catch (e) {
         console.error('ERRO API PRÓPRIA:', e)
-        m.reply('*🖤 Erro:* Não foi possível processar o áudio. Tente novamente em instantes.')
+        m.reply('*🖤 Erro:* Não foi possível processar o áudio. Tente novamente.')
     }
 }
 
