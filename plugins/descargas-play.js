@@ -1,7 +1,7 @@
 /**
- * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗     ╔╗  ╔═╗ ╔╦╗
- * ║ ╦ ║ ║  ║  ║ ║   ╠═╣     ╠╩╗ ║ ║  ║ 
- * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩     ╚═╝ ╚═╝  ╩ 
+ * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
+ * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
+ * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
  * @author Leandro Rocha
  * @link https://github.com/leandromemes
  * @project Gotica Bot
@@ -10,10 +10,26 @@
 import fetch from 'node-fetch'
 import fs from 'fs'
 
+// Função para formatar segundos em MM:SS ou HH:MM:SS
+function formatarTempo(segundos) {
+    if (!segundos || isNaN(segundos)) return '00:00'
+    const sec = Number(segundos)
+    const horas = Math.floor(sec / 3600)
+    const minutos = Math.floor((sec % 3600) / 60)
+    const segRestantes = Math.floor(sec % 60)
+
+    const pad = (num) => String(num).padStart(2, '0')
+
+    if (horas > 0) {
+        return `${pad(horas)}:${pad(minutos)}:${pad(segRestantes)}`
+    }
+    return `${pad(minutos)}:${pad(segRestantes)}`
+}
+
 let handler = async (m, { conn, text }) => {
     const devLeandro = "༄ Đev Šoberano ×͜×"
 
-    const minhaApiURL = 'http://162.35.162.178:3000'
+    const minhaApiURL = 'https://api.devsoberano.com'
     const apiKey = 'sb_bot_gotica_8f9a2b'
 
     if (!text.trim()) return conn.reply(m.chat, '*✨ Hey!* Digite o nome da música para buscar.', m)
@@ -25,7 +41,7 @@ let handler = async (m, { conn, text }) => {
     await conn.sendMessage(m.chat, { react: { text: "🔍", key: m.key }})
 
     try {
-        const endpoint = `${minhaApiURL}/play?search=${encodeURIComponent(text.trim())}&apikey=${apiKey}`
+        const endpoint = `${minhaApiURL}/api/downloads/play-audio?search=${encodeURIComponent(text.trim())}&api_key=${apiKey}`
         let res = await fetch(endpoint)
 
         const contentType = res.headers.get("content-type")
@@ -43,14 +59,16 @@ let handler = async (m, { conn, text }) => {
             return m.reply("*💫 Erro:* Música não encontrada!")
         }
 
+        const duracaoFormatada = formatarTempo(data.total_duration_in_seconds)
+
         const textoMensagem = `*💋 ─ ☾ GOTICA PLAY ☽ ─ 💫*\n\n` +
             `> *🎵 Título »* _${data.title}_\n` +
-            `> *⏳ Duração »* _${data.total_duration_in_seconds}s_\n` +
+            `> *⏳ Duração »* _${duracaoFormatada}_\n` +
             `> *📺 Canal »* _${data.channel?.name || 'YouTube'}_\n` +
             `> *👤 Dev »* _${devLeandro}_\n\n` +
             `*⭐ AGUARDE! Enviando áudio...*`
 
-        // 1. Envia a thumbnail com legenda
+        // 1. Envia a thumbnail com a legenda
         if (data.thumbnail) {
             await conn.sendMessage(m.chat, {
                 image: { url: data.thumbnail },
@@ -60,21 +78,27 @@ let handler = async (m, { conn, text }) => {
             await conn.reply(m.chat, textoMensagem, m)
         }
 
-        // 2. Trata o áudio: se o arquivo existe na máquina envia via buffer local, senão baixa via URL da API
-        let audioContent
+        // 2. Carrega o Buffer do Áudio (Prioriza arquivo local se for na VPS, ou baixa via URL se for no PC)
+        let audioBuffer
         const caminhoLocal = data.file ? String(data.file).trim() : ''
 
         if (caminhoLocal && fs.existsSync(caminhoLocal)) {
-            audioContent = fs.readFileSync(caminhoLocal)
+            audioBuffer = fs.readFileSync(caminhoLocal)
         } else if (data.url) {
-            audioContent = { url: data.url.trim() }
+            const resAudio = await fetch(data.url.trim())
+            if (!resAudio.ok) throw new Error('Falha ao baixar áudio da URL da API')
+            
+            // Atualizado para usar arrayBuffer() e evitar DeprecationWarning
+            const arrayBuffer = await resAudio.arrayBuffer()
+            audioBuffer = Buffer.from(arrayBuffer)
         } else {
             return m.reply('*💫 Erro:* Falha ao carregar o arquivo de áudio!')
         }
 
+        // 3. Envia o áudio no WhatsApp
         await conn.sendMessage(m.chat, {
-            audio: audioContent,
-            fileName: `${data.title}.m4a`,
+            audio: audioBuffer,
+            fileName: `${data.title}.mp3`,
             mimetype: "audio/mp4",
             ptt: false
         }, { quoted: m })
