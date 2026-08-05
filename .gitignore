@@ -1,4 +1,5 @@
 ﻿node_modules/
 tmp/
 session/
+soberano-qr/
 serviceAccountKey.json
