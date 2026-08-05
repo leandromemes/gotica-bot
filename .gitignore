@@ -1,8 +1,2 @@
 ﻿node_modules/
-tmp/
-sessions/
-session/
-.npm/
-figu/
-database.json
 serviceAccountKey.json
