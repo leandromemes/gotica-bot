@@ -13,9 +13,9 @@ import fs from 'fs'
 let handler = async (m, { conn, text }) => {
     const devLeandro = "༄ Đev Šoberano ×͜×"
 
-    // Configuração da API Soberana
+    // URL Centralizada da API na VPS (Funciona para qualquer bot no mundo)
     const minhaApiURL = 'http://162.35.162.178:3000'
-    const apiKey = 'sb_bot_gotica_8f9a2b' // Coloque aqui o token cadastrado na API
+    const apiKey = 'sb_bot_gotica_8f9a2b'
 
     if (!text.trim()) return conn.reply(m.chat, '*✨ Hey!* Digite o nome da música para buscar.', m)
 
@@ -26,20 +26,18 @@ let handler = async (m, { conn, text }) => {
     await conn.sendMessage(m.chat, { react: { text: "🔍", key: m.key }})
 
     try {
-        // Envia a requisição com o parâmetro 'apikey'
         const endpoint = `${minhaApiURL}/play?search=${encodeURIComponent(text)}&apikey=${apiKey}`
         let res = await fetch(endpoint)
 
         const contentType = res.headers.get("content-type")
         if (!contentType || !contentType.includes("application/json")) {
-            return m.reply("*🌙 Erro:* Minha API não respondeu em JSON. Ela está rodando?")
+            return m.reply("*🌙 Erro:* Minha API não respondeu em JSON. Verifique se a porta 3000 está liberada na VPS.")
         }
 
         let data = await res.json()
 
-        // Tratamento para caso o token seja recusado
         if (res.status === 401 || res.status === 403) {
-            return m.reply(`*🔑 Erro de Autenticação:* ${data.erro || 'Token inválido!'}`)
+            return m.reply(`*🔑 Erro de Autenticação:* ${data.error || 'Token inválido!'}`)
         }
 
         if (!data || (!data.url && !data.file)) {
@@ -63,7 +61,7 @@ let handler = async (m, { conn, text }) => {
             await conn.reply(m.chat, textoMensagem, m)
         }
 
-        // 2. Prepara e envia o áudio
+        // 2. Define a fonte do áudio (se arquivo local existe no servidor usa o buffer, senão usa a URL da API)
         let audioContent
         if (data.file && fs.existsSync(data.file)) {
             audioContent = fs.readFileSync(data.file)
@@ -73,7 +71,7 @@ let handler = async (m, { conn, text }) => {
 
         await conn.sendMessage(m.chat, {
             audio: audioContent,
-            fileName: `${data.title}.mp3`,
+            fileName: `${data.title}.m4a`,
             mimetype: "audio/mp4",
             ptt: false
         }, { quoted: m })
@@ -82,7 +80,7 @@ let handler = async (m, { conn, text }) => {
 
     } catch (e) {
         console.error('ERRO API PRÓPRIA:', e)
-        m.reply('*🖤 Erro:* Minha API não respondeu. Verifique se o processo está rodando no PM2.')
+        m.reply('*🖤 Erro:* Não foi possível conectar com a API. Verifique a conexão com a VPS.')
     }
 }
 
