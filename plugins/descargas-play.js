@@ -14,7 +14,7 @@ let handler = async (m, { conn, text }) => {
     const devLeandro = "༄ Đev Šoberano ×͜×"
 
     // Configuração da API Soberana
-    const minhaApiURL = 'http://localhost:3000'
+    const minhaApiURL = 'http://162.35.162.178:3000'
     const apiKey = 'sb_bot_gotica_8f9a2b' // Coloque aqui o token cadastrado na API
 
     if (!text.trim()) return conn.reply(m.chat, '*✨ Hey!* Digite o nome da música para buscar.', m)
