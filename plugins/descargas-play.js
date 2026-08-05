@@ -13,7 +13,6 @@ import fs from 'fs'
 let handler = async (m, { conn, text }) => {
     const devLeandro = "༄ Đev Šoberano ×͜×"
 
-    // URL Centralizada da API na VPS (Funciona para qualquer bot no mundo)
     const minhaApiURL = 'http://162.35.162.178:3000'
     const apiKey = 'sb_bot_gotica_8f9a2b'
 
@@ -26,12 +25,12 @@ let handler = async (m, { conn, text }) => {
     await conn.sendMessage(m.chat, { react: { text: "🔍", key: m.key }})
 
     try {
-        const endpoint = `${minhaApiURL}/play?search=${encodeURIComponent(text)}&apikey=${apiKey}`
+        const endpoint = `${minhaApiURL}/play?search=${encodeURIComponent(text.trim())}&apikey=${apiKey}`
         let res = await fetch(endpoint)
 
         const contentType = res.headers.get("content-type")
         if (!contentType || !contentType.includes("application/json")) {
-            return m.reply("*🌙 Erro:* Minha API não respondeu em JSON. Verifique se a porta 3000 está liberada na VPS.")
+            return m.reply("*🌙 Erro:* Minha API não respondeu em JSON. Ela está no ar?")
         }
 
         let data = await res.json()
@@ -51,7 +50,7 @@ let handler = async (m, { conn, text }) => {
             `> *👤 Dev »* _${devLeandro}_\n\n` +
             `*⭐ AGUARDE! Enviando áudio...*`
 
-        // 1. Envia a imagem/thumbnail com a legenda
+        // 1. Envia a thumbnail
         if (data.thumbnail) {
             await conn.sendMessage(m.chat, {
                 image: { url: data.thumbnail },
@@ -61,12 +60,16 @@ let handler = async (m, { conn, text }) => {
             await conn.reply(m.chat, textoMensagem, m)
         }
 
-        // 2. Define a fonte do áudio (se arquivo local existe no servidor usa o buffer, senão usa a URL da API)
+        // 2. Trata o arquivo local limpando espaços/caracteres ocultos
         let audioContent
-        if (data.file && fs.existsSync(data.file)) {
-            audioContent = fs.readFileSync(data.file)
+        const caminhoLocal = data.file ? String(data.file).trim() : ''
+
+        if (caminhoLocal && fs.existsSync(caminhoLocal)) {
+            audioContent = fs.readFileSync(caminhoLocal)
+        } else if (data.url) {
+            audioContent = { url: data.url.trim() }
         } else {
-            audioContent = { url: data.url }
+            return m.reply('*💫 Erro:* Falha ao carregar o arquivo de áudio!')
         }
 
         await conn.sendMessage(m.chat, {
@@ -80,7 +83,7 @@ let handler = async (m, { conn, text }) => {
 
     } catch (e) {
         console.error('ERRO API PRÓPRIA:', e)
-        m.reply('*🖤 Erro:* Não foi possível conectar com a API. Verifique a conexão com a VPS.')
+        m.reply('*🖤 Erro:* Não foi possível processar o áudio. Tente novamente em instantes.')
     }
 }
 
