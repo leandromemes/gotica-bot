@@ -9,8 +9,8 @@
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
     // VERIFICAÇÃO DE DONO (Soberano)
-    const DONO_OFICIAL = '556391330669@s.whatsapp.net'
-    const TARGET_LID_DONO = '240041947357401@lid'
+    const DONO_OFICIAL = '5574991940377@s.whatsapp.net'
+    const TARGET_LID_DONO = '25886472585277@lid'
     
     const isOwner = m.sender === DONO_OFICIAL || m.sender === TARGET_LID_DONO || m.isOwner
 
@@ -53,7 +53,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
 
 handler.help = ['dardinheiro <valor> @user']
 handler.tags = ['owner']
-handler.command = ['dardinheiro', 'darbot', 'addmoney', 'gerar']
+handler.command = ['dardinheiro','addmoney', 'gerar']
 handler.rowner = true // Reforço para garantir que só o dono use
 
 export default handler
