@@ -1,7 +1,7 @@
 /**
- * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗     ╔╗  ╔═╗ ╔╦╗
- * ║ ╦ ║ ║  ║  ║ ║   ╠═╣     ╠╩╗ ║ ║  ║ 
- * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩     ╚═╝ ╚═╝  ╩ 
+ * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
+ * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
+ * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
  * @author ༄ Đev Šoberano ×͜×
  * @link https://github.com/leandromemes
  * @project Gotica Bot - ANTI-CRASH & PERFORMANCE
@@ -420,6 +420,23 @@ export async function handler(chatUpdate) {
                                 (cleanBotJid && uJid.includes(cleanBotJid))
                 return isMatch && checkUserAdmin(u)
             }) : false
+
+            // ── VERIFICAÇÃO DO MODO SÓ ADM NA EXECUÇÃO DO COMANDO ──
+            if (m.isGroup) {
+                const cleanFrom = m.chat.split('@')[0] + '@g.us'
+                const filePath = join(process.cwd(), 'src', 'database', 'grupos', `${cleanFrom}.json`)
+                if (existsSync(filePath)) {
+                    try {
+                        const dataGp = JSON.parse(readFileSync(filePath, 'utf-8'))
+                        const isOnlyAdmin = dataGp?.[0]?.modoadmin || false
+                        if (isOnlyAdmin && !isAdmin && !isSoberano) {
+                            return // Ignora o comando para membros comuns se soadm estiver ativo
+                        }
+                    } catch (e) {
+                        console.error('[SOADM CHECK ERROR]', e)
+                    }
+                }
+            }
 
             for (let name in global.plugins) {
                 let plugin = global.plugins[name]
