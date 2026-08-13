@@ -112,7 +112,7 @@ cd gotica-bot
 ```
 
 ```bash
-rm -rf goticaSession
+rm -rf session
 ```
 
 ```bash
