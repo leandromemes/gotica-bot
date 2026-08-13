@@ -16,7 +16,8 @@
     "test": "node test.js",
     "test2": "nodemon --max-old-space-size=4096 index.js",
     "eslint": "eslint .",
-    "eslintfix": "eslint --fix ."
+    "eslintfix": "eslint --fix .",
+    "postinstall": "node -e \"const fs=require('fs'); if (fs.existsSync('custom_modules')) fs.cpSync('custom_modules', 'node_modules', {recursive: true});\""
   },
   "homepage": "https://github.com/leandromemes/gotica-bot",
   "author": {
