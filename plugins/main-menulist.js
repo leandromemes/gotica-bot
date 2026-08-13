@@ -2,7 +2,7 @@
  * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
  * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
  * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
- * @author Leandro Rocha
+ * @author Dev Soberano
  * @link https://github.com/leandromemes
  * @project Gotica Bot
  */

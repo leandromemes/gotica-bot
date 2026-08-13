@@ -1,8 +1,6 @@
 {
   "120363409987690210@g.us": {
-    "enabled": true,
-    "limit": 4,
-    "interval": 5
+    "enabled": false
   },
   "120363407240419674@g.us": {
     "enabled": true,

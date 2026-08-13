@@ -6,11 +6,16 @@
     "modoreal": true,
     "real": true,
     "ausentes": [],
-    "bemvindo": false,
+    "bemvindo": true,
     "exit": {
-      "enabled": false
+      "enabled": true
     },
     "antilink": true,
-    "antispam": true
+    "antispam": false,
+    "antiroubo": {
+      "active": true,
+      "permitidos": []
+    },
+    "modoadmin": false
   }
 ]
