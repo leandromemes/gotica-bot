@@ -267,8 +267,6 @@ global.reloadHandler = async function (restatConn) {
 
             const membros_ = grpmdt.participants || [];
 
-            // Normaliza um participante que pode vir como string OU objeto
-            // { id, phoneNumber, admin } dependendo da versão do evento.
             const extrairId = (p) => {
                 if (!p) return null;
                 if (typeof p === 'string') return p;
@@ -291,9 +289,6 @@ global.reloadHandler = async function (restatConn) {
 
             if (!alvo || !quemExecutou) return;
 
-            // Identificadores do próprio bot, direto da lista real de
-            // participantes do grupo (fonte da verdade) — evita o bot se
-            // confundir consigo mesmo por causa de formato divergente.
             const botNum = global.conn.user?.id?.split(':')[0]?.split('@')[0];
             const selfIds = new Set();
             if (botNum) {
@@ -313,12 +308,9 @@ global.reloadHandler = async function (restatConn) {
                 return false;
             };
 
-            // TRAVA ABSOLUTA: o bot nunca é alvo de correção nem "invasor".
             if (ehSelf(quemExecutou) || ehSelf(alvo)) return;
 
-            // Verifica permissão de quem executou
             const permitidos = config.antiroubo.permitidos || [];
-            const ownerNumber = (global.owner?.[0]?.[0] || '').replace(/\D/g, '');
             const donosNumeros = (Array.isArray(global.owner) ? global.owner : [])
                 .map(o => String(o[0] || '').replace(/\D/g, ''))
                 .filter(Boolean);
@@ -331,8 +323,6 @@ global.reloadHandler = async function (restatConn) {
 
             if (isPermitido) return;
 
-            // Só age se o próprio JID resolvido for utilizável (sem sufixo
-            // de device tipo ":N@lid", que a API de grupo rejeita).
             if (/:[0-9]+@lid$/.test(alvo) || /:[0-9]+@lid$/.test(quemExecutou)) {
                 console.log('[ANTI-ROUBO] JID não resolvido corretamente, ignorando ação para evitar erro.');
                 return;
@@ -341,9 +331,6 @@ global.reloadHandler = async function (restatConn) {
             const acaoTexto = action === 'promote' ? 'promover' : 'rebaixar';
             const acaoRevertida = action === 'promote' ? 'promovido' : 'rebaixado';
 
-            // Reverte o alvo e pune o executor em chamadas SEPARADAS (uma
-            // única chamada com formatos de JID diferentes pode retornar
-            // "bad-request").
             let sucessoAlvo = false;
             let sucessoExecutor = false;
             try {
@@ -425,7 +412,11 @@ global.reloadHandler = async function (restatConn) {
             const desc = mdata.desc || ''
 
             for (let participante of participants) {
-                const userJid = participante.includes('@') ? participante : participante + '@s.whatsapp.net'
+                // CORREÇÃO: Garante que participante é processado como string de JID
+                let rawId = typeof participante === 'string' ? participante : (participante?.id || participante?.jid);
+                if (!rawId) continue;
+
+                const userJid = rawId.includes('@') ? rawId : rawId + '@s.whatsapp.net'
                 const userNumber = userJid.split('@')[0]
 
                 const cacheKey = `${grupoId}_${userJid}_${action}`
@@ -445,14 +436,12 @@ global.reloadHandler = async function (restatConn) {
 
                 const isWelcome = action === 'add';
 
-                // Definição do texto padrão conforme especificado
                 const defaultText = isWelcome ?
                     (jsonGp.textbv || wl0.legendabv ? (jsonGp.textbv || wl0.legendabv) : "✨ Seja bem-vindo(a), #numerodele#\n\nApresente-se com:\n\n📝 *Nome:*\n📸 *Foto:*\n🎂 *Idade:*\n\nSiga as regras para não ser banido! 👑") :
                     (jsonGp.exit && jsonGp.exit.text ? jsonGp.exit.text : (wl0.legendasaiu || "╭━⊱ 👋 *ATÉ LOGO!* 👋 ⊱━╮\n│\n│ 👤 #numerodele#\n│\n│ 🚪 Saiu do grupo\n│ *#nomedogp#*\n│\n╰━━━━━━━━━━━━━━━━━━╯"));
 
                 const text = formatMessageText(defaultText);
 
-                // Busca a foto de perfil do usuário, senão usa imagem neutra/fallback
                 let profilePicUrl = 'https://raw.githubusercontent.com/nazuninha/uploads/main/outros/1747053564257_bzswae.bin';
                 try {
                     const pp = await global.conn.profilePictureUrl(userJid, 'image');
@@ -466,7 +455,6 @@ global.reloadHandler = async function (restatConn) {
 
                 const mentions = [userJid];
 
-                // Retorno da mensagem montado e pronto com o botão do canal (Newsletter)
                 let msgObject = {
                     image: profilePicUrl.startsWith('http') ? { url: profilePicUrl } : readFileSync(profilePicUrl),
                     caption: text,
