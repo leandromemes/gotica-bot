@@ -201,7 +201,9 @@ global.reloadHandler = async function (restatConn) {
             if (!existsSync(caminho)) return;
             const jsonGp = JSON.parse(readFileSync(caminho));
             const config = Array.isArray(jsonGp) ? jsonGp[0] : jsonGp;
+
             if (!config?.antilinkgp && !config?.antiflood && !config?.antifloodgp) return;
+
             let grpmdt;
             try { grpmdt = await global.conn.groupMetadata(from) } catch { return }
             if (!grpmdt?.id.endsWith('@g.us')) return;
@@ -223,17 +225,161 @@ global.reloadHandler = async function (restatConn) {
             const botMembro = membros_.find(v => (v.jid || v.id)?.startsWith(NumeroDoBot));
             const botJid = botMembro?.jid || botMembro?.id;
             if (!botJid || !groupAdmins_.includes(botJid)) return;
-            console.log(`[ANTI-FLOOD-MERUEM] Removendo ${participante} de ${from}...`);
+
+            console.log(`[ANTI-FLOOD] Removendo ${participante} de ${from}...`);
             await global.conn.groupParticipantsUpdate(from, [participante], 'remove');
             const numeroBanido = participante.split('@')[0];
             await global.conn.sendMessage(from, {
-                text: `🤨 *ANTI-LINK* \n\n@${numeroBanido} foi removido do grupo por *flood de mensagens invisíveis* no grupo`,
+                text: `🤨 *SISTEMA DE SEGURANÇA* \n\n@${numeroBanido} foi removido do grupo por *envio de mensagens invisíveis/sistema ativado*.`,
                 mentions: [participante]
             });
         } catch (e) {
-            console.log('Erro no detector de flood invisível:', e);
+            console.log('Erro no detector do WebSocket:', e);
         }
     });
+
+    // Remove listener antigo antes de registrar, evitando duplicação em
+    // reconexões/reloads sucessivos.
+    if (global.conn.antiRouboHandler) {
+        global.conn.ev.off('group-participants.update', global.conn.antiRouboHandler);
+    }
+
+    // --- [ SISTEMA ANTI-ROUBO DE GRUPO ] ---
+    global.conn.antiRouboHandler = async (event) => {
+        try {
+            const { id: chatId, participants, action, author } = event;
+            if (!chatId?.endsWith('@g.us')) return;
+            if (action !== 'promote' && action !== 'demote') return;
+            if (!author) return;
+
+            const caminhoAntigo = `./DADOS DO YUTA/grupos/ATIVAÇÕES-YUTA/${chatId}.json`;
+            const caminhoGotica = `./src/database/grupos/${chatId}.json`;
+            let caminho = existsSync(caminhoGotica) ? caminhoGotica : caminhoAntigo;
+            if (!existsSync(caminho)) return;
+
+            const jsonGp = JSON.parse(readFileSync(caminho));
+            const config = Array.isArray(jsonGp) ? jsonGp[0] : jsonGp;
+            if (!config?.antiroubo || !config.antiroubo.active) return;
+
+            let grpmdt;
+            try { grpmdt = await global.conn.groupMetadata(chatId) } catch { return }
+            if (!grpmdt?.id.endsWith('@g.us')) return;
+
+            const membros_ = grpmdt.participants || [];
+
+            // Normaliza um participante que pode vir como string OU objeto
+            // { id, phoneNumber, admin } dependendo da versão do evento.
+            const extrairId = (p) => {
+                if (!p) return null;
+                if (typeof p === 'string') return p;
+                if (typeof p === 'object') return p.id || p.jid || p.phoneNumber || null;
+                return null;
+            };
+            const normalizar = (alvo) => {
+                if (!alvo || typeof alvo !== 'string') return alvo;
+                if (alvo.includes('@lid') && membros_) {
+                    const lidBase = alvo.split(':')[0] + '@lid';
+                    const encontrado = membros_.find(v => v.lid === lidBase)?.jid || membros_.find(v => v.lid === lidBase)?.id;
+                    return encontrado || alvo;
+                }
+                return alvo;
+            };
+
+            const alvoRaw = extrairId(participants?.[0]);
+            const alvo = normalizar(alvoRaw);
+            const quemExecutou = normalizar(extrairId(author) || author);
+
+            if (!alvo || !quemExecutou) return;
+
+            // Identificadores do próprio bot, direto da lista real de
+            // participantes do grupo (fonte da verdade) — evita o bot se
+            // confundir consigo mesmo por causa de formato divergente.
+            const botNum = global.conn.user?.id?.split(':')[0]?.split('@')[0];
+            const selfIds = new Set();
+            if (botNum) {
+                for (const p of membros_) {
+                    const candidatos = [p.id, p.jid, p.lid, p.phoneNumber].filter(Boolean);
+                    const bate = candidatos.some(c => String(c).split(':')[0].split('@')[0] === botNum);
+                    if (bate) candidatos.forEach(c => selfIds.add(c));
+                }
+            }
+            const ehSelf = (id) => {
+                if (!id) return false;
+                if (selfIds.has(id)) return true;
+                const numOnly = String(id).split(':')[0].split('@')[0];
+                for (const s of selfIds) {
+                    if (String(s).split(':')[0].split('@')[0] === numOnly) return true;
+                }
+                return false;
+            };
+
+            // TRAVA ABSOLUTA: o bot nunca é alvo de correção nem "invasor".
+            if (ehSelf(quemExecutou) || ehSelf(alvo)) return;
+
+            // Verifica permissão de quem executou
+            const permitidos = config.antiroubo.permitidos || [];
+            const ownerNumber = (global.owner?.[0]?.[0] || '').replace(/\D/g, '');
+            const donosNumeros = (Array.isArray(global.owner) ? global.owner : [])
+                .map(o => String(o[0] || '').replace(/\D/g, ''))
+                .filter(Boolean);
+
+            const quemExecutouNum = quemExecutou.split(':')[0].split('@')[0].replace(/\D/g, '');
+            const isPermitido =
+                donosNumeros.includes(quemExecutouNum) ||
+                permitidos.includes(quemExecutou) ||
+                permitidos.includes(quemExecutouNum);
+
+            if (isPermitido) return;
+
+            // Só age se o próprio JID resolvido for utilizável (sem sufixo
+            // de device tipo ":N@lid", que a API de grupo rejeita).
+            if (/:[0-9]+@lid$/.test(alvo) || /:[0-9]+@lid$/.test(quemExecutou)) {
+                console.log('[ANTI-ROUBO] JID não resolvido corretamente, ignorando ação para evitar erro.');
+                return;
+            }
+
+            const acaoTexto = action === 'promote' ? 'promover' : 'rebaixar';
+            const acaoRevertida = action === 'promote' ? 'promovido' : 'rebaixado';
+
+            // Reverte o alvo e pune o executor em chamadas SEPARADAS (uma
+            // única chamada com formatos de JID diferentes pode retornar
+            // "bad-request").
+            let sucessoAlvo = false;
+            let sucessoExecutor = false;
+            try {
+                const acaoReverter = action === 'promote' ? 'demote' : 'promote';
+                await global.conn.groupParticipantsUpdate(chatId, [alvo], acaoReverter);
+                sucessoAlvo = true;
+            } catch (e) {
+                console.log('[ANTI-ROUBO] Falha ao reverter alvo:', e.message);
+            }
+
+            await new Promise(r => setTimeout(r, 1200));
+
+            try {
+                await global.conn.groupParticipantsUpdate(chatId, [quemExecutou], 'demote');
+                sucessoExecutor = true;
+            } catch (e) {
+                console.log('[ANTI-ROUBO] Falha ao punir executor:', e.message);
+            }
+
+            const avisoFalha = (!sucessoAlvo || !sucessoExecutor)
+                ? '\n\n⚠️ Uma das ações de correção falhou (verifique se ainda sou admin do grupo).'
+                : '';
+
+            const msgAlerta = `*🔒 𝐀𝐍𝐓𝐈-𝐑𝐎𝐔𝐁𝐎 𝐃𝐄 𝐆𝐑𝐔𝐏𝐎 🔒*\n*ᴀᴄ̧ᴀ̃ᴏ ʙʟᴏǫᴜᴇᴀᴅᴀ!*\n*ᴏ ᴀᴅᴍ @${quemExecutou.split('@')[0]} ᴛᴇɴᴛᴏᴜ ${acaoTexto} @${alvo.split('@')[0]} sᴇᴍ ᴘᴇʀᴍɪssᴀ̃ᴏ.*\n*ᴀᴄᴀᴏ: ${acaoRevertida} ʀᴇᴠᴇʀᴛɪᴅᴏ ᴇ ᴇxᴇᴄᴜᴛᴏʀ ʀᴇʙᴀɪxᴀᴅᴏ.*${avisoFalha}\n> _Apenas admins autorizados podem promover/rebaixar neste grupo._`;
+
+            await global.conn.sendMessage(chatId, {
+                text: msgAlerta,
+                mentions: [quemExecutou, alvo]
+            }).catch(() => {});
+
+        } catch (e) {
+            console.log('[ANTI-ROUBO] Erro geral:', e);
+        }
+    };
+
+    global.conn.ev.on('group-participants.update', global.conn.antiRouboHandler);
 
     const currentHandler = handler.handler || handler.default?.handler || handler.default || handler;
     global.conn.handler = async (chatUpdate) => {
@@ -243,6 +389,7 @@ global.reloadHandler = async function (restatConn) {
             console.error(e) 
         }
     }
+    
 
     // --- [ MANIPULADOR DIRETO DE ENTRADA E SAÍDA COM BOTÃO DE CANAL / NEWSLETTER ] ---
     global.conn.participantsUpdate = async (update) => {
