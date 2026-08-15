@@ -1,6 +1,6 @@
 [
   {
-    "antiflood": false,
+    "antiflood": true,
     "nsfw": false,
     "autolevelup": true,
     "modoreal": true,

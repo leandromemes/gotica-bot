@@ -109,14 +109,14 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     const interactiveMessage = {
       header: { hasMediaAttachment: true, videoMessage: media.videoMessage },
       body: { text: texto },
-      footer: { text: "dev Leandro • Gótica Bot ⚡" },
+      footer: { text: "dev Soberano • Gótica Bot ⚡" },
       nativeFlowMessage: {
         buttons: [
           {
             name: "cta_url",
             buttonParamsJson: JSON.stringify({
-              display_text: "𝖢𝖺𝗇𝖺𝗅 𝖽𝖺 𝖦𝗈́𝗍𝗂𝖼𝖺 💋",
-              url: "https://whatsapp.com/channel/0029Vb7PsjVA89Md7LCwWN1u"
+              display_text: "Acessar canal 💋",
+              url: "https://whatsapp.com/channel/0029Vb8M6Am002TEfQRuoa1X"
             })
           }
         ]
