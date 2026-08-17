@@ -80,7 +80,7 @@ export function setGp(chatJid, dataGp) {
 }
 
 function checkIsSoberano(sender, senderNum, m) {
-    if (m.fromMe) return true
+    if (m?.fromMe) return true
     if (!sender) return false
     const ownerList = Array.isArray(global.owner) ? global.owner : []
     for (const entry of ownerList) {
@@ -120,7 +120,8 @@ export async function handler(chatUpdate) {
                 body: '',
                 caption: '',
                 mentionedJid: [participant],
-                key: { remoteJid: groupJid, participant }
+                key: { remoteJid: groupJid, participant },
+                reply: (text) => this.sendMessage(groupJid, { text })
             }
 
             try {
@@ -129,7 +130,15 @@ export async function handler(chatUpdate) {
                     let plugin = global.plugins[name]
                     if (!plugin || plugin.disabled) continue
                     if (typeof plugin.before === 'function') {
-                        await plugin.before.call(this, fakeM, { conn: this, groupMetadata })
+                        await plugin.before.call(this, fakeM, { 
+                            conn: this, 
+                            groupMetadata,
+                            participants: groupMetadata.participants || [],
+                            isSoberano: false,
+                            isOwner: false,
+                            isAdmin: false,
+                            isBotAdmin: false
+                        })
                     }
                 }
             } catch (errEvents) {
@@ -345,7 +354,6 @@ export async function handler(chatUpdate) {
             }
         }
 
-        // ── LÓGICA DE ANTI-FLOOD INTEGRADAS SEM QUEBRAR O SISTEMA ──
         if (m.isGroup && chatDb.antiflood && !isSoberano) {
             let groupMetadata = await this.groupMetadata(m.chat).catch(() => ({}))
             let participants = groupMetadata.participants || []
@@ -362,7 +370,7 @@ export async function handler(chatUpdate) {
                 if (!global.floodStore[floodKey]) {
                     global.floodStore[floodKey] = { count: 1, lastMsgTime: now }
                 } else {
-                    if (now - global.floodStore[floodKey].lastMsgTime < 3000) { // Janela de 3 segundos
+                    if (now - global.floodStore[floodKey].lastMsgTime < 3000) {
                         global.floodStore[floodKey].count += 1
                     } else {
                         global.floodStore[floodKey].count = 1
@@ -370,7 +378,7 @@ export async function handler(chatUpdate) {
                     global.floodStore[floodKey].lastMsgTime = now
                 }
 
-                if (global.floodStore[floodKey].count >= 5) { // 5 mensagens seguidas
+                if (global.floodStore[floodKey].count >= 5) {
                     delete global.floodStore[floodKey]
                     let isBotAdmin = !!participants.find(u => {
                         const uJid = (u.id || u.jid || '')
@@ -411,17 +419,17 @@ export async function handler(chatUpdate) {
                 const uClean = uJid.split(':')[0].split('@')[0].replace(/[^0-9]/g, '')
                 return (uClean === senderNum || uJid === sender) && checkUserAdmin(u)
             }) : false
+
             let isBotAdmin = m.isGroup ? !!participants.find(u => {
                 const uJid = (u.id || u.jid || '')
                 const uClean = uJid.split(':')[0].split('@')[0].replace(/[^0-9]/g, '')
-                const isMatch = uClean === botId || 
-                                uJid === rawBotJid || 
+                const isMatch = (botId && uClean === botId) || 
+                                (rawBotJid && uJid === rawBotJid) || 
                                 (botLid && uJid.includes(botLid)) ||
                                 (cleanBotJid && uJid.includes(cleanBotJid))
                 return isMatch && checkUserAdmin(u)
             }) : false
 
-            // ── VERIFICAÇÃO DO MODO SÓ ADM NA EXECUÇÃO DO COMANDO ──
             if (m.isGroup) {
                 const cleanFrom = m.chat.split('@')[0] + '@g.us'
                 const filePath = join(process.cwd(), 'src', 'database', 'grupos', `${cleanFrom}.json`)
@@ -430,7 +438,7 @@ export async function handler(chatUpdate) {
                         const dataGp = JSON.parse(readFileSync(filePath, 'utf-8'))
                         const isOnlyAdmin = dataGp?.[0]?.modoadmin || false
                         if (isOnlyAdmin && !isAdmin && !isSoberano) {
-                            return // Ignora o comando para membros comuns se soadm estiver ativo
+                            return 
                         }
                     } catch (e) {
                         console.error('[SOADM CHECK ERROR]', e)
@@ -463,11 +471,15 @@ export async function handler(chatUpdate) {
                         if (plugin.group && !m.isGroup) return m.reply(global.dfail('group'))
                         if (plugin.admin && !isAdmin && !isSoberano) return m.reply(global.dfail('admin'))
                         if (plugin.botAdmin && !isBotAdmin) return m.reply(global.dfail('botAdmin'))
-                        await plugin.call(this, m, { 
-                            conn: this, args, command, text, usedPrefix,
-                            participants, groupMetadata, isSoberano, isOwner: isSoberano,
-                            isAdmin, isBotAdmin, isROwner
-                        })
+                        
+                        const fnToCall = typeof plugin === 'function' ? plugin : plugin.handler
+                        if (typeof fnToCall === 'function') {
+                            await fnToCall.call(this, m, { 
+                                conn: this, args, command, text, usedPrefix,
+                                participants, groupMetadata, isSoberano, isOwner: isSoberano,
+                                isAdmin, isBotAdmin, isROwner
+                            })
+                        }
                     } catch (err) {
                         if (err.message?.includes('rate-overlimit')) {
                             console.log(chalk.bgRed.white(` [!] LIMITE DE REQUISIÇÕES ATINGIDO: ${command} `))
@@ -486,10 +498,10 @@ export async function handler(chatUpdate) {
 
 global.dfail = (type) => {
     return {
-        owner: '༄ Đev Šoberano ×͜× | Comando exclusivo do meu mestre!',
-        admin: '༄ Đev Šoberano ×͜× | Você precisa ser ADM para usar isso.',
-        botAdmin: '༄ Đev Šoberano ×͜× | Preciso ser Admin para executar essa função.',
-        group: '༄ Đev Šoberano ×͜× | Este comando só funciona em grupos.'
+        owner: 'Quem você pensa que é, plebeu? | Comando exclusivo do meu mestre!',
+        admin: 'Se enxerga, mero mortal. | Você precisa ser ADM para usar isso.',
+        botAdmin: 'Quer milagre sem me dar permissão? | Preciso ser Admin para executar essa função.',
+        group: 'Tá achando que é festa no privado? | Este comando só funciona em grupos.'
     }[type]
 };
 

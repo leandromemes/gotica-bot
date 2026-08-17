@@ -7,54 +7,81 @@
  * @project Gotica Bot
  */
 
-const handler = async (m, { conn, args, participants, command, isAdmin, isOwner }) => {
-  // Esculacho para curiosos
-  if (!isAdmin && !isOwner) return m.reply('🤔 Quem você pensa que é? Você não passa de um inseto insignificante nesse grupo. Só o Soberano ou os ADMs têm o direito de fazer uma limpa aqui!')
-
-  const ddd = args[0]
-  if (!ddd || !ddd.startsWith('+')) {
-    return m.reply(`*🦇 Erro:* Você deve especificar um DDD válido com o sinal de +.\nExemplo: *.${command} +5511*`)
+const handler = async (m, { conn, args, command }) => {
+  const input = args[0]
+  if (!input) {
+    return m.reply(`*🦇 Erro:* Você deve especificar um DDD ou Prefixo válido.\nExemplo: *.${command} 16* ou *.${command} +5516*`)
   }
 
-  const botNumber = conn.user.id.split(':')[0]
-  const groupMetadata = await conn.groupMetadata(m.chat)
-  const admins = groupMetadata.participants.filter(p => p.admin).map(p => p.id)
-
-  const matching = participants.filter(p => 
-    p.id.startsWith(ddd.replace('+', '')) &&
-    p.id !== botNumber &&
-    !admins.includes(p.id)
-  )
-
-  // Comando para LISTAR os números por DDD
-  if (command === 'listaddd') {
-    if (matching.length === 0) return m.reply(`*🦇 Erro:* Não encontrei nenhum usuário com o DDD/Prefixo ${ddd}`)
-
-    const lista = matching.map((p, i) => `${i + 1}. wa.me/${p.id.split('@')[0]}`).join('\n')
-    return m.reply(`🔎 *Lista de usuários com o DDD ${ddd}:*\n\n${lista}`)
+  // Limpa caracteres especiais mantendo apenas números
+  const cleanInput = input.replace(/[^0-9]/g, '')
+  if (!cleanInput) {
+    return m.reply(`*🦇 Erro:* DDD/Prefixo inválido.\nExemplo: *.${command} 16* ou *.${command} 5516*`)
   }
 
-  // Comando para BANIR os números por DDD
-  if (command === 'banddd') {
-    if (matching.length === 0) return m.reply(`*🦇 Erro:* Não encontrei usuários para expulsar com o DDD ${ddd}`)
-
-    m.reply(`*🌑 Iniciando extermínio de ${matching.length} insetos...*`)
-
-    for (let p of matching) {
-      // Delay de 0.5s conforme solicitado para ser rápido e seguro
-      await new Promise(resolve => setTimeout(resolve, 500))
-      await conn.groupParticipantsUpdate(m.chat, [p.id], 'remove').catch(_ => null)
-    }
-    return m.reply(`*✅ Sucesso:* O DDD ${ddd} foi limpo. ${matching.length} usuários foram removidos.`)
+  // Se o usuário passou apenas 2 dígitos (ex: "16"), assume Brasil e adiciona 55 na frente
+  let targetPrefixes = []
+  if (cleanInput.length === 2) {
+    targetPrefixes.push(`55${cleanInput}`)
+  } else if (cleanInput.startsWith('55') && cleanInput.length === 4) {
+    targetPrefixes.push(cleanInput) // Ex: 5516
+  } else {
+    targetPrefixes.push(cleanInput) // Qualquer DDI/Prefixo customizado (ex: 63975)
   }
+
+  // Obter metadados do grupo e participantes
+  const groupMetadata = await conn.groupMetadata(m.chat).catch(() => ({}))
+  const groupParticipants = groupMetadata.participants || []
+
+  // Identifica o ID do bot para ignorá-lo na lista
+  const botJid = conn.user.jid || conn.user.id || ''
+  const botNumber = botJid.split(':')[0].split('@')[0].replace(/[^0-9]/g, '')
+
+  const admins = groupParticipants.filter(p => p.admin).map(p => p.id)
+
+  // Filtra participantes que coincidem com os prefixos calculados
+  // O número de telefone real fica em p.jid, não em p.id (que é sempre LID)
+  const matchingParticipants = groupParticipants.filter(p => {
+    const realNumberJid = p.jid || p.id
+    const userNum = realNumberJid.split('@')[0].split(':')[0].replace(/[^0-9]/g, '')
+    if (!userNum || userNum === botNumber) return false
+
+    return targetPrefixes.some(prefix => userNum.startsWith(prefix))
+  })
+
+  if (matchingParticipants.length === 0) {
+    return m.reply(`*🦇 Erro:* Não encontrei nenhum participante com o DDD/Prefixo *${input}* neste grupo.`)
+  }
+
+  // Busca o nome de cada participante (banco/cache é indexado pelo LID, então usa p.id)
+  const listaItens = await Promise.all(matchingParticipants.map(async (p, i) => {
+    const isUserAdmin = admins.includes(p.id)
+    const realNumberJid = p.jid || p.id
+    const cleanNum = realNumberJid.split('@')[0].split(':')[0].replace(/[^0-9]/g, '')
+
+    let nome =
+      global.db?.data?.users?.[p.id]?.name ||
+      global.db?.data?.users?.[p.id]?.pushName ||
+      conn.contacts?.[p.id]?.name ||
+      (await conn.getName(p.id)) ||
+      `+${cleanNum}`
+
+    if (!nome || nome === 'undefined') nome = `+${cleanNum}`
+
+    return `${i + 1}. *${nome}* — +${cleanNum}${isUserAdmin ? ' *[ADM]*' : ''}`
+  }))
+
+  const lista = listaItens.join('\n')
+
+  return m.reply(`🔎 *Lista de participantes com o DDD/Prefixo ${input}:*\n\n${lista}`)
 }
 
-handler.help = ['banddd']
+handler.help = ['listaddd <ddd>']
 handler.tags = ['admin']
-handler.command = ['listaddd', 'banddd'] // Handlers atualizados
+handler.command = ['listaddd']
 handler.group = true
 handler.admin = true
 handler.botAdmin = true
-handler.register = false 
+handler.register = false
 
 export default handler
