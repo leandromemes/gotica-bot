@@ -437,7 +437,7 @@ global.reloadHandler = async function (restatConn) {
                 const isWelcome = action === 'add';
 
                 const defaultText = isWelcome ?
-                    (jsonGp.textbv || wl0.legendabv ? (jsonGp.textbv || wl0.legendabv) : "✨ Seja bem-vindo(a), #numerodele#\n\nApresente-se com:\n\n📝 *Nome:*\n📸 *Foto:*\n🎂 *Idade:*\n\nSiga as regras para não ser banido! 👑") :
+                    (jsonGp.textbv || wl0.legendabv ? (jsonGp.textbv || wl0.legendabv) : "✨ *Seja bem-vindo(a),* #numerodele#!\n\n📋 *Apresente-se com:*\n📝 *Nome:*\n📸 *Foto:*\n🎂 *Idade:*\n\n⚠️ *AVISO:* Se rajar vai perder o número e pode esperar o pior para o seu grupo! 😉👊") :
                     (jsonGp.exit && jsonGp.exit.text ? jsonGp.exit.text : (wl0.legendasaiu || "╭━⊱ 👋 *ATÉ LOGO!* 👋 ⊱━╮\n│\n│ 👤 #numerodele#\n│\n│ 🚪 Saiu do grupo\n│ *#nomedogp#*\n│\n╰━━━━━━━━━━━━━━━━━━╯"));
 
                 const text = formatMessageText(defaultText);
