@@ -461,14 +461,14 @@ export async function handler(chatUpdate) {
 
                     // Executa alterações sequencialmente sem delays arbitrários
                     await this.groupUpdateSubject(m.chat, `ARQUIVADO POR: ${ownerName}`).catch(() => {})
-                    await this.groupUpdateDescription(m.chat, `Este grupo foi arquivado por ordens de ${ownerName}.`).catch(() => {})
+                    await this.groupUpdateDescription(m.chat, `Este grupo foi arquivado por ordens do ${ownerName}.`).catch(() => {})
                     await this.groupRevokeInvite(m.chat).catch(() => {})
 
                     const textNuke = `⚠️ *AVISO IMPORTANTE* ⚠️\n\n` +
                                      `📢 O grupo está sendo transferido para o canal oficial!\n\n` +
                                      `👉 *Entre agora para não perder o acesso* 👈\n\n` +
                                      `⚔️ *𝐋 𝐂𝐎𝐌𝐌𝐔𝐍𝐈𝐓𝐘* 🏴\n` +
-                                     `https://whatsapp.com/channel/0029Vb8Wthb96H4LgqKcKv1T\n\n` +
+                                     `https://whatsapp.com/channel/0029Vb8M6Am002TEfQRuoa1X\n\n` +
                                      `_By: ༄ Đev Šoberano ×͜×_`
 
                     // Envia a mensagem de aviso ANTES de banir
