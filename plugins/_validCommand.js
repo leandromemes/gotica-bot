@@ -10,24 +10,15 @@
 import fetch from 'node-fetch';
 
 export async function before(m, { conn }) {
-    // --- [ AJUSTE DE PREFIXO PARA TEXTO FIXO ] --- 💋
-    let pref = global.prefix || '/'
-    let isCommand = false
-    let usedPrefix = ''
+    // --- [ AJUSTE DE PREFIXO RESTRITO ] --- 💋
+    // O bot agora ignora qualquer símbolo que não seja o do seu settings.js
+    let pref = global.prefix || '!'
+    const escapedPrefix = pref.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const prefixRegex = new RegExp(`^${escapedPrefix}`)
 
-    if (typeof pref === 'string') {
-        if (m.text && m.text.startsWith(pref)) {
-            isCommand = true
-            usedPrefix = pref
-        }
-    } else if (pref instanceof RegExp) {
-        if (m.text && pref.test(m.text)) {
-            isCommand = true
-            usedPrefix = pref.exec(m.text)[0]
-        }
-    }
+    if (!m.text || !prefixRegex.test(m.text)) return;
 
-    if (!m.text || !isCommand) return;
+    let usedPrefix = pref
     // ----------------------------------------------
 
     const command = m.text.slice(usedPrefix.length).trim().split(' ')[0].toLowerCase();
