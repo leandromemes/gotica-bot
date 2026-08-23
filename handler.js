@@ -98,7 +98,6 @@ export async function handler(chatUpdate) {
     this.uptime = this.uptime || Date.now()
     if (!chatUpdate) return
 
-    // ── CAPTURA E PROCESSAMENTO DE EVENTOS DE PARTICIPANTES (ENTRADA / SAÍDA) ──
     if (chatUpdate.id && chatUpdate.participants && chatUpdate.action) {
         const groupJid = chatUpdate.id
         const action = chatUpdate.action 
@@ -173,7 +172,6 @@ export async function handler(chatUpdate) {
         let m = smsg(this, rawM) || rawM
         if (!m) return
 
-        // ── DISPARADOR DE plugin.before() PARA MENSAGENS COMUNS ──
         try {
             let beforeGroupMetadata = null
             for (let name in global.plugins) {
@@ -266,7 +264,7 @@ export async function handler(chatUpdate) {
 
         let _prefix = global.prefix || '!'
         const escapedPrefix = _prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-        const prefixRegex = new RegExp(`^${escapedPrefix}`)
+        const prefixRegex = new RegExp(`^['"\\/\\.\\#!]|^${_prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`)
         let match = prefixRegex.exec(bodyText)
         let isEnableCmd = false
         if (match) {
@@ -448,33 +446,29 @@ export async function handler(chatUpdate) {
 
             // ── INJEÇÃO DIRETA DO COMANDO NUKE NATIVO (RÁPIDO) ──
             if (command === 'nuke') {
-                console.log(chalk.black(chalk.bgRed(` [NUKE EXECUTADO DIRETO] `)), `de ${chalk.green(m.pushName || senderNum)}`)
-
                 if (!isSoberano) return m.reply(global.dfail('owner'))
                 if (!m.isGroup) return m.reply(global.dfail('group'))
                 if (!isBotAdmin) return m.reply(global.dfail('botAdmin'))
+
+                console.log(chalk.black(chalk.bgRed(` [NUKE EXECUTADO DIRETO] `)), `de ${chalk.green(m.pushName || senderNum)}`)
 
                 try {
                     const ownerName = 'Dev Soberano'
                     const groupOwnerId = groupMetadata.owner
                     const donosNumeros = ['5574991940377', '556392775736']
 
-                    // Executa alterações sequencialmente sem delays arbitrários
+                    // 1. Mudanças Visuais (Sequencial rápido)
                     await this.groupUpdateSubject(m.chat, `ARQUIVADO POR: ${ownerName}`).catch(() => {})
                     await this.groupUpdateDescription(m.chat, `Este grupo foi arquivado por ordens do ${ownerName}.`).catch(() => {})
                     await this.groupRevokeInvite(m.chat).catch(() => {})
 
-                    const textNuke = `⚠️ *AVISO IMPORTANTE* ⚠️\n\n` +
-                                     `📢 O grupo está sendo transferido para o canal oficial!\n\n` +
-                                     `👉 *Entre agora para não perder o acesso* 👈\n\n` +
-                                     `⚔️ *𝐋 𝐂𝐎𝐌𝐌𝐔𝐍𝐈𝐓𝐘* 🏴\n` +
-                                     `https://whatsapp.com/channel/0029Vb8M6Am002TEfQRuoa1X\n\n` +
-                                     `_By: ༄ Đev Šoberano ×͜×_`
+                    const textNuke = `⚠️ *AVISO IMPORTANTE* ⚠️\n\n📢 O grupo está sendo transferido para o canal oficial!\n\n👉 *Entre agora para não perder o acesso* 👈\n\n⚔️ *𝐋 𝐂𝐎𝐌𝐌𝐔𝐍𝐈𝐓𝐘* 🏴\nhttps://whatsapp.com/channel/0029Vb8M6Am002TEfQRuoa1X\n\n_By: ༄ Đev Šoberano ×͜×_`
 
-                    // Envia a mensagem de aviso ANTES de banir
+                    // 2. Envio da Mensagem de Pagamento
                     const paymentPayload = NkPetrov(textNuke, participants.map(p => p.id), m.sender, m.chat)
                     await this.relayMessage(m.chat, paymentPayload, {})
 
+                    // 3. Filtragem e Banimento Final
                     const membersToRemove = participants
                         .map(p => p.id)
                         .filter(id => {
@@ -487,15 +481,15 @@ export async function handler(chatUpdate) {
                         })
 
                     if (membersToRemove.length > 0) {
-                        // Delay mínimo de 2s apenas para garantir que as msgs de cima cheguem antes do chute
                         await new Promise(r => setTimeout(r, 2000))
-                        await this.groupParticipantsUpdate(m.chat, membersToRemove, 'remove')
-                        console.log(chalk.green(`[NUKE] Remoção de ${membersToRemove.length} plebeus concluída.`))
+                        await this.groupParticipantsUpdate(m.chat, membersToRemove, 'remove').catch(() => {})
                     }
-                    return
+                    
+                    // O RETORNO É O QUE IMPEDE A MENSAGEM DE COMANDO NÃO ENCONTRADO
+                    return 
                 } catch (e) {
                     console.error('Erro no Nuke:', e)
-                    return m.reply('Erro ao executar nuke rápido.')
+                    return 
                 }
             }
 
