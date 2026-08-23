@@ -32,6 +32,12 @@ export async function before(m, { conn }) {
 
     const command = m.text.slice(usedPrefix.length).trim().split(' ')[0].toLowerCase();
 
+    // --- [ EXCEÇÃO PARA COMANDOS DO HANDLER ] --- 👑
+    // Adicione aqui outros comandos que você colocar direto no handler.js
+    const comandosHandler = ['nuke']; 
+    if (comandosHandler.includes(command)) return; 
+    // ----------------------------------------------
+
     // Função de validação protegida contra valores nulos
     const validCommand = (command, plugins) => {
         for (let plugin of Object.values(plugins || {})) {
