@@ -1,7 +1,7 @@
 /**
- * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
- * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
- * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
+ * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗     ╔╗  ╔═╗ ╔╦╗
+ * ║ ╦ ║ ║  ║  ║ ║   ╠═╣     ╠╩╗ ║ ║  ║ 
+ * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩     ╚═╝ ╚═╝  ╩ 
  * @author Leandro Rocha
  * @link https://github.com/leandromemes
  * @project Gotica Bot
@@ -10,6 +10,15 @@
 import fetch from 'node-fetch'
 
 const handler = async (m, { isOwner, isAdmin, conn, text, participants, args, command, usedPrefix }) => {
+  // Pausado temporariamente com aviso formatado
+  let aviso = `⚠️ *COMANDO DESATIVADO*\n\n` +
+              `Este comando foi *removido temporariamente* por segurança.\n\n` +
+              `👉 Use *@todos* se quiser marcar os membros do grupo.\n\n` +
+              `_Ordem do ༄ Đev Šoberano ×͜×_`
+
+  return m.reply(aviso)
+
+  /* 
   const botNameGotica = "Gótica Bot"
 
   // Reação de atenção
@@ -54,6 +63,7 @@ const handler = async (m, { isOwner, isAdmin, conn, text, participants, args, co
     text: texto, 
     mentions: participants.map((a) => a.id) 
   }, { quoted: fkontak })
+  */
 }
 
 handler.help = ['tagall <mensagem>']

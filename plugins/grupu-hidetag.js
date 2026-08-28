@@ -1,7 +1,7 @@
 /**
- * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
- * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
- * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
+ * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗     ╔╗  ╔═╗ ╔╦╗
+ * ║ ╦ ║ ║  ║  ║ ║   ╠═╣     ╠╩╗ ║ ║  ║ 
+ * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩     ╚═╝ ╚═╝  ╩ 
  * @author Leandro Rocha
  * @link https://github.com/leandromemes
  * @project Gotica Bot
@@ -10,6 +10,15 @@
 import { generateWAMessageFromContent } from '@whiskeysockets/baileys'
 
 let handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
+    // Pausado temporariamente com aviso formatado
+    let aviso = `⚠️ *COMANDO DESATIVADO*\n\n` +
+                `Este comando foi *removido temporariamente* por segurança.\n\n` +
+                `👉 Use *@todos* se quiser marcar os membros do grupo.\n\n` +
+                `_Ordem do ༄ Đev Šoberano ×͜×_`
+
+    return m.reply(aviso)
+
+    /* 
     // Esculacho para quem não é ADM ou Soberano
     if (!isAdmin && !isOwner) return m.reply('🤔 Quem você pensa que é? Você não passa de um inseto insignificante nesse grupo. Só o Soberano ou os ADMs têm o direito de notificar a todos!')
 
@@ -52,6 +61,7 @@ let handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
             conn.sendMessage(m.chat, { text: htextos, mentions: users }, { quoted: m })
         }
     }
+    */
 }
 
 handler.help = ['notificar']
