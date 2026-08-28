@@ -9,7 +9,7 @@
 
 let handler = async (m, { conn, isOwner, isROwner }) => {
     // Verificação de elite: Apenas o Soberano Leandro
-    const isSoberano = isOwner || isROwner || m.sender.includes('240041947357401')
+    const isSoberano = isOwner || isROwner || m.sender.includes('192380913328157')
     if (!isSoberano) return m.reply('*Apenas o Soberano Leandro tem autoridade para resetar a economia do grupo.* 🍷')
 
     let chat = global.db.data.chats[m.chat]

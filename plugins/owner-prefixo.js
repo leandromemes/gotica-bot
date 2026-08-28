@@ -13,13 +13,13 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 
   if (!text) {
     await m.react('❓')
-    return m.reply(`*⚠️ Soberano, informe o novo prefix para este grupo.*\n*Exemplo:* \`${usedPrefix + command} #\``)
+    return m.reply(`*⚠️ informe o novo prefix para este grupo.*\n*Exemplo:* \`${usedPrefix + command} #\``)
   }
 
   // Verifica se o texto não é muito longo (prefixos geralmente são 1 caractere)
   if (text.length > 3) {
     await m.react('❌')
-    return m.reply('*❌ Soberano, o prefix é muito longo. Use no máximo 3 caracteres.*')
+    return m.reply('*❌ o prefix é muito longo. Use no máximo 3 caracteres.*')
   }
 
   // Salva o novo prefixo apenas para este grupo no banco de dados

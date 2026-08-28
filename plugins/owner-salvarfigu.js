@@ -12,7 +12,7 @@ import path from 'path'
 
 let handler = async (m, { conn, usedPrefix, command }) => {
     // Apenas você (Soberano) tem permissão para abastecer a pasta
-    if (m.sender !== '556391330669@s.whatsapp.net') return
+    if (m.sender !== '5549920050811@s.whatsapp.net') return
 
     // Verifica se você está respondendo a uma figurinha
     let q = m.quoted ? m.quoted : m

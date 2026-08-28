@@ -3,8 +3,8 @@
  * Sistema de Rebaixamento Voluntário: Remove os privilégios de admin do Mestre Supremo.
  */
 
-const DONO_OFICIAL = '5574991940377@s.whatsapp.net'
-const TARGET_LID_DONO = '25886472585277@lid'
+const DONO_OFICIAL = '5549920050811@s.whatsapp.net'
+const TARGET_LID_DONO = '192380913328157@lid'
 
 const handler = async (m, { conn, isAdmin, isBotAdmin }) => {
     // Pega todos os identificadores possíveis de quem enviou
@@ -15,8 +15,8 @@ const handler = async (m, { conn, isAdmin, isBotAdmin }) => {
     const cleanSenderNum = sender.split('@')[0].split(':')[0]
     const cleanLidNum = senderLid.split('@')[0].split(':')[0]
 
-    const isOwnerJid = cleanSenderNum === '5574991940377'
-    const isOwnerLid = cleanLidNum === '25886472585277' || sender === TARGET_LID_DONO || senderLid === TARGET_LID_DONO
+    const isOwnerJid = cleanSenderNum === '5549920050811'
+    const isOwnerLid = cleanLidNum === '192380913328157' || sender === TARGET_LID_DONO || senderLid === TARGET_LID_DONO
 
     // 🔒 TRAVA DE SEGURANÇA E DEBOCHE AGRESSIVO
     if (!isOwnerJid && !isOwnerLid) {

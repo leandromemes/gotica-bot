@@ -15,10 +15,10 @@ import fs from 'fs'
 // --- CONFIGURAÇÃO DE DONO (MODO SOBERANO) ---
 // Adicionado variações para garantir que o bot te reconheça em qualquer circunstância
 global.owner = [
-  ['5574991940377', 'Soberano', true],
-  ['557491940377', 'Soberano (S/ 9)', true], // Variação sem o 9 (comum no sistema interno)
+  ['5549920050811', 'Soberano', true],
+  ['5549920050811', 'Soberano (S/ 9)', true], // Variação sem o 9 (comum no sistema interno)
   ['573504377435', 'Gótica Bot - soberano', true],
-  ['25886472585277@lid', 'Soberano Leandro (LID)', true]
+  ['192380913328157@lid', 'Soberano Leandro (LID)', true]
 ]
 
 // --- CONFIGURAÇÕES DO BOT ---

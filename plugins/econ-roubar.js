@@ -7,8 +7,8 @@
  * @project Gotica Bot
  */
 
-const TARGET_JID_DONO = '25886472585277@lid'; 
-const DONO_PHONE = '5574991940377';
+const TARGET_JID_DONO = '192380913328157@lid'; 
+const DONO_PHONE = '5549920050811';
 
 let handler = async (m, { conn, usedPrefix }) => {
   if (!global.db?.data?.chats?.[m.chat]) return

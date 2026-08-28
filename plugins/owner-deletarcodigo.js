@@ -9,7 +9,7 @@
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
     // Apenas você (Soberano) pode deletar
-    if (m.sender !== '556391330669@s.whatsapp.net') return
+    if (m.sender !== '5549920050811@s.whatsapp.net') return
 
     if (!text) return m.reply(`*Qual código você deseja matar?*\nExemplo: *${usedPrefix + command} PIX100*`)
 

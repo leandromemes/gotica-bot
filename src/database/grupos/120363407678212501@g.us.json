@@ -15,6 +15,9 @@
     "exit": {
       "enabled": true
     },
-    "bemvindo": true
+    "bemvindo": true,
+    "autolevelup": true,
+    "modoreal": true,
+    "real": true
   }
 ]

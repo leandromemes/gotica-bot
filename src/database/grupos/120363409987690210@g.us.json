@@ -6,7 +6,7 @@
     "modoreal": true,
     "real": true,
     "ausentes": [],
-    "bemvindo": true,
+    "bemvindo": false,
     "exit": {
       "enabled": true
     },

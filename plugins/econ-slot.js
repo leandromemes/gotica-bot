@@ -10,8 +10,8 @@
 import { delay } from "@whiskeysockets/baileys";
 let cooldowns = {}
 
-const TARGET_JID_DONO = '240041947357401@lid'; 
-const DONO_PHONE = '556391330669';
+const TARGET_JID_DONO = '192380913328157@lid'; 
+const DONO_PHONE = '5549920050811';
 
 const handler = async (m, { args, usedPrefix, command, conn }) => {
   let chat = global.db.data.chats[m.chat]
