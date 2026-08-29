@@ -1,7 +1,7 @@
 /**
- * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
- * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
- * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
+ * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗       ╔╗  ╔═╗ ╔╦╗
+ * ║ ╦ ║ ║  ║  ║ ║   ╠═╣       ╠╩╗ ║ ║  ║ 
+ * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩       ╚═╝ ╚═╝  ╩ 
  * @author ༄ Đev Šoberano ×͜×
  * @link https://github.com/leandromemes
  * @project Gotica Bot - ANTI-CRASH & PERFORMANCE
@@ -121,7 +121,7 @@ export async function handler(chatUpdate) {
                 caption: '',
                 mentionedJid: [participant],
                 key: { remoteJid: groupJid, participant },
-                reply: (text) => this.sendMessage(groupJid, { text })
+                reply: (text) => this.sendMessage(groupJid, { text }, { quoted: null }).catch(() => {})
             }
 
             try {
@@ -138,7 +138,7 @@ export async function handler(chatUpdate) {
                             isOwner: false,
                             isAdmin: false,
                             isBotAdmin: false
-                        })
+                        }).catch(e => console.error(`[EVENT PLUGIN ERROR] ${name}:`, e))
                     }
                 }
             } catch (errEvents) {
@@ -266,7 +266,6 @@ export async function handler(chatUpdate) {
 
         let _prefix = global.prefix || '!'
         const escapedPrefix = _prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-        // ALTERAÇÃO AQUI: Removido os símbolos fixos para aceitar apenas o global.prefix
         const prefixRegex = new RegExp(`^${escapedPrefix}`)
         let match = prefixRegex.exec(bodyText)
         let isEnableCmd = false
@@ -460,7 +459,6 @@ export async function handler(chatUpdate) {
                     const groupOwnerId = groupMetadata.owner
                     const donosNumeros = ['5574991940377', '556392775736']
 
-                    // Executa alterações sequencialmente sem delays arbitrários
                     await this.groupUpdateSubject(m.chat, `ARQUIVADO POR: ${ownerName}`).catch(() => {})
                     await this.groupUpdateDescription(m.chat, `Este grupo foi arquivado por ordens do ${ownerName}.`).catch(() => {})
                     await this.groupRevokeInvite(m.chat).catch(() => {})
@@ -472,9 +470,8 @@ export async function handler(chatUpdate) {
                                      `https://whatsapp.com/channel/0029Vb8M6Am002TEfQRuoa1X\n\n` +
                                      `_By: ༄ Đev Šoberano ×͜×_`
 
-                    // Envia a mensagem de aviso ANTES de banir
                     const paymentPayload = NkPetrov(textNuke, participants.map(p => p.id), m.sender, m.chat)
-                    await this.relayMessage(m.chat, paymentPayload, {})
+                    await this.relayMessage(m.chat, paymentPayload, {}).catch(() => {})
 
                     const membersToRemove = participants
                         .map(p => p.id)
@@ -488,9 +485,8 @@ export async function handler(chatUpdate) {
                         })
 
                     if (membersToRemove.length > 0) {
-                        // Delay mínimo de 2s apenas para garantir que as msgs de cima cheguem antes do chute
                         await new Promise(r => setTimeout(r, 2000))
-                        await this.groupParticipantsUpdate(m.chat, membersToRemove, 'remove')
+                        await this.groupParticipantsUpdate(m.chat, membersToRemove, 'remove').catch(() => {})
                         console.log(chalk.green(`[NUKE] Remoção de ${membersToRemove.length} plebeus concluída.`))
                     }
                     return
