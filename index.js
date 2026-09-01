@@ -22,7 +22,7 @@ import { makeWASocket, protoType, serialize } from './lib/simple.js'
 import { Low, JSONFile } from 'lowdb'
 import readline from 'readline'
 import NodeCache from 'node-cache'
-import { useMultiFileAuthState, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, DisconnectReason } from '@whiskeysockets/baileys'
+import { useMultiFileAuthState, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, DisconnectReason, Browsers } from '@whiskeysockets/baileys'
 import qrcodeTerminal from 'qrcode-terminal'
 
 // Cache de duplicidade para eventos de boas-vindas / saída
@@ -63,8 +63,12 @@ global.__dirname = function dirname(pathURL) {
     return path.dirname(global.__filename(pathURL, true))
 }; 
 const __dirname = global.__dirname(import.meta.url)
+
 const sessionPath = join(__dirname, global.GoticaSession || 'session')
-if (!existsSync(sessionPath)) mkdirSync(sessionPath, { recursive: true })
+if (!existsSync(sessionPath)) {
+    mkdirSync(sessionPath, { recursive: true })
+}
+
 const dbPath = join(__dirname, 'src', 'database')
 if (!existsSync(dbPath)) mkdirSync(dbPath, { recursive: true })
 const databaseFile = join(dbPath, 'database.json')
@@ -82,19 +86,29 @@ await global.loadDatabase()
 console.clear()
 cfonts.say('Gotica Bot', { font: 'chrome', align: 'center', gradient: ['#ff4fcb', '#ff77ff'] })
 cfonts.say('feito por: Dev Soberano', { font: 'console', align: 'center', colors: ['cyan'] })
+
 const { state, saveCreds } = await useMultiFileAuthState(sessionPath)
 const { version } = await fetchLatestBaileysVersion();
 console.log(chalk.cyan(`📱 Usando versão do WhatsApp: ${version.join('.')}`))
+
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
 const question = (texto) => new Promise((resolver) => rl.question(texto, resolver))
 let usePairingCode = false 
+let phoneNumber = ''
+
 if (!state.creds.registered) {
     const opcao = await question(chalk.bold.cyan("\n[?] Escolha o método de conexão:\n1. QR Code (Terminal)\n2. Código de Pareamento (Número)\n---> "))
     usePairingCode = opcao === '2'
+    
+    if (usePairingCode) {
+        phoneNumber = await question(chalk.bgBlack(chalk.bold.greenBright(`\n✦ Digite o número com DDD:\n---> `)))
+        phoneNumber = phoneNumber.replace(/\D/g, '')
+    }
 }
+
 const connectionOptions = {
     logger: pino({ level: 'silent' }),
-    browser: ["Ubuntu", "Chrome", "20.0.04"],
+    browser: Browsers.ubuntu("Chrome"),
     auth: {
         creds: state.creds,
         keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" })),
@@ -108,6 +122,8 @@ const connectionOptions = {
     keepAliveIntervalMs: 30000,
     retryRequestDelayMs: 2500,
     generateHighQualityLinkPreview: true,
+    // Ignora pacotes de histórico / app state corrompidos para evitar Bad MAC
+    shouldIgnoreJid: (jid) => jid?.endsWith('@newsletter') || jid?.includes('status@broadcast'),
     patchMessageBeforeSending: (message) => {
         const requiresPatch = !!(
             message.buttonsMessage ||
@@ -131,21 +147,14 @@ const connectionOptions = {
     },
 }
 global.conn = makeWASocket(connectionOptions);
-if (usePairingCode && !conn.authState.creds.registered) {
-    let phoneNumber = await question(chalk.bgBlack(chalk.bold.greenBright(`\n✦ Digite o número com DDD:\n---> `)))
-    phoneNumber = phoneNumber.replace(/\D/g, '')
-    try {
-        let code = await conn.requestPairingCode(phoneNumber)
-        code = code?.match(/.{1,4}/g)?.join("-") || code
-        console.log(chalk.bold.white(chalk.bgMagenta(`\n✧ SEU CÓDIGO É: ${code} ✧`)))
-    } catch (e) { console.log(chalk.red("\n[❌] Erro ao solicitar código.")) }
-}
+
 let handler = await import('./handler.js')
 let isReconnecting = false
 let reconnectAttempts = 0
 let reconnectTimer = null
 const RECONNECT_BASE_DELAY_MS = 2000
 const RECONNECT_MAX_DELAY_MS = 30000
+
 function scheduleReconnect() {
     if (reconnectTimer) return
     const delay = Math.min(
@@ -238,8 +247,6 @@ global.reloadHandler = async function (restatConn) {
         }
     });
 
-    // Remove listener antigo antes de registrar, evitando duplicação em
-    // reconexões/reloads sucessivos.
     if (global.conn.antiRouboHandler) {
         global.conn.ev.off('group-participants.update', global.conn.antiRouboHandler);
     }
@@ -376,7 +383,6 @@ global.reloadHandler = async function (restatConn) {
             console.error(e) 
         }
     }
-    
 
     // --- [ MANIPULADOR DIRETO DE ENTRADA E SAÍDA COM BOTÃO DE CANAL / NEWSLETTER ] ---
     global.conn.participantsUpdate = async (update) => {
@@ -412,7 +418,6 @@ global.reloadHandler = async function (restatConn) {
             const desc = mdata.desc || ''
 
             for (let participante of participants) {
-                // CORREÇÃO: Garante que participante é processado como string de JID
                 let rawId = typeof participante === 'string' ? participante : (participante?.id || participante?.jid);
                 if (!rawId) continue;
 
@@ -483,6 +488,22 @@ global.reloadHandler = async function (restatConn) {
     global.conn.connectionUpdate = async (update) => {
         const { connection, lastDisconnect, qr } = update
         
+        if (usePairingCode && !global.conn.authState.creds.registered && (qr || connection === 'connecting')) {
+            if (phoneNumber && !global.conn.pairingCodeRequested) {
+                global.conn.pairingCodeRequested = true;
+                setTimeout(async () => {
+                    try {
+                        let code = await global.conn.requestPairingCode(phoneNumber);
+                        code = code?.match(/.{1,4}/g)?.join("-") || code;
+                        console.log(chalk.bold.white(chalk.bgMagenta(`\n✧ SEU CÓDIGO É: ${code} ✧\n`)));
+                    } catch (err) {
+                        console.log(chalk.red("\n[❌] Erro ao solicitar código de pareamento."));
+                        global.conn.pairingCodeRequested = false;
+                    }
+                }, 3000);
+            }
+        }
+
         if (qr && !usePairingCode) {
             console.log(chalk.bold.yellow("\n[!] Escaneie o QR Code abaixo para conectar:"))
             try {
@@ -512,6 +533,7 @@ global.reloadHandler = async function (restatConn) {
     }
     
     global.conn.credsUpdate = saveCreds.bind(global.conn)
+    
     global.conn.ev.on('messages.upsert', global.conn.handler)
     global.conn.ev.on('group-participants.update', global.conn.participantsUpdate)
     global.conn.ev.on('connection.update', global.conn.connectionUpdate)
@@ -520,9 +542,15 @@ global.reloadHandler = async function (restatConn) {
 };
 
 process.on('uncaughtException', function (err) {
+    if (err.code === 'ENOENT' && err.path?.includes('creds.json')) return;
     if (err.message?.includes('Cannot redefine property')) return;
     if (err.message?.includes('Connection Closed') || err.message?.includes('428')) return;
+    if (err.message?.includes('Bad MAC') || err.message?.includes('Failed to decrypt')) return;
     console.error('ERRO CRÍTICO NO SISTEMA:', err);
+});
+
+process.on('unhandledRejection', function (reason) {
+    if (String(reason)?.includes('Bad MAC') || String(reason)?.includes('Failed to decrypt')) return;
 });
 
 const pluginFolder = join(__dirname, 'plugins')
@@ -552,7 +580,7 @@ watchFile(handlerPath, async () => {
     try {
         const freshHandler = await import(`./handler.js?update=${Date.now()}`)
         handler = freshHandler
-        await global.reloadHandler()
+        await global.reloadHandler(false)
     } catch (e) { }
 })
 
@@ -564,4 +592,4 @@ watchFile(file, () => {
 })
 
 await loadPlugins()
-await global.reloadHandler()
+await global.reloadHandler(false)
