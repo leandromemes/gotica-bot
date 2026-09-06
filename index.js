@@ -106,50 +106,15 @@ if (!state.creds.registered) {
     }
 }
 
-// Filtro de Logs para silenciar alertas do Signal/Bad MAC
-const logger = pino({
-    level: 'fatal',
-    hooks: {
-        logMethod(inputArgs, method) {
-            const msg = inputArgs.join(' ');
-            if (msg.includes('Bad MAC') || msg.includes('Failed to decrypt') || msg.includes('Session error')) {
-                return;
-            }
-            return method.apply(this, inputArgs);
-        }
-    }
-});
-
-// KeyStore Seguro protegendo contra falhas de decodificação no Signal
-const baseKeyStore = makeCacheableSignalKeyStore(state.keys, logger);
-const safeSignalKeyStore = {
-    ...baseKeyStore,
-    get: async (type, ids) => {
-        try {
-            return await baseKeyStore.get(type, ids);
-        } catch (e) {
-            return {};
-        }
-    },
-    set: async (data) => {
-        try {
-            return await baseKeyStore.set(data);
-        } catch (e) {
-            return;
-        }
-    }
-};
-
 const connectionOptions = {
-    logger,
+    logger: pino({ level: 'silent' }),
     browser: Browsers.ubuntu("Chrome"),
     auth: {
         creds: state.creds,
-        keys: safeSignalKeyStore,
+        keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" })),
     },
     markOnlineOnConnect: true,
     syncFullHistory: false,
-    shouldSyncHistoryMessage: () => false,
     msgRetryCounterCache,
     version,
     defaultQueryTimeoutMs: 60000, 
@@ -157,7 +122,6 @@ const connectionOptions = {
     keepAliveIntervalMs: 30000,
     retryRequestDelayMs: 2500,
     generateHighQualityLinkPreview: true,
-    // Ignora pacotes de histórico / app state corrompidos para evitar Bad MAC
     shouldIgnoreJid: (jid) => jid?.endsWith('@newsletter') || jid?.includes('status@broadcast'),
     patchMessageBeforeSending: (message) => {
         const requiresPatch = !!(
@@ -577,17 +541,15 @@ global.reloadHandler = async function (restatConn) {
 };
 
 process.on('uncaughtException', function (err) {
-    const msg = err?.message || String(err);
     if (err.code === 'ENOENT' && err.path?.includes('creds.json')) return;
-    if (msg.includes('Cannot redefine property')) return;
-    if (msg.includes('Connection Closed') || msg.includes('428')) return;
-    if (msg.includes('Bad MAC') || msg.includes('Failed to decrypt') || msg.includes('Session error')) return;
+    if (err.message?.includes('Cannot redefine property')) return;
+    if (err.message?.includes('Connection Closed') || err.message?.includes('428')) return;
+    if (err.message?.includes('Bad MAC') || err.message?.includes('Failed to decrypt')) return;
     console.error('ERRO CRÍTICO NO SISTEMA:', err);
 });
 
 process.on('unhandledRejection', function (reason) {
-    const msg = String(reason);
-    if (msg.includes('Bad MAC') || msg.includes('Failed to decrypt') || msg.includes('Session error')) return;
+    if (String(reason)?.includes('Bad MAC') || String(reason)?.includes('Failed to decrypt')) return;
 });
 
 const pluginFolder = join(__dirname, 'plugins')
