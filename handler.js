@@ -1,7 +1,7 @@
 /**
- * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗       ╔╗  ╔═╗ ╔╦╗
- * ║ ╦ ║ ║  ║  ║ ║   ╠═╣       ╠╩╗ ║ ║  ║ 
- * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩       ╚═╝ ╚═╝  ╩ 
+ * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
+ * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
+ * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
  * @author ༄ Đev Šoberano ×͜×
  * @link https://github.com/leandromemes
  * @project Gotica Bot - ANTI-CRASH & PERFORMANCE
@@ -13,6 +13,22 @@ import { unwatchFile, watchFile, existsSync, mkdirSync, writeFileSync, readFileS
 import path, { join } from 'path'
 import chalk from 'chalk'
 import { WAMessageStubType } from '@whiskeysockets/baileys'
+
+// --- [ SILENCIADOR NATIVO DO LIBSIGNAL / BAD MAC ] ---
+const originalConsoleError = console.error;
+console.error = function (...args) {
+    const errorStr = args.map(arg => (typeof arg === 'object' ? format(arg) : String(arg))).join(' ');
+    if (
+        errorStr.includes('Bad MAC') ||
+        errorStr.includes('Session error') ||
+        errorStr.includes('verifyMAC') ||
+        errorStr.includes('doDecryptWhisperMessage') ||
+        errorStr.includes('decryptWithSessions')
+    ) {
+        return;
+    }
+    originalConsoleError.apply(console, args);
+};
 
 const isNumber = x => typeof x === 'number' && !isNaN(x)
 if (!global.groupCache) global.groupCache = {}
