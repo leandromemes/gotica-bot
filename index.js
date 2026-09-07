@@ -6,6 +6,7 @@
  * @link https://github.com/leandromemes
  * @project ༄ Đev Šoberano ×͜× - ANTI-CRASH SYSTEM
  */
+
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '1'
 import './settings.js'
 import { watchFile, unwatchFile, readdirSync, existsSync, mkdirSync, readFileSync } from 'fs'
@@ -37,18 +38,20 @@ try {
     const serviceAccount = require("./serviceAccountKey.json");
     if (!admin.apps.length) {
         admin.initializeApp({
-          credential: admin.credential.cert(serviceAccount),
-          databaseURL: "https://cybersoberano-default-rtdb.firebaseio.com" 
+            credential: admin.credential.cert(serviceAccount),
+            databaseURL: "https://cybersoberano-default-rtdb.firebaseio.com" 
         })
     }
     dbFirebase = admin.database()
 } catch (e) {
-    console.log(chalk.red.bold("\n[⚠️] FIREBASE: Erro nas credenciais."))
+    console.log(chalk.red.bold("\n[⚠️] FIREBASE: Erro nas credenciais ou arquivo ausente."))
 }
-const msgRetryCounterCache = new NodeCache()
+
+const msgRetryCounterCache = new NodeCache({ stdTTL: 3600, checkperiod: 600 })
 const { chain } = lodash
 global.opts = new Object(yargs(process.argv.slice(2)).exitProcess(false).parse())
 if (!global.opts['db']) global.opts['db'] = './src/database/database.json'
+
 if (!global.isProtoInitialized) {
     try {
         protoType()
@@ -56,6 +59,7 @@ if (!global.isProtoInitialized) {
         global.isProtoInitialized = true
     } catch (e) {}
 }
+
 global.__filename = function filename(pathURL = import.meta.url, rmPrefix = platform !== 'win32') {
     return rmPrefix ? /file:\/\/\//.test(pathURL) ? fileURLToPath(pathURL) : pathURL : pathToFileURL(pathURL).toString();
 }; 
@@ -83,6 +87,7 @@ global.loadDatabase = async function loadDatabase() {
     global.db.chain = lodash.chain(global.db.data)
 }
 await global.loadDatabase()
+
 console.clear()
 cfonts.say('Gotica Bot', { font: 'chrome', align: 'center', gradient: ['#ff4fcb', '#ff77ff'] })
 cfonts.say('feito por: Dev Soberano', { font: 'console', align: 'center', colors: ['cyan'] })
@@ -107,7 +112,7 @@ if (!state.creds.registered) {
 }
 
 const connectionOptions = {
-    logger: pino({ level: 'silent' }),
+    logger: pino({ level: 'fatal' }),
     browser: Browsers.ubuntu("Chrome"),
     auth: {
         creds: state.creds,
@@ -119,10 +124,16 @@ const connectionOptions = {
     version,
     defaultQueryTimeoutMs: 60000, 
     connectTimeoutMs: 60000,
-    keepAliveIntervalMs: 30000,
-    retryRequestDelayMs: 2500,
+    keepAliveIntervalMs: 25000,
+    retryRequestDelayMs: 2000,
     generateHighQualityLinkPreview: true,
     shouldIgnoreJid: (jid) => jid?.endsWith('@newsletter') || jid?.includes('status@broadcast'),
+    getMessage: async (key) => {
+        if (global.db.data?.msgs?.[key.id]) {
+            return global.db.data.msgs[key.id]
+        }
+        return { conversation: '' }
+    },
     patchMessageBeforeSending: (message) => {
         const requiresPatch = !!(
             message.buttonsMessage ||
@@ -145,6 +156,7 @@ const connectionOptions = {
         return message;
     },
 }
+
 global.conn = makeWASocket(connectionOptions);
 
 let handler = await import('./handler.js')
@@ -152,7 +164,7 @@ let isReconnecting = false
 let reconnectAttempts = 0
 let reconnectTimer = null
 const RECONNECT_BASE_DELAY_MS = 2000
-const RECONNECT_MAX_DELAY_MS = 30000
+const RECONNECT_MAX_DELAY_MS = 20000
 
 function scheduleReconnect() {
     if (reconnectTimer) return
@@ -179,7 +191,11 @@ global.reloadHandler = async function (restatConn) {
             return true
         }
         isReconnecting = true
-        try { global.conn.ws.close() } catch { }
+        try { 
+            if (global.conn?.ws) {
+                global.conn.ws.close() 
+            }
+        } catch { }
         global.conn = makeWASocket(connectionOptions)
     }
     
@@ -196,55 +212,57 @@ global.reloadHandler = async function (restatConn) {
         global.conn.ev.off('creds.update', global.conn.credsUpdate)
     }
 
-    global.conn.ws.removeAllListeners('encrypted-message');
+    if (global.conn.ws) {
+        global.conn.ws.removeAllListeners('encrypted-message');
 
-    // --- [ SISTEMA ANTI-FLOOD INVISÍVEL (WEBSOCKET) ] ---
-    global.conn.ws.on('encrypted-message', async ({ from, sender, detection }) => {
-        const temSufixoDevice = /:[0-9]+@lid/.test(sender || '');
-        if (!from?.endsWith('@g.us') || !sender || !detection?.hasSkmsg || !temSufixoDevice) return;
-        try {
-            const caminhoAntigo = `./DADOS DO YUTA/grupos/ATIVAÇÕES-YUTA/${from}.json`;
-            const caminhoGotica = `./src/database/grupos/${from}.json`;
-            let caminho = existsSync(caminhoGotica) ? caminhoGotica : caminhoAntigo;
-            if (!existsSync(caminho)) return;
-            const jsonGp = JSON.parse(readFileSync(caminho));
-            const config = Array.isArray(jsonGp) ? jsonGp[0] : jsonGp;
+        // --- [ SISTEMA ANTI-FLOOD INVISÍVEL (WEBSOCKET) ] ---
+        global.conn.ws.on('encrypted-message', async ({ from, sender, detection }) => {
+            const temSufixoDevice = /:[0-9]+@lid/.test(sender || '');
+            if (!from?.endsWith('@g.us') || !sender || !detection?.hasSkmsg || !temSufixoDevice) return;
+            try {
+                const caminhoAntigo = `./DADOS DO YUTA/grupos/ATIVAÇÕES-YUTA/${from}.json`;
+                const caminhoGotica = `./src/database/grupos/${from}.json`;
+                let caminho = existsSync(caminhoGotica) ? caminhoGotica : caminhoAntigo;
+                if (!existsSync(caminho)) return;
+                const jsonGp = JSON.parse(readFileSync(caminho));
+                const config = Array.isArray(jsonGp) ? jsonGp[0] : jsonGp;
 
-            if (!config?.antilinkgp && !config?.antiflood && !config?.antifloodgp) return;
+                if (!config?.antilinkgp && !config?.antiflood && !config?.antifloodgp) return;
 
-            let grpmdt;
-            try { grpmdt = await global.conn.groupMetadata(from) } catch { return }
-            if (!grpmdt?.id.endsWith('@g.us')) return;
-            const membros_ = grpmdt.participants;
-            const groupAdmins_ = getGroupAdmins(membros_);
-            const normalizar = alvo => {
-                if (!alvo) return alvo;
-                if (alvo.includes('@lid') && membros_) {
-                    const lidBase = alvo.split(':')[0] + '@lid';
-                    const encontrado = membros_.find(v => v.lid === lidBase)?.jid;
-                    return encontrado || alvo;
-                }
-                return alvo;
-            };
-            const participante = normalizar(sender);
-            const NumeroDoBot = global.conn.user.id.split(':')[0];
-            if (participante.startsWith(NumeroDoBot)) return;
-            if (groupAdmins_.includes(participante)) return;
-            const botMembro = membros_.find(v => (v.jid || v.id)?.startsWith(NumeroDoBot));
-            const botJid = botMembro?.jid || botMembro?.id;
-            if (!botJid || !groupAdmins_.includes(botJid)) return;
+                let grpmdt;
+                try { grpmdt = await global.conn.groupMetadata(from) } catch { return }
+                if (!grpmdt?.id.endsWith('@g.us')) return;
+                const membros_ = grpmdt.participants;
+                const groupAdmins_ = getGroupAdmins(membros_);
+                const normalizar = alvo => {
+                    if (!alvo) return alvo;
+                    if (alvo.includes('@lid') && membros_) {
+                        const lidBase = alvo.split(':')[0] + '@lid';
+                        const encontrado = membros_.find(v => v.lid === lidBase)?.jid;
+                        return encontrado || alvo;
+                    }
+                    return alvo;
+                };
+                const participante = normalizar(sender);
+                const NumeroDoBot = global.conn.user?.id ? global.conn.user.id.split(':')[0] : '';
+                if (participante.startsWith(NumeroDoBot)) return;
+                if (groupAdmins_.includes(participante)) return;
+                const botMembro = membros_.find(v => (v.jid || v.id)?.startsWith(NumeroDoBot));
+                const botJid = botMembro?.jid || botMembro?.id;
+                if (!botJid || !groupAdmins_.includes(botJid)) return;
 
-            console.log(`[ANTI-FLOOD] Removendo ${participante} de ${from}...`);
-            await global.conn.groupParticipantsUpdate(from, [participante], 'remove');
-            const numeroBanido = participante.split('@')[0];
-            await global.conn.sendMessage(from, {
-                text: `🤨 *SISTEMA DE SEGURANÇA* \n\n@${numeroBanido} foi removido do grupo por *envio de mensagens invisíveis/sistema ativado*.`,
-                mentions: [participante]
-            });
-        } catch (e) {
-            console.log('Erro no detector do WebSocket:', e);
-        }
-    });
+                console.log(`[ANTI-FLOOD] Removendo ${participante} de ${from}...`);
+                await global.conn.groupParticipantsUpdate(from, [participante], 'remove');
+                const numeroBanido = participante.split('@')[0];
+                await global.conn.sendMessage(from, {
+                    text: `🤨 *SISTEMA DE SEGURANÇA*\n\n@${numeroBanido} foi removido do grupo por *envio de mensagens invisíveis/sistema ativado*.`,
+                    mentions: [participante]
+                });
+            } catch (e) {
+                console.log('Erro no detector do WebSocket:', e);
+            }
+        });
+    }
 
     if (global.conn.antiRouboHandler) {
         global.conn.ev.off('group-participants.update', global.conn.antiRouboHandler);
@@ -511,7 +529,8 @@ global.reloadHandler = async function (restatConn) {
                 console.log(chalk.gray(`QR Data: ${qr}`))
             }
         }
-        if (connection == 'open') {
+
+        if (connection === 'open') {
             console.log(chalk.bold.green('\n[SUCCESS] ༄ Đev Šoberano ×͜× | Bot Online!'))
             isReconnecting = false
             reconnectAttempts = 0
@@ -526,8 +545,12 @@ global.reloadHandler = async function (restatConn) {
             if (reason === DisconnectReason.loggedOut) {
                 console.log(chalk.bgRed.white(" [!] SESSÃO DESLOGADA. Apague a pasta de sessão e escaneie novamente. "))
                 return
+            } else if (reason === DisconnectReason.restartRequired || reason === DisconnectReason.connectionLost) {
+                console.log(chalk.yellow("[!] Reinicialização ou conexão perdida. Reconectando imediatamente..."))
+                scheduleReconnect()
+            } else {
+                scheduleReconnect()
             }
-            scheduleReconnect()
         }
     }
     
@@ -543,7 +566,7 @@ global.reloadHandler = async function (restatConn) {
 process.on('uncaughtException', function (err) {
     if (err.code === 'ENOENT' && err.path?.includes('creds.json')) return;
     if (err.message?.includes('Cannot redefine property')) return;
-    if (err.message?.includes('Connection Closed') || err.message?.includes('428')) return;
+    if (err.message?.includes('Connection Closed') || err.message?.includes('428') || err.message?.includes('408')) return;
     if (err.message?.includes('Bad MAC') || err.message?.includes('Failed to decrypt')) return;
     console.error('ERRO CRÍTICO NO SISTEMA:', err);
 });
