@@ -2,7 +2,7 @@
  * Plugin Admin Modo Real - ༄ Đev Šoberano ×͜×
  */
 
-import { simple } from "../../lib/simple.js";
+import { simple } from "../lib/simple.js";
 import config from "../config.js";
 
 export default {
