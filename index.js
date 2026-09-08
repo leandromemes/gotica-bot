@@ -26,8 +26,9 @@ import NodeCache from 'node-cache'
 import { useMultiFileAuthState, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, DisconnectReason, Browsers } from '@whiskeysockets/baileys'
 import qrcodeTerminal from 'qrcode-terminal'
 
-// Cache de duplicidade para eventos de boas-vindas / saída
+// --- [ GLOBAIS DE CONTROLE PERSISTENTE ] ---
 const welcomeEventCache = new Set()
+let pairingCodeRequested = false // FIX: Movido para fora para não resetar na reconexão
 
 // --- [ CONFIGURAÇÃO FIREBASE ] ---
 import admin from 'firebase-admin'
@@ -122,10 +123,10 @@ const connectionOptions = {
     syncFullHistory: false,
     msgRetryCounterCache,
     version,
-    defaultQueryTimeoutMs: 60000, 
-    connectTimeoutMs: 60000,
-    keepAliveIntervalMs: 25000,
-    retryRequestDelayMs: 2000,
+    defaultQueryTimeoutMs: 90000, // Aumentado para 90s (Mais estabilidade VPS)
+    connectTimeoutMs: 90000,       // Aumentado para 90s
+    keepAliveIntervalMs: 30000,    // Aumentado para 30s
+    retryRequestDelayMs: 5000,     // Aumentado para 5s
     generateHighQualityLinkPreview: true,
     shouldIgnoreJid: (jid) => jid?.endsWith('@newsletter') || jid?.includes('status@broadcast'),
     getMessage: async (key) => {
@@ -163,8 +164,8 @@ let handler = await import('./handler.js')
 let isReconnecting = false
 let reconnectAttempts = 0
 let reconnectTimer = null
-const RECONNECT_BASE_DELAY_MS = 2000
-const RECONNECT_MAX_DELAY_MS = 20000
+const RECONNECT_BASE_DELAY_MS = 3000 // Aumentado delay base
+const RECONNECT_MAX_DELAY_MS = 30000
 
 function scheduleReconnect() {
     if (reconnectTimer) return
@@ -423,7 +424,6 @@ global.reloadHandler = async function (restatConn) {
             }
 
             const wl0 = Array.isArray(jsonGp.wellcome) ? jsonGp.wellcome[0] : (jsonGp.wellcome || {})
-
             const isWelcomeEnabled = jsonGp.bemvindo === true || wl0.bemvindo1 === true || wl0.wellcome === true || jsonGp.welcome === true
             const isExitEnabled = jsonGp.exit?.enabled === true || jsonGp.bemvindo === true || wl0.bemvindo1 === true || wl0.legendasaiu != null || jsonGp.legendasaida != null || jsonGp.exit?.text != null
 
@@ -437,10 +437,8 @@ global.reloadHandler = async function (restatConn) {
             for (let participante of participants) {
                 let rawId = typeof participante === 'string' ? participante : (participante?.id || participante?.jid);
                 if (!rawId) continue;
-
                 const userJid = rawId.includes('@') ? rawId : rawId + '@s.whatsapp.net'
                 const userNumber = userJid.split('@')[0]
-
                 const cacheKey = `${grupoId}_${userJid}_${action}`
                 if (welcomeEventCache.has(cacheKey)) continue
                 welcomeEventCache.add(cacheKey)
@@ -449,36 +447,26 @@ global.reloadHandler = async function (restatConn) {
                 const formatMessageText = (txt) => {
                     if (!txt) return ''
                     return txt
-                        .replace(/#nomedogp#/g, subject)
-                        .replace(/#numerodele#/g, `@${userNumber}`)
-                        .replace(/#descrição#/g, desc)
-                        .replace(/@user/g, `@${userNumber}`)
+                        .replace(/#nomedogp#/g, subject).replace(/#numerodele#/g, `@${userNumber}`)
+                        .replace(/#descrição#/g, desc).replace(/@user/g, `@${userNumber}`)
                         .replace(/@subject/g, subject)
                 }
 
                 const isWelcome = action === 'add';
-
                 const defaultText = isWelcome ?
-                    (jsonGp.textbv || wl0.legendabv ? (jsonGp.textbv || wl0.legendabv) : "✨ *Seja bem-vindo(a),* #numerodele#!\n\n📋 *Apresente-se com:*\n📝 *Nome:*\n📸 *Foto:*\n🎂 *Idade:*\n\n⚠️ *AVISO:* Siga as regras, e Se flodar links aqui ja pode esperar o pior para o seu grupo! 😉👊") :
-                    (jsonGp.exit && jsonGp.exit.text ? jsonGp.exit.text : (wl0.legendasaiu || "╭━⊱ 👋 *ATÉ LOGO!* 👋 ⊱━╮\n│\n│ 👤 #numerodele#\n│\n│ 🚪 Saiu do grupo\n│ *#nomedogp#*\n│\n╰━━━━━━━━━━━━━━━━━━╯"));
+                    (jsonGp.textbv || wl0.legendabv ? (jsonGp.textbv || wl0.legendabv) : "Seja bem vindo!") :
+                    (jsonGp.exit && jsonGp.exit.text ? jsonGp.exit.text : (wl0.legendasaiu || "Até logo!"));
 
                 const text = formatMessageText(defaultText);
-
                 let profilePicUrl = 'https://raw.githubusercontent.com/nazuninha/uploads/main/outros/1747053564257_bzswae.bin';
                 try {
                     const pp = await global.conn.profilePictureUrl(userJid, 'image');
                     if (pp) profilePicUrl = pp;
-                } catch {
-                    const fallbackLocalPath = join(process.cwd(), 'media', 'neutra.jpg');
-                    if (existsSync(fallbackLocalPath)) {
-                        profilePicUrl = fallbackLocalPath;
-                    }
-                }
+                } catch {}
 
                 const mentions = [userJid];
-
                 let msgObject = {
-                    image: profilePicUrl.startsWith('http') ? { url: profilePicUrl } : readFileSync(profilePicUrl),
+                    image: { url: profilePicUrl },
                     caption: text,
                     mentions: mentions,
                     contextInfo: {
@@ -492,70 +480,50 @@ global.reloadHandler = async function (restatConn) {
                         }
                     }
                 };
-
-                await global.conn.sendMessage(grupoId, msgObject).catch(async (e) => {
-                    console.error('[ERRO AO ENVIAR WELCOME/EXIT]:', e);
-                });
+                await global.conn.sendMessage(grupoId, msgObject).catch(() => {});
             }
-        } catch (e) {
-            console.error('[PARTICIPANTS UPDATE ERROR]:', e)
-        }
+        } catch (e) { console.error(e) }
     }
     
     global.conn.connectionUpdate = async (update) => {
         const { connection, lastDisconnect, qr } = update
         
+        // FIX PAIRING CODE LOOP VPS
         if (usePairingCode && !global.conn.authState.creds.registered && (qr || connection === 'connecting')) {
-            if (phoneNumber && !global.conn.pairingCodeRequested) {
-                global.conn.pairingCodeRequested = true;
+            if (phoneNumber && !pairingCodeRequested) {
+                pairingCodeRequested = true;
                 setTimeout(async () => {
                     try {
                         let code = await global.conn.requestPairingCode(phoneNumber);
-                        code = code?.match(/.{1,4}/g)?.join("-") || code;
-                        console.log(chalk.bold.white(chalk.bgMagenta(`\n✧ SEU CÓDIGO É: ${code} ✧\n`)));
-                    } catch (err) {
-                        console.log(chalk.red("\n[❌] Erro ao solicitar código de pareamento."));
-                        global.conn.pairingCodeRequested = false;
-                    }
+                        console.log(chalk.white(chalk.bgMagenta(`\n✧ SEU CÓDIGO É: ${code?.match(/.{1,4}/g)?.join("-") || code} ✧\n`)));
+                    } catch { pairingCodeRequested = false }
                 }, 3000);
             }
         }
 
         if (qr && !usePairingCode) {
             console.log(chalk.bold.yellow("\n[!] Escaneie o QR Code abaixo para conectar:"))
-            try {
-                qrcodeTerminal.generate(qr, { small: true })
-            } catch (err) {
-                console.log(chalk.gray(`QR Data: ${qr}`))
-            }
+            qrcodeTerminal.generate(qr, { small: true })
         }
 
         if (connection === 'open') {
             console.log(chalk.bold.green('\n[SUCCESS] ༄ Đev Šoberano ×͜× | Bot Online!'))
-            isReconnecting = false
-            reconnectAttempts = 0
+            isReconnecting = false; reconnectAttempts = 0; pairingCodeRequested = false;
         }
         
         if (connection === 'close') {
-            const boomError = new Boom(lastDisconnect?.error)
-            const reason = boomError?.output?.statusCode
-            console.log(chalk.red(`\n[!] Conexão fechada. Razão: ${reason}`))
+            const reason = new Boom(lastDisconnect?.error)?.output?.statusCode
             isReconnecting = false
-            
             if (reason === DisconnectReason.loggedOut) {
-                console.log(chalk.bgRed.white(" [!] SESSÃO DESLOGADA. Apague a pasta de sessão e escaneie novamente. "))
+                console.log(chalk.bgRed("Sessão deslogada!"))
                 return
-            } else if (reason === DisconnectReason.restartRequired || reason === DisconnectReason.connectionLost) {
-                console.log(chalk.yellow("[!] Reinicialização ou conexão perdida. Reconectando imediatamente..."))
-                scheduleReconnect()
-            } else {
-                scheduleReconnect()
             }
+            console.log(chalk.yellow("[!] Reinicializando por instabilidade..."))
+            scheduleReconnect()
         }
     }
     
     global.conn.credsUpdate = saveCreds.bind(global.conn)
-    
     global.conn.ev.on('messages.upsert', global.conn.handler)
     global.conn.ev.on('group-participants.update', global.conn.participantsUpdate)
     global.conn.ev.on('connection.update', global.conn.connectionUpdate)
@@ -563,55 +531,21 @@ global.reloadHandler = async function (restatConn) {
     return true
 };
 
-process.on('uncaughtException', function (err) {
-    if (err.code === 'ENOENT' && err.path?.includes('creds.json')) return;
-    if (err.message?.includes('Cannot redefine property')) return;
-    if (err.message?.includes('Connection Closed') || err.message?.includes('428') || err.message?.includes('408')) return;
-    if (err.message?.includes('Bad MAC') || err.message?.includes('Failed to decrypt')) return;
-    console.error('ERRO CRÍTICO NO SISTEMA:', err);
-});
-
-process.on('unhandledRejection', function (reason) {
-    if (String(reason)?.includes('Bad MAC') || String(reason)?.includes('Failed to decrypt')) return;
-});
+// PREVENÇÃO DE CRASH PARA VPS
+process.on('uncaughtException', (err) => {
+    const ignorar = ['Bad MAC', 'decryption', 'Connection Closed', '408', '428', 'ECONNRESET']
+    if (ignorar.some(m => err.message.includes(m))) return
+    console.error('ERRO:', err)
+})
 
 const pluginFolder = join(__dirname, 'plugins')
 global.plugins = {}
 async function loadPlugins() {
     for (const filename of readdirSync(pluginFolder).filter(f => f.endsWith('.js'))) {
-        const file = join(pluginFolder, filename)
-        try {
-            const fileUrl = pathToFileURL(file).href
-            const module = await import(fileUrl + '?update=' + Date.now())
-            global.plugins[filename] = module.default || module
-        } catch (e) { }
-        unwatchFile(file) 
-        watchFile(file, async () => {
-            try {
-                const fileUrl = pathToFileURL(file).href
-                const module = await import(fileUrl + '?update=' + Date.now())
-                global.plugins[filename] = module.default || module
-            } catch (e) { }
-        })
+        const module = await import(pathToFileURL(join(pluginFolder, filename)).href + `?update=${Date.now()}`)
+        global.plugins[filename] = module.default || module
     }
 }
-
-const handlerPath = join(__dirname, 'handler.js')
-unwatchFile(handlerPath)
-watchFile(handlerPath, async () => {
-    try {
-        const freshHandler = await import(`./handler.js?update=${Date.now()}`)
-        handler = freshHandler
-        await global.reloadHandler(false)
-    } catch (e) { }
-})
-
-let file = fileURLToPath(import.meta.url)
-watchFile(file, () => {
-    unwatchFile(file)
-    console.log(chalk.redBright("Atualizado 'index.js'"))
-    import(pathToFileURL(file).href + `?update=${Date.now()}`)
-})
 
 await loadPlugins()
 await global.reloadHandler(false)
