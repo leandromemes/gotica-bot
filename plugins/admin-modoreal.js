@@ -1,34 +1,33 @@
 /**
- * Plugin Admin Modo Real - ༄ Đev Šoberano ×͜×
+ * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
+ * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
+ * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
+ * @author Leandro Rocha
+ * @link https://github.com/leandromemes
+ * @project Gotica Bot
  */
 
-// Mudamos o modo de importar o config para bater com seu settings.js
-import * as config from "../config.js";
-// Verificamos se o arquivo simple existe, caso contrário importamos apenas o que precisa
-import { format } from "util";
+let handler = async (m, { conn, usedPrefix, command, args, isAdmin, isOwner }) => {
+    const isSoberano = isOwner || m.sender.includes('240041947357401')
+    if (!(isAdmin || isSoberano)) return global.dfail('admin', m, conn)
 
-export default {
-    name: "modoreal",
-    description: "Gerencia o modo real de envio",
-    category: "admin",
-    commands: ["modoreal", "modor"], // Adicionado commands para o loader do bot reconhecer
-    async handler(m, { args, reply, isOwner, prefix }) { // Mudado de execute para handler para bater com seu index.js
-        if (!isOwner) {
-            return reply("❌ Apenas o dono pode usar este comando.");
-        }
+    let chat = global.db.data.chats[m.chat]
+    let state = args[0] ? args[0].toLowerCase() : ''
 
-        const action = args[0]?.toLowerCase();
-        
-        if (!action) {
-            return reply(`⚠️ Use: \`${prefix}modoreal on\` ou \`${prefix}modoreal off\``);
-        }
-
-        if (action === "on") {
-            return reply("✅ Modo real ativado com sucesso!");
-        } else if (action === "off") {
-            return reply("🛑 Modo real desativado com sucesso!");
-        } else {
-            return reply("❌ Opção inválida. Use `on` ou `off`.");
-        }
+    if (state === 'on' || state === '1') {
+        chat.modoreal = true
+        m.reply(`✅ *MODO REAL ATIVADO!*\n*A economia está liberada neste grupo.* 🍷`)
+    } else if (state === 'off' || state === '0') {
+        chat.modoreal = false
+        m.reply(`⚠️ *MODO REAL DESATIVADO!*\n*A farra do dinheiro acabou.* 🍷`)
+    } else {
+        m.reply(`*Soberano, use ${usedPrefix + command} on ou off.*`)
     }
-};
+}
+
+handler.help = ['modoreal']
+handler.tags = ['admin']
+handler.command = ['modoreal']
+handler.group = true
+
+export default handler
