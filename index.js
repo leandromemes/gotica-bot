@@ -28,6 +28,9 @@ import qrcodeTerminal from 'qrcode-terminal'
 // Cache de duplicidade para eventos de boas-vindas / saída
 const welcomeEventCache = new Set()
 
+// Registro do horário em que o bot ligou (para ignorar mensagens antigas/anteriores)
+const botStartTime = Date.now()
+
 // --- [ CONFIGURAÇÃO FIREBASE ] ---
 import admin from 'firebase-admin'
 import { createRequire } from 'module';
@@ -37,8 +40,8 @@ try {
     const serviceAccount = require("./serviceAccountKey.json");
     if (!admin.apps.length) {
         admin.initializeApp({
-          credential: admin.credential.cert(serviceAccount),
-          databaseURL: "https://cybersoberano-default-rtdb.firebaseio.com" 
+         credential: admin.credential.cert(serviceAccount),
+         databaseURL: "https://cybersoberano-default-rtdb.firebaseio.com" 
         })
     }
     dbFirebase = admin.database()
@@ -150,6 +153,7 @@ const connectionOptions = {
     markOnlineOnConnect: true,
     syncFullHistory: false,
     shouldSyncHistoryMessage: () => false,
+    printQRInTerminal: false,
     msgRetryCounterCache,
     version,
     defaultQueryTimeoutMs: 60000, 
@@ -157,7 +161,7 @@ const connectionOptions = {
     keepAliveIntervalMs: 30000,
     retryRequestDelayMs: 2500,
     generateHighQualityLinkPreview: true,
-    // Ignora pacotes de histórico / app state corrompidos para evitar Bad MAC
+    // Ignora pacotes de histórico / app state corrompidos e bloqueia o processamento de mensagens retroativas
     shouldIgnoreJid: (jid) => jid?.endsWith('@newsletter') || jid?.includes('status@broadcast'),
     patchMessageBeforeSending: (message) => {
         const requiresPatch = !!(
@@ -413,6 +417,17 @@ global.reloadHandler = async function (restatConn) {
     const currentHandler = handler.handler || handler.default?.handler || handler.default || handler;
     global.conn.handler = async (chatUpdate) => {
         try { 
+            // Ignora mensagens cujo timestamp seja anterior ao momento em que o bot ligou
+            if (chatUpdate.messages && chatUpdate.messages.length > 0) {
+                chatUpdate.messages = chatUpdate.messages.filter(msg => {
+                    const msgTime = (msg.messageTimestamp || 0) * 1000;
+                    if (msgTime > 0 && msgTime < botStartTime) {
+                        return false;
+                    }
+                    return true;
+                });
+                if (chatUpdate.messages.length === 0) return;
+            }
             await currentHandler.call(global.conn, chatUpdate) 
         } catch (e) { 
             console.error(e) 
