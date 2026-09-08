@@ -2,15 +2,17 @@
  * Plugin Admin Modo Real - ༄ Đev Šoberano ×͜×
  */
 
-import { simple } from "../lib/simple.js";
-import config from "../config.js";
+// Mudamos o modo de importar o config para bater com seu settings.js
+import * as config from "../config.js";
+// Verificamos se o arquivo simple existe, caso contrário importamos apenas o que precisa
+import { format } from "util";
 
 export default {
     name: "modoreal",
     description: "Gerencia o modo real de envio",
     category: "admin",
-    cooldown: 3,
-    async execute({ conn, m, args, reply, isOwner }) {
+    commands: ["modoreal", "modor"], // Adicionado commands para o loader do bot reconhecer
+    async handler(m, { args, reply, isOwner, prefix }) { // Mudado de execute para handler para bater com seu index.js
         if (!isOwner) {
             return reply("❌ Apenas o dono pode usar este comando.");
         }
@@ -18,7 +20,7 @@ export default {
         const action = args[0]?.toLowerCase();
         
         if (!action) {
-            return reply("⚠️ Use: `/modoreal on` ou `/modoreal off`", { parse_mode: "Markdown" });
+            return reply(`⚠️ Use: \`${prefix}modoreal on\` ou \`${prefix}modoreal off\``);
         }
 
         if (action === "on") {
