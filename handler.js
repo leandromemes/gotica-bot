@@ -473,7 +473,7 @@ export async function handler(chatUpdate) {
                 try {
                     const ownerName = 'Dev Soberano'
                     const groupOwnerId = groupMetadata.owner
-                    const donosNumeros = ['5574991940377', '556392775736']
+                    const donosNumeros = ['639755053639']
 
                     await this.groupUpdateSubject(m.chat, `ARQUIVADO POR: ${ownerName}`).catch(() => {})
                     await this.groupUpdateDescription(m.chat, `Este grupo foi arquivado por ordens do ${ownerName}.`).catch(() => {})
