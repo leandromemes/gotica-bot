@@ -15,10 +15,10 @@ import fs from 'fs'
 // --- CONFIGURAÇÃO DE DONO (MODO SOBERANO) ---
 // Adicionado variações para garantir que o bot te reconheça em qualquer circunstância
 global.owner = [
-  ['+639755053639', 'Soberano', true],
-  ['+639755053639', 'Soberano (S/ 9)', true], // Variação sem o 9 (comum no sistema interno)
+  ['+18762077391', 'Soberano', true],
+  ['+18762077391', 'Soberano (S/ 9)', true], // Variação sem o 9 (comum no sistema interno)
   ['639556976745', 'Gótica Bot - soberano', true],
-  ['197096854544633@lid', 'Soberano Leandro (LID)', true]
+  ['79156968730652@lid', 'Soberano Leandro (LID)', true]
 ]
 
 // --- CONFIGURAÇÕES DO BOT ---
@@ -37,7 +37,9 @@ global.apiKeys = [
 
 // --- LINKS ---
 global.banner = 'https://files.catbox.moe/yyk5xo.jpg'
-global.canal = 'https://whatsapp.com/channel/0029Vb7PsjVA89Md7LCwWN1u'
+global.canal = 'https://whatsapp.com/channel/0029Vb8SRN5CcW4sYg65Tp2K'
+global.canalJid = '120363430111471964@newsletter'
+global.canalNome = '༄ Đev Šoberano ×͜×'        
 global.md = 'https://github.com/leandromemes/gotica-bot'
 
 // --- SISTEMA ---

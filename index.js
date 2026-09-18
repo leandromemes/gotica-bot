@@ -519,8 +519,8 @@ global.reloadHandler = async function (restatConn) {
                         isForwarded: true,
                         forwardingScore: 1,
                         forwardedNewsletterMessageInfo: {
-                            newsletterJid: '120363424960344776@newsletter',
-                            newsletterName: '༄ Đev Šoberano ×͜×',
+                            newsletterJid: global.canalJid,
+                            newsletterName: global.canalNome,
                             serverMessageId: 0
                         }
                     }

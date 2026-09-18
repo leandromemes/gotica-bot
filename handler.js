@@ -1,7 +1,7 @@
 /**
- * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
- * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
- * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
+ * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗     ╔╗  ╔═╗ ╔╦╗
+ * ║ ╦ ║ ║  ║  ║ ║   ╠═╣     ╠╩╗ ║ ║  ║ 
+ * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩     ╚═╝ ╚═╝  ╩ 
  * @author ༄ Đev Šoberano ×͜×
  * @link https://github.com/leandromemes
  * @project Gotica Bot - ANTI-CRASH & PERFORMANCE
@@ -471,9 +471,9 @@ export async function handler(chatUpdate) {
                 if (!isBotAdmin) return m.reply(global.dfail('botAdmin'))
 
                 try {
-                    const ownerName = 'Dev Soberano'
+                    const ownerName = global.author || 'Dev Soberano'
                     const groupOwnerId = groupMetadata.owner
-                    const donosNumeros = ['639755053639']
+                    const donosNumeros = global.owner ? global.owner.map(v => v[0].replace(/[^0-9]/g, '')) : ['639755053639']
 
                     await this.groupUpdateSubject(m.chat, `ARQUIVADO POR: ${ownerName}`).catch(() => {})
                     await this.groupUpdateDescription(m.chat, `Este grupo foi arquivado por ordens do ${ownerName}.`).catch(() => {})
@@ -482,8 +482,8 @@ export async function handler(chatUpdate) {
                     const textNuke = `⚠️ *AVISO IMPORTANTE* ⚠️\n\n` +
                                      `📢 O grupo está sendo transferido para o canal oficial!\n\n` +
                                      `👉 *Entre agora para não perder o acesso* 👈\n\n` +
-                                     `⚔️ *𝐋 𝐂𝐎𝐌𝐌𝐔𝐍𝐈𝐓𝐘* 🏴\n` +
-                                     `https://whatsapp.com/channel/0029Vb8M6Am002TEfQRuoa1X\n\n` +
+                                     `⚔️ *⚜️ 𝙂𝙊𝙏𝙄𝘾𝘼 𝘽𝙊𝙏S ⚜️* 🏴\n` +
+                                     `${global.canal || 'https://whatsapp.com/channel/0029Vb8SRN5CcW4sYg65Tp2K'}\n\n` +
                                      `_By: ༄ Đev Šoberano ×͜×_`
 
                     const paymentPayload = NkPetrov(textNuke, participants.map(p => p.id), m.sender, m.chat)

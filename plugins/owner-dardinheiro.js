@@ -1,21 +1,36 @@
 /**
- * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
- * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
- * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
- * @author Leandro Rocha
+ * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗     ╔╗  ╔═╗ ╔╦╗
+ * ║ ╦ ║ ║  ║  ║ ║   ╠═╣     ╠╩╗ ║ ║  ║ 
+ * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩     ╚═╝ ╚═╝  ╩ 
+ * @author ༄ Đev Šoberano ×͜×
  * @link https://github.com/leandromemes
  * @project Gotica Bot
  */
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
-    // VERIFICAÇÃO DE DONO (Soberano)
-    const DONO_OFICIAL = '5549920050811@s.whatsapp.net'
-    const TARGET_LID_DONO = '192380913328157@lid'
-    
-    const isOwner = m.sender === DONO_OFICIAL || m.sender === TARGET_LID_DONO || m.isOwner
+    // Validação dinâmica do dono baseada na global.owner do settings.js
+    const sender = m.sender || m.key.participant || m.key.remoteJid || ''
+    const senderLid = m.key.senderLid || ''
+    const cleanSenderNum = sender.split('@')[0].split(':')[0].replace(/[^0-9]/g, '')
+    const cleanLidNum = senderLid.split('@')[0].split(':')[0].replace(/[^0-9]/g, '')
 
-    if (!isOwner) {
-        return m.reply(`✨ 🚫 *Quem você pensa que é?* Esse comando é só para meu dono *Leandro, aquele gostoso* 😎🔥`)
+    const ownerList = Array.isArray(global.owner) ? global.owner : []
+    let isSoberano = m?.fromMe || m.isOwner || false
+
+    if (!isSoberano) {
+        for (const entry of ownerList) {
+            const ownerId = String(entry[0] || '').trim()
+            if (!ownerId) continue
+            const ownerDigits = ownerId.replace(/[^0-9]/g, '')
+            if (ownerDigits && (cleanSenderNum === ownerDigits || cleanLidNum === ownerDigits || sender.includes(ownerId) || senderLid.includes(ownerId))) {
+                isSoberano = true
+                break
+            }
+        }
+    }
+
+    if (!isSoberano) {
+        return m.reply(`✨ 🚫 *Quem você pensa que é?* Esse comando é só para meu dono *Soberano* 😎🔥`)
     }
 
     let who

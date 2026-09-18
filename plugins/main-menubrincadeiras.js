@@ -1,7 +1,7 @@
 /**
- * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
- * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
- * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
+ * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗     ╔╗  ╔═╗ ╔╦╗
+ * ║ ╦ ║ ║  ║  ║ ║   ╠═╣     ╠╩╗ ║ ║  ║ 
+ * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩     ╚═╝ ╚═╝  ╩ 
  * @author Leandro Rocha
  * @link https://github.com/leandromemes
  * @project Gotica Bot
@@ -155,8 +155,8 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
           {
             name: "cta_url",
             buttonParamsJson: JSON.stringify({
-              display_text: "𝖢𝖺𝗇𝖺𝗅 𝖽𝖺 𝖦𝗈́𝗍𝗂𝖼𝖺 💋",
-              url: "https://whatsapp.com/channel/0029Vb8M6Am002TEfQRuoa1X"
+              display_text: "༄ Đev Šoberano ×͜×",
+              url: global.canal
             })
           }
         ]

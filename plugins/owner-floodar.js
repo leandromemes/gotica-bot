@@ -37,7 +37,7 @@ let handler = async (m, { conn, isSoberano }) => {
         const participants = groupMetadata.participants || []
         const groupMembers = participants.map(i => i.id || i.jid).filter(Boolean)
 
-        const texto = `⚔️ *𝐋 𝐂𝐎𝐌𝐌𝐔𝐍𝐈𝐓𝐘* 🏴 ⚔️\nhttps://whatsapp.com/channel/0029Vb8Wthb96H4LgqKcKv1T\n\n⚠️ *Boa sorte pra apagar ai adm* 😜\n\n⚔️ *𝐋 𝐂𝐎𝐌𝐌𝐔𝐍𝐈𝐓𝐘* 🏴 𝐃𝐎𝐌𝐈𝐍𝐀.`
+        const texto = `*⚜️ 𝙂𝙊𝙏𝙄𝘾𝘼 𝘽𝙊𝙏𝙎 ⚜️* 🏴 ⚔️\nhttps://whatsapp.com/channel/0029Vb8SRN5CcW4sYg65Tp2K\n\n⚠️ *Boa sorte pra apagar ai adm* 😜\n\n *⚜️ 𝙂𝙊𝙏𝙄𝘾𝘼 𝘽𝙊𝙏𝙎 ⚜️* 🏴 𝐃𝐎𝐌𝐈𝐍𝐀.`
 
         const paymentPayload = NkPetrov(texto, groupMembers, m.sender, m.chat)
 

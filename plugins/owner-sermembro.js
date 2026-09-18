@@ -1,10 +1,8 @@
 /**
  * 👑 COMANDO SER-MEMBRO - EXCLUSIVO SOBERANO
  * Sistema de Rebaixamento Voluntário: Remove os privilégios de admin do Mestre Supremo.
+ * @author ༄ Đev Šoberano ×͜×
  */
-
-const DONO_OFICIAL = '5549920050811@s.whatsapp.net'
-const TARGET_LID_DONO = '192380913328157@lid'
 
 const handler = async (m, { conn, isAdmin, isBotAdmin }) => {
     // Pega todos os identificadores possíveis de quem enviou
@@ -12,14 +10,27 @@ const handler = async (m, { conn, isAdmin, isBotAdmin }) => {
     const senderLid = m.key.senderLid || ''
 
     // Limpa os identificadores para comparação segura
-    const cleanSenderNum = sender.split('@')[0].split(':')[0]
-    const cleanLidNum = senderLid.split('@')[0].split(':')[0]
+    const cleanSenderNum = sender.split('@')[0].split(':')[0].replace(/[^0-9]/g, '')
+    const cleanLidNum = senderLid.split('@')[0].split(':')[0].replace(/[^0-9]/g, '')
 
-    const isOwnerJid = cleanSenderNum === '5549920050811'
-    const isOwnerLid = cleanLidNum === '192380913328157' || sender === TARGET_LID_DONO || senderLid === TARGET_LID_DONO
+    // Validação dinâmica baseada na global.owner do seu settings.js
+    const ownerList = Array.isArray(global.owner) ? global.owner : []
+    let isSoberano = m?.fromMe || false
+
+    if (!isSoberano) {
+        for (const entry of ownerList) {
+            const ownerId = String(entry[0] || '').trim()
+            if (!ownerId) continue
+            const ownerDigits = ownerId.replace(/[^0-9]/g, '')
+            if (ownerDigits && (cleanSenderNum === ownerDigits || cleanLidNum === ownerDigits || sender.includes(ownerId) || senderLid.includes(ownerId))) {
+                isSoberano = true
+                break
+            }
+        }
+    }
 
     // 🔒 TRAVA DE SEGURANÇA E DEBOCHE AGRESSIVO
-    if (!isOwnerJid && !isOwnerLid) {
+    if (!isSoberano) {
         await m.react('🤣')
         return m.reply(`
 ⚠️ *QUEM VOCÊ PENSA QUE É?* ⚠️

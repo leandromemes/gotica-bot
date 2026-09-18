@@ -1,21 +1,36 @@
 /**
- * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗      ╔╗  ╔═╗ ╔╦╗
- * ║ ╦ ║ ║  ║  ║ ║   ╠═╣      ╠╩╗ ║ ║  ║ 
- * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩      ╚═╝ ╚═╝  ╩ 
- * @author Leandro Rocha
+ * ╔═╗ ╔═╗ ╔╦╗ ╦ ╔═╗ ╔═╗     ╔╗  ╔═╗ ╔╦╗
+ * ║ ╦ ║ ║  ║  ║ ║   ╠═╣     ╠╩╗ ║ ║  ║ 
+ * ╚═╝ ╚═╝  ╩  ╩ ╚═╝ ╩ ╩     ╚═╝ ╚═╝  ╩ 
+ * @author ༄ Đev Šoberano ×͜×
  * @link https://github.com/leandromemes
  * @project Gotica Bot
  */
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
-    // VERIFICAÇÃO DE DONO (Soberano)
-    const DONO_OFICIAL = '5549920050811@s.whatsapp.net'
-    const TARGET_LID_DONO = '192380913328157@lid'
-    
-    const isOwner = m.sender === DONO_OFICIAL || m.sender === TARGET_LID_DONO || m.isOwner
+    // Validação dinâmica do dono baseada na global.owner do settings.js
+    const sender = m.sender || m.key.participant || m.key.remoteJid || ''
+    const senderLid = m.key.senderLid || ''
+    const cleanSenderNum = sender.split('@')[0].split(':')[0].replace(/[^0-9]/g, '')
+    const cleanLidNum = senderLid.split('@')[0].split(':')[0].replace(/[^0-9]/g, '')
 
-    if (!isOwner) {
-        return m.reply(`✨ 🚫 *Acesso negado!* Apenas o Soberano Leandro pode confiscar bens. 🍷`)
+    const ownerList = Array.isArray(global.owner) ? global.owner : []
+    let isSoberano = m?.fromMe || m.isOwner || false
+
+    if (!isSoberano) {
+        for (const entry of ownerList) {
+            const ownerId = String(entry[0] || '').trim()
+            if (!ownerId) continue
+            const ownerDigits = ownerId.replace(/[^0-9]/g, '')
+            if (ownerDigits && (cleanSenderNum === ownerDigits || cleanLidNum === ownerDigits || sender.includes(ownerId) || senderLid.includes(ownerId))) {
+                isSoberano = true
+                break
+            }
+        }
+    }
+
+    if (!isSoberano) {
+        return m.reply(`✨ 🚫 *Acesso negado!* Apenas o Mestre Supremo Soberano pode confiscar bens. 🍷`)
     }
 
     let who
@@ -33,9 +48,9 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     if (!chat.users) chat.users = {}
     if (!chat.users[who]) chat.users[who] = { coin: 0, bank: 0 }
 
-    // Remove o saldo (Garante que não fique negativo se você não quiser, mas aqui vamos deixar tirar o que ele tem)
+    // Remove o saldo (Garante que não fique negativo se não houver saldo suficiente)
     if (chat.users[who].coin < valor) {
-        chat.users[who].coin = 0 // Se ele tiver menos que o valor, zera a carteira
+        chat.users[who].coin = 0 
     } else {
         chat.users[who].coin -= valor
     }
