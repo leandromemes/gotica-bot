@@ -41,7 +41,10 @@ let handler = async (m, { conn, text }) => {
     await conn.sendMessage(m.chat, { react: { text: "🔍", key: m.key }})
 
     try {
-        const endpoint = `${minhaApiURL}/api/downloads/play-audio?search=${encodeURIComponent(text.trim())}&api_key=${apiKey}`
+        // Envia tanto 'apikey' quanto 'api_key' para garantir compatibilidade com a rota /play
+        const querySearch = encodeURIComponent(text.trim())
+        const endpoint = `${minhaApiURL}/play?search=${querySearch}&apikey=${apiKey}&api_key=${apiKey}`
+        
         let res = await fetch(endpoint)
 
         const contentType = res.headers.get("content-type")
@@ -78,17 +81,22 @@ let handler = async (m, { conn, text }) => {
             await conn.reply(m.chat, textoMensagem, m)
         }
 
-        // 2. Carrega o Buffer do Áudio (Prioriza arquivo local se for na VPS, ou baixa via URL se for no PC)
+        // 2. Carrega o Buffer do Áudio (Prioriza arquivo local se estiver na VPS ou trata URL pública)
         let audioBuffer
         const caminhoLocal = data.file ? String(data.file).trim() : ''
 
         if (caminhoLocal && fs.existsSync(caminhoLocal)) {
             audioBuffer = fs.readFileSync(caminhoLocal)
         } else if (data.url) {
-            const resAudio = await fetch(data.url.trim())
+            // Se a API retornar localhost na URL, converte para o domínio público HTTPS
+            let urlDownload = data.url.trim()
+            if (urlDownload.includes('localhost:3000')) {
+                urlDownload = urlDownload.replace('http://localhost:3000', minhaApiURL)
+            }
+
+            const resAudio = await fetch(urlDownload)
             if (!resAudio.ok) throw new Error('Falha ao baixar áudio da URL da API')
             
-            // Atualizado para usar arrayBuffer() e evitar DeprecationWarning
             const arrayBuffer = await resAudio.arrayBuffer()
             audioBuffer = Buffer.from(arrayBuffer)
         } else {
